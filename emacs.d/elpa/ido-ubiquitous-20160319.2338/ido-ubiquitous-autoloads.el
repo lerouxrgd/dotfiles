@@ -3,9 +3,9 @@
 ;;; Code:
 (add-to-list 'load-path (or (file-name-directory #$) (car load-path)))
 
-;;;### (autoloads nil "ido-ubiquitous" "ido-ubiquitous.el" (22292
-;;;;;;  13041 797786 240000))
-;;; Generated autoloads from ido-ubiquitous.el
+;;;### (autoloads nil "ido-ubiquitous" "../../../../.emacs.d/elpa/ido-ubiquitous-20160319.2338/ido-ubiquitous.el"
+;;;;;;  "ac38dfb5295a892ddc4ce3a0ceb4b23e")
+;;; Generated autoloads from ../../../../.emacs.d/elpa/ido-ubiquitous-20160319.2338/ido-ubiquitous.el
 
 (defvar ido-ubiquitous-debug-mode nil "\
 Non-nil if Ido-Ubiquitous-Debug mode is enabled.
@@ -42,6 +42,12 @@ when ido completion is or is not used by customizing
 `ido-ubiquitous-function-overrides'.
 
 \(fn &optional ARG)" t nil)
+
+;;;***
+
+;;;### (autoloads nil nil ("../../../../.emacs.d/elpa/ido-ubiquitous-20160319.2338/ido-ubiquitous-autoloads.el"
+;;;;;;  "../../../../.emacs.d/elpa/ido-ubiquitous-20160319.2338/ido-ubiquitous.el")
+;;;;;;  (22292 64433 682017 822000))
 
 ;;;***
 

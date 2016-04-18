@@ -3,9 +3,9 @@
 ;;; Code:
 (add-to-list 'load-path (or (file-name-directory #$) (car load-path)))
 
-;;;### (autoloads nil "ido-completing-read+" "ido-completing-read+.el"
-;;;;;;  (22292 13042 769806 878000))
-;;; Generated autoloads from ido-completing-read+.el
+;;;### (autoloads nil "ido-completing-read+" "../../../../.emacs.d/elpa/ido-completing-read+-20160319.2338/ido-completing-read+.el"
+;;;;;;  "1bba6122ca45ee1258caedede1c475f0")
+;;; Generated autoloads from ../../../../.emacs.d/elpa/ido-completing-read+-20160319.2338/ido-completing-read+.el
 
 (defvar ido-cr+-enable-next-call nil "\
 If non-nil, then the next call to `ido-completing-read' is by `ido-completing-read+'.")
@@ -58,6 +58,12 @@ Emacs 25. Setting another package's variable is not safe in
 general, but in this case it should be, because ido always
 let-binds this variable before using it, so the initial value
 shouldn't matter.")
+
+;;;***
+
+;;;### (autoloads nil nil ("../../../../.emacs.d/elpa/ido-completing-read+-20160319.2338/ido-completing-read+-autoloads.el"
+;;;;;;  "../../../../.emacs.d/elpa/ido-completing-read+-20160319.2338/ido-completing-read+.el")
+;;;;;;  (22292 64431 941160 451000))
 
 ;;;***
 

@@ -3,9 +3,9 @@
 ;;; Code:
 (add-to-list 'load-path (or (file-name-directory #$) (car load-path)))
 
-;;;### (autoloads nil "paredit" "paredit.el" (22292 13031 569569
-;;;;;;  71000))
-;;; Generated autoloads from paredit.el
+;;;### (autoloads nil "paredit" "../../../../.emacs.d/elpa/paredit-20160324.1215/paredit.el"
+;;;;;;  "6f023f909dfdd92c8f573f17873141d1")
+;;; Generated autoloads from ../../../../.emacs.d/elpa/paredit-20160324.1215/paredit.el
 
 (autoload 'paredit-mode "paredit" "\
 Minor mode for pseudo-structurally editing Lisp code.
@@ -22,6 +22,12 @@ Paredit behaves badly if parentheses are unbalanced, so exercise
 Turn on pseudo-structural editing of Lisp code.
 
 \(fn)" t nil)
+
+;;;***
+
+;;;### (autoloads nil nil ("../../../../.emacs.d/elpa/paredit-20160324.1215/paredit-autoloads.el"
+;;;;;;  "../../../../.emacs.d/elpa/paredit-20160324.1215/paredit.el")
+;;;;;;  (22292 64411 783015 871000))
 
 ;;;***
 
