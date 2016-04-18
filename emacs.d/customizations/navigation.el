@@ -64,3 +64,7 @@
 
 ;; projectile everywhere!
 (projectile-global-mode)
+
+;; keep point at the same screen position
+(setq scroll-preserve-screen-position t)
+
