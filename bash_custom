@@ -1,0 +1,17 @@
+
+export JAVA_HOME=/usr/local/jdk1.8
+export TEXLIVE_HOME=/usr/local/texlive/2016
+
+export TOOLS=/home/raru/dev/tools
+export INTELLIJ_HOME=$TOOLS/intellij
+
+export PATH=~/dev/bin:$JAVA_HOME/bin:$PATH
+export PATH=$INTELLIJ_HOME/bin:$PATH
+export PATH=$TEXLIVE_HOME/bin/x86_64-linux:$PATH
+
+export MANPATH=$TEXLIVE_HOME/texmf-dist/doc/man:$MANPATH
+
+alias intellij='setsid $INTELLIJ_HOME/bin/idea.sh'
+em-x() { setsid /usr/bin/emacs "$@" ;}
+em() { /usr/bin/emacs -nw "$@" ;}
+
