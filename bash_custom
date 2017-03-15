@@ -14,4 +14,6 @@ export MANPATH=$TEXLIVE_HOME/texmf-dist/doc/man:$MANPATH
 alias intellij='setsid $INTELLIJ_HOME/bin/idea.sh'
 em-x() { setsid /usr/bin/emacs "$@" ;}
 em() { /usr/bin/emacs -nw "$@" ;}
+
 dul() { root=${1-./}; ls $root | xargs -I DIR du -sh ${root%/}/DIR ;}
+mplay() { mplayer -fixed-vo -shuffle "$@" ;}
