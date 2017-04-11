@@ -11,9 +11,10 @@
 (add-to-list 'package-archives
              '("melpa" . "http://melpa.milkbox.net/packages/") t)
 
-(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
-                         ("marmalade" . "http://marmalade-repo.org/packages/")
-                         ("melpa" . "https://melpa.org/packages/")
+(setq package-archives '(("gnu"          . "http://elpa.gnu.org/packages/")
+                         ("elpy"         . "https://jorgenschaefer.github.io/packages/")
+                         ("marmalade"    . "http://marmalade-repo.org/packages/")
+                         ("melpa"        . "https://melpa.org/packages/")
                          ("melpa-stable" . "https://stable.melpa.org/packages/"))) 
 
 ;; Load and activate emacs packages. Do this first so that the
@@ -45,6 +46,10 @@
     ;; integration with a Clojure REPL
     ;; https://github.com/clojure-emacs/cider
     cider
+
+    ;; integration with Python
+    ;; https://github.com/jorgenschaefer/elpy
+    elpy
 
     ;; http://immerrr.github.io/lua-mode/
     lua-mode
@@ -137,6 +142,7 @@
 (load "setup-clojure.el")
 (load "setup-js.el")
 (load "setup-octave.el")
+(load "setup-python.el")
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
