@@ -12,7 +12,6 @@
              '("melpa" . "http://melpa.milkbox.net/packages/") t)
 
 (setq package-archives '(("gnu"          . "http://elpa.gnu.org/packages/")
-                         ("elpy"         . "https://jorgenschaefer.github.io/packages/")
                          ("marmalade"    . "http://marmalade-repo.org/packages/")
                          ("melpa"        . "https://melpa.org/packages/")
                          ("melpa-stable" . "https://stable.melpa.org/packages/"))) 
