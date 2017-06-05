@@ -143,6 +143,7 @@
 (load "setup-js.el")
 (load "setup-octave.el")
 (load "setup-python.el")
+(load "setup-lua.el")
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
