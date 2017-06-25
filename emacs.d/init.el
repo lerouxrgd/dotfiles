@@ -46,6 +46,9 @@
     ;; https://github.com/clojure-emacs/cider
     cider
 
+    ;; https://github.com/clojure-emacs/clj-refactor.el
+    clj-refactor
+
     ;; integration with Python
     ;; https://github.com/jorgenschaefer/elpy
     elpy

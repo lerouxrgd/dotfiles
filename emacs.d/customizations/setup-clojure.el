@@ -82,3 +82,16 @@
      (define-key clojure-mode-map (kbd "C-M-r") 'cider-refresh)
      (define-key clojure-mode-map (kbd "C-c u") 'cider-user-ns)
      (define-key cider-mode-map (kbd "C-c u") 'cider-user-ns)))
+
+;;;;
+;; Clj-refactor
+;;;;
+
+(require 'clj-refactor)
+
+(defun cljr-clojure-mode-hook ()
+    (clj-refactor-mode 1)
+    (yas-minor-mode 1) ; for adding require/use/import statements
+    (cljr-add-keybindings-with-prefix "C-c C-r"))
+
+(add-hook 'clojure-mode-hook #'cljr-clojure-mode-hook)
