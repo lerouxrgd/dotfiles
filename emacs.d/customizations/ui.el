@@ -29,7 +29,7 @@
 (load-theme 'darcula t)
 
 ;; increase font size for better readability
-(set-face-attribute 'default nil :height 165)
+(set-face-attribute 'default nil :height 180)
 
 ;; Uncomment the lines below by removing semicolons and play with the
 ;; values in order to set the width (in characters wide) and height
