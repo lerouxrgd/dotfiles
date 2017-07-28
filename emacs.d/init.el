@@ -80,6 +80,11 @@
 
     ;; git integration
     ;;magit
+    
+    ;; json validation
+    ;; https://github.com/purcell/flymake-json
+    flymake-json
+    json-mode
     ))
 
 ;; On OS X, an Emacs instance started from the graphical user

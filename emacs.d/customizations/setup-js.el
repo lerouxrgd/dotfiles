@@ -9,6 +9,8 @@
      (tagedit-add-paredit-like-keybindings)
      (add-hook 'html-mode-hook (lambda () (tagedit-mode 1)))))
 
+;; json validation
+(add-hook 'js-mode-hook 'flymake-json-maybe-load)
 
 ;; coffeescript
 (add-to-list 'auto-mode-alist '("\\.coffee.erb$" . coffee-mode))
