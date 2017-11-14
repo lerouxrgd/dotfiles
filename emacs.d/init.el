@@ -5,16 +5,17 @@
 ;; Define package repositories
 (require 'package)
 (add-to-list 'package-archives
-             '("marmalade" . "http://marmalade-repo.org/packages/") t)
+             '("gnu"          . "http://elpa.gnu.org/packages/") t)
 (add-to-list 'package-archives
-             '("tromey" . "http://tromey.com/elpa/") t)
+	     '("marmalade"    . "http://marmalade-repo.org/packages/") t)
 (add-to-list 'package-archives
-             '("melpa" . "http://melpa.milkbox.net/packages/") t)
-
-(setq package-archives '(("gnu"          . "http://elpa.gnu.org/packages/")
-                         ("marmalade"    . "http://marmalade-repo.org/packages/")
-                         ("melpa"        . "https://melpa.org/packages/")
-                         ("melpa-stable" . "https://stable.melpa.org/packages/"))) 
+	     '("melpa"        . "https://melpa.org/packages/") t)
+(add-to-list 'package-archives
+	     '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+(add-to-list 'package-archives
+	     '("melpa-milk"   . "http://melpa.milkbox.net/packages/") t)
+(add-to-list 'package-archives
+	     '("tromey"       . "http://tromey.com/elpa/") t)
 
 ;; Load and activate emacs packages. Do this first so that the
 ;; packages are loaded before you start trying to modify them.
@@ -48,6 +49,9 @@
 
     ;; https://github.com/clojure-emacs/clj-refactor.el
     clj-refactor
+
+    ;; https://github.com/justbur/emacs-which-key
+    which-key
 
     ;; integration with Python
     ;; https://github.com/jorgenschaefer/elpy

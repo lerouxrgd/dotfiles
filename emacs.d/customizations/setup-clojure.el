@@ -9,9 +9,6 @@
 ;; Java classes (e.g. JavaClassName)
 (add-hook 'clojure-mode-hook 'subword-mode)
 
-;; A little more syntax highlighting
-(require 'clojure-mode-extra-font-locking)
-
 ;; syntax hilighting for midje
 (add-hook 'clojure-mode-hook
           (lambda ()
@@ -24,6 +21,9 @@
                 (1 font-lock-keyword-face))))
             (define-clojure-indent (fact 1))
             (define-clojure-indent (facts 1))))
+
+;; A little more syntax highlighting
+(require 'clojure-mode-extra-font-locking)
 
 ;;;;
 ;; Cider
@@ -100,3 +100,11 @@
     (cljr-add-keybindings-with-prefix "C-c C-r"))
 
 (add-hook 'clojure-mode-hook #'cljr-clojure-mode-hook)
+
+;;;;
+;; Which-key
+;;;;
+
+;; Helps with key binding auto completion
+(require 'which-key)
+(which-key-mode)
