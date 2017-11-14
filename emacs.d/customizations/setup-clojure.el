@@ -67,7 +67,6 @@
     (cider-interactive-eval (format "(println '(def server (%s/start))) (println 'server)" ns))
     (cider-interactive-eval (format "(def server (%s/start)) (println server)" ns))))
 
-
 (defun cider-refresh ()
   (interactive)
   (cider-interactive-eval (format "(user/reset)")))
@@ -76,12 +75,18 @@
   (interactive)
   (cider-repl-set-ns "user"))
 
+(defun cider-browse-current-ns ()
+  (interactive)
+  (cider-browse-ns (with-current-buffer (current-buffer) (cider-current-ns))))
+
 (eval-after-load 'cider
   '(progn
      (define-key clojure-mode-map (kbd "C-c C-v") 'cider-start-http-server)
      (define-key clojure-mode-map (kbd "C-M-r") 'cider-refresh)
      (define-key clojure-mode-map (kbd "C-c u") 'cider-user-ns)
-     (define-key cider-mode-map (kbd "C-c u") 'cider-user-ns)))
+     (define-key cider-mode-map (kbd "C-c u") 'cider-user-ns)
+     (define-key cider-mode-map (kbd "C-c M-b") 'cider-browse-current-ns)
+     (define-key cider-mode-map (kbd "C-c C-M-b") 'cider-browse-ns-all)))
 
 ;;;;
 ;; Clj-refactor
