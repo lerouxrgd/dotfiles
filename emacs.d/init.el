@@ -79,7 +79,7 @@
     tagedit
 
     ;; git integration
-    ;;magit
+    magit
     
     ;; json validation
     ;; https://github.com/purcell/flymake-json
