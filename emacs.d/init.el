@@ -56,6 +56,25 @@
     ;; integration with Python
     ;; https://github.com/jorgenschaefer/elpy
     elpy
+    ;; pip install rope
+    ;; pip install flake8
+    ;; pip install importmagic
+    ;; pip install autopep8
+    ;; pip install yapf
+
+    ;; integration with Go
+    ;; https://github.com/dominikh/go-mode.el
+    ;; https://github.com/dougm/goflymake
+    ;; https://github.com/rogpeppe/godef
+    go-mode
+    go-guru
+    ;; go get -u golang.org/x/tools/cmd/...
+    ;; go get -u github.com/dougm/goflymake
+    ;; go get -u github.com/rogpeppe/godef/...
+
+    ;; https://github.com/nsf/gocode#emacs-setup
+    go-autocomplete
+    ;; go get -u github.com/nsf/gocode
 
     ;; http://immerrr.github.io/lua-mode/
     lua-mode
@@ -155,6 +174,7 @@
 (load "setup-octave.el")
 (load "setup-python.el")
 (load "setup-lua.el")
+(load "setup-go.el")
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
