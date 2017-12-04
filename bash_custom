@@ -2,10 +2,16 @@
 export JAVA_HOME=/usr/local/jdk1.8
 export TEXLIVE_HOME=/usr/local/texlive/2016
 
+export LOCAL=/home/raru/dev/local
+export GOPATH=$LOCAL/gocode
+
 export TOOLS=/home/raru/dev/tools
 export INTELLIJ_HOME=$TOOLS/intellij
 
-export PATH=/home/raru/dev/bin:$JAVA_HOME/bin:$PATH
+export PATH=/home/raru/dev/bin:$PATH
+export PATH=$JAVA_HOME/bin:$PATH
+export PATH=/usr/local/go/bin:$PATH
+export PATH=${GOPATH//://bin:}/bin:$PATH
 export PATH=$INTELLIJ_HOME/bin:$PATH
 export PATH=$TEXLIVE_HOME/bin/x86_64-linux:$PATH
 
