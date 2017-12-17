@@ -28,32 +28,25 @@
 (when (not package-archive-contents)
   (package-refresh-contents))
 
-;; The packages you want installed. You can also install these
-;; manually with M-x package-install
-;; Add in your own as you wish:
+;; Define packages to install
 (defvar my-packages
-  '(;; makes handling lisp expressions much, much easier
+  '(;; Makes handling lisp expressions much, much easier
     ;; Cheatsheet: http://www.emacswiki.org/emacs/PareditCheatsheet
     paredit
 
-    ;; key bindings and code colorization for Clojure
+    ;; Colorful parenthesis matching
+    rainbow-delimiters
+
+    ;; Integration with Clojure
     ;; https://github.com/clojure-emacs/clojure-mode
-    clojure-mode
-
-    ;; extra syntax highlighting for clojure
-    clojure-mode-extra-font-locking
-
-    ;; integration with a Clojure REPL
     ;; https://github.com/clojure-emacs/cider
-    cider
-
     ;; https://github.com/clojure-emacs/clj-refactor.el
+    clojure-mode
+    clojure-mode-extra-font-locking    
+    cider
     clj-refactor
 
-    ;; https://github.com/justbur/emacs-which-key
-    which-key
-
-    ;; integration with Python
+    ;; Integration with Python
     ;; https://github.com/jorgenschaefer/elpy
     elpy
     ;; pip install rope
@@ -62,52 +55,68 @@
     ;; pip install autopep8
     ;; pip install yapf
 
-    ;; integration with Go
+    ;; Integration with Go
     ;; https://github.com/dominikh/go-mode.el
     ;; https://github.com/dougm/goflymake
     ;; https://github.com/rogpeppe/godef
+    ;; https://github.com/nsf/gocode#emacs-setup
     go-mode
     go-guru
+    go-autocomplete
     ;; go get -u golang.org/x/tools/cmd/...
     ;; go get -u github.com/dougm/goflymake
     ;; go get -u github.com/rogpeppe/godef/...
-
-    ;; https://github.com/nsf/gocode#emacs-setup
-    go-autocomplete
     ;; go get -u github.com/nsf/gocode
 
+    ;; Integration with Javascript
+    ;; https://github.com/mooz/js2-mode
+    ;; https://github.com/magnars/js2-refactor.el
+    ;; https://github.com/nicolaspetton/xref-js2
+    ;; https://github.com/ggreer/the_silver_searcher
+    ;; https://github.com/ternjs/tern
+    js2-mode
+    js2-refactor
+    xref-js2
+    company-tern
+    ;; sudo dnf install the_silver_searcher
+    ;; sudo npm install -g tern
+
+    ;; Validation for JSON
+    ;; https://github.com/purcell/flymake-json
+    json-mode
+    flymake-json
+    ;; sudo npm install jsonlint -g
+
+    ;; Edit html tags like sexps
+    tagedit
+
+    ;; Integration with Lua
     ;; http://immerrr.github.io/lua-mode/
     lua-mode
 
+    ;; Integration with Octave
     ;; https://github.com/coldnew/ac-octave
     ac-octave
 
-    ;; allow ido usage in as many contexts as possible. see
-    ;; customizations/navigation.el line 23 for a description
-    ;; of ido
+    ;; Integration with Git
+    ;; https://github.com/magit/magit
+    magit
+
+    ;; Allows ido usage in as many contexts as possible.
+    ;; See customizations/navigation.el for a description of ido
     ido-ubiquitous
 
-    ;; Enhances M-x to allow easier execution of commands. Provides
-    ;; a filterable list of possible commands in the minibuffer
+    ;; Enhances M-x to allow easier execution of commands.
+    ;; Provides a filterable list of possible commands in the minibuffer
     ;; http://www.emacswiki.org/emacs/Smex
     smex
 
+    ;; Displays the key bindings following current incomplete command
+    ;; https://github.com/justbur/emacs-which-key
+    which-key
+
     ;; project navigation
     projectile
-
-    ;; colorful parenthesis matching
-    rainbow-delimiters
-
-    ;; edit html tags like sexps
-    tagedit
-
-    ;; git integration
-    magit
-    
-    ;; json validation
-    ;; https://github.com/purcell/flymake-json
-    flymake-json
-    json-mode
     ))
 
 ;; On OS X, an Emacs instance started from the graphical user
@@ -170,18 +179,17 @@
 
 ;; Langauage-specific
 (load "setup-clojure.el")
-(load "setup-js.el")
-(load "setup-octave.el")
 (load "setup-python.el")
-(load "setup-lua.el")
 (load "setup-go.el")
+(load "setup-js2.el")
+(load "setup-lua.el")
+(load "setup-octave.el")
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(coffee-tab-width 2)
  '(package-selected-packages
    (quote
     (ac-octave tagedit smex rainbow-delimiters projectile paredit lua-mode ido-ubiquitous clojure-mode-extra-font-locking cider))))
