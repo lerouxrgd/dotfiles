@@ -90,6 +90,10 @@
     ;; Edit html tags like sexps
     tagedit
 
+    ;; Integration with Markdown
+    ;; https://github.com/jrblevin/markdown-mode
+    markdown-mode
+
     ;; Integration with Lua
     ;; http://immerrr.github.io/lua-mode/
     lua-mode
