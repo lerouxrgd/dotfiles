@@ -187,7 +187,6 @@
 (load "setup-go.el")
 (load "setup-js2.el")
 (load "setup-lua.el")
-(load "setup-octave.el")
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
