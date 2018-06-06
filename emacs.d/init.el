@@ -68,6 +68,10 @@
     ;; go get -u github.com/rogpeppe/godef/...
     ;; go get -u github.com/nsf/gocode
 
+    ;; Integration with Rust
+    rust-mode
+    toml-mode
+
     ;; Integration with Javascript
     ;; https://github.com/mooz/js2-mode
     ;; https://github.com/magnars/js2-refactor.el
