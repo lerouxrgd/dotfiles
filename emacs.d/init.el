@@ -69,8 +69,16 @@
     ;; go get -u github.com/nsf/gocode
 
     ;; Integration with Rust
+    ;; https://github.com/rust-lang/rust-mode
+    ;; https://github.com/racer-rust/emacs-racer
+    ;; https://github.com/dryman/toml-mode.el
     rust-mode
+    racer
+    company
     toml-mode
+    ;; rustup component add rustfmt-preview
+    ;; rustup component add rust-src
+    ;; cargo install racer
 
     ;; Integration with Javascript
     ;; https://github.com/mooz/js2-mode
@@ -189,6 +197,7 @@
 (load "setup-clojure.el")
 (load "setup-python.el")
 (load "setup-go.el")
+(load "setup-rust.el")
 (load "setup-js2.el")
 (load "setup-lua.el")
 
@@ -199,7 +208,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (ac-octave tagedit smex rainbow-delimiters projectile paredit lua-mode ido-ubiquitous clojure-mode-extra-font-locking cider))))
+    (tagedit smex rainbow-delimiters projectile paredit lua-mode ido-ubiquitous clojure-mode-extra-font-locking cider))))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
