@@ -95,8 +95,10 @@
 
     ;; Validation for JSON
     ;; https://github.com/purcell/flymake-json
+    ;; https://github.com/DamienCassou/json-navigator
     json-mode
     flymake-json
+    json-navigator
     ;; sudo npm install jsonlint -g
 
     ;; Edit html tags like sexps
