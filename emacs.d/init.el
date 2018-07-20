@@ -49,11 +49,11 @@
     ;; Integration with Python
     ;; https://github.com/jorgenschaefer/elpy
     elpy
-    ;; pip install rope
-    ;; pip install flake8
-    ;; pip install importmagic
-    ;; pip install autopep8
-    ;; pip install yapf
+    ;; pip install --user rope
+    ;; pip install --user flake8
+    ;; pip install --user importmagic
+    ;; pip install --user autopep8
+    ;; pip install --user yapf
 
     ;; Integration with Go
     ;; https://github.com/dominikh/go-mode.el

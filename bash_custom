@@ -1,9 +1,9 @@
 
-export JAVA_HOME=/usr/local/jdk1.8
+export JAVA_HOME=/usr/lib/jvm/java
 export TEXLIVE_HOME=/usr/local/texlive/2016
 
-export LOCAL=/home/raru/dev/local
-export GOPATH=$LOCAL/gocode
+export WORKSPACE=/home/raru/dev/workspace
+export GOPATH=$WORKSPACE/gocode
 
 export TOOLS=/home/raru/dev/tools
 export INTELLIJ_HOME=$TOOLS/intellij
