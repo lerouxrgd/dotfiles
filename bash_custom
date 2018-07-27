@@ -1,25 +1,21 @@
 
-export JAVA_HOME=/usr/lib/jvm/java
-export TEXLIVE_HOME=/usr/local/texlive/2016
+export JAVA_HOME=/usr/lib/jvm/default-runtime
 
-export WORKSPACE=/home/raru/dev/workspace
-export GOPATH=$WORKSPACE/gocode
+export TOOLS=$HOME/dev/tools
+export WORKSPACES=$HOME/dev/workspaces
 
-export TOOLS=/home/raru/dev/tools
-export INTELLIJ_HOME=$TOOLS/intellij
+export GOPATH=$WORKSPACES/gocode
 
-export PATH=/home/raru/dev/bin:$PATH
+export PATH=$HOME/dev/bin:$PATH
+export PATH=$HOME/.local/bin:$PATH
+export PATH=$HOME/.cargo/bin:$PATH
 export PATH=$JAVA_HOME/bin:$PATH
 export PATH=/usr/local/go/bin:$PATH
 export PATH=${GOPATH//://bin:}/bin:$PATH
-export PATH=$INTELLIJ_HOME/bin:$PATH
-export PATH=$TEXLIVE_HOME/bin/x86_64-linux:$PATH
 
-export MANPATH=$TEXLIVE_HOME/texmf-dist/doc/man:$MANPATH
-
-alias intellij='setsid $INTELLIJ_HOME/bin/idea.sh'
+alias intellij='setsid $TOOLS/intellij/bin/idea.sh'
 em-x() { setsid /usr/bin/emacs "$@" ;}
 em() { /usr/bin/emacs -nw "$@" ;}
 
+alias ll='ls -alF'
 dul() { root=${1-./}; ls $root | xargs -I DIR du -sh ${root%/}/DIR ;}
-mplay() { mplayer -fixed-vo -shuffle "$@" ;}
