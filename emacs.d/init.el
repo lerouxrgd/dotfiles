@@ -78,7 +78,8 @@
     toml-mode
     ;; rustup component add rustfmt-preview
     ;; rustup component add rust-src
-    ;; cargo install racer
+    ;; rustup toolchain add nightly
+    ;; cargo +nightly install racer
 
     ;; Integration with Javascript
     ;; https://github.com/mooz/js2-mode
