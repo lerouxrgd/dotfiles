@@ -22,16 +22,6 @@
 ;; This also sets the load path.
 (package-initialize)
 
-;; Download the ELPA archive description if needed.
-;; This informs Emacs about the latest versions of all packages, and
-;; makes them available for download.
-(when (not package-archive-contents)
-  (package-refresh-contents))
-
-;;(defvar ido-cur-item nil)
-;;(defvar ido-default-item nil)
-;;(defvar ido-cur-list nil)
-
 ;; Define packages to install
 (setq package-selected-packages
   '(;; Makes handling lisp expressions much, much easier
@@ -141,20 +131,19 @@
     projectile
     ))
 
-;; On OS X, an Emacs instance started from the graphical user
-;; interface will have a different environment than a shell in a
-;; terminal window, because OS X does not run a shell during the
-;; login. Obviously this will lead to unexpected results when
-;; calling external utilities like make from Emacs.
-;; This library works around this problem by copying important
-;; environment variables from the user's shell.
-;; https://github.com/purcell/exec-path-from-shell
-(if (eq system-type 'darwin)
-    (add-to-list 'my-packages 'exec-path-from-shell))
+(defun install-packages ()
+  "Install all required packages."
+  (interactive)
+  ;; Download the ELPA archive description if needed.
+  ;; This informs Emacs about the latest versions of all packages,
+  ;; and makes them available for download.
+  (unless package-archive-contents
+    (package-refresh-contents))
+  (dolist (package package-selected-packages)
+    (unless (package-installed-p package)
+      (package-install package))))
 
-(dolist (p package-selected-packages)
-  (when (not (package-installed-p p))
-    (package-install p)))
+(install-packages)
 
 ;; Place downloaded elisp files in ~/.emacs.d/vendor. You'll then be able
 ;; to load them.
