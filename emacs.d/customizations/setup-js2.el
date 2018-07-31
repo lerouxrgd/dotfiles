@@ -47,6 +47,10 @@
      (tagedit-add-paredit-like-keybindings)
      (add-hook 'html-mode-hook (lambda () (tagedit-mode 1)))))
 
+(require 'flymd)
+(setq flymd-output-directory "/tmp/flymd")
+(setq flymd-close-buffer-delete-temp-files t)
+
 ;;;;
 ;; JSON
 ;;;;
