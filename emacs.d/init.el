@@ -33,7 +33,7 @@
 ;;(defvar ido-cur-list nil)
 
 ;; Define packages to install
-(defvar my-packages
+(setq package-selected-packages
   '(;; Makes handling lisp expressions much, much easier
     ;; Cheatsheet: http://www.emacswiki.org/emacs/PareditCheatsheet
     paredit
@@ -95,7 +95,7 @@
     js2-refactor
     xref-js2
     company-tern
-    ;; sudo dnf install the_silver_searcher
+    ;; sudo pacman -Syu the_silver_searcher
     ;; sudo npm install -g tern
 
     ;; Validation for JSON
@@ -109,9 +109,11 @@
     ;; Edit html tags like sexps
     tagedit
 
-    ;; Integration with Markdown
+    ;; Integration with Markdown (and live preview)
     ;; https://github.com/jrblevin/markdown-mode
+    ;; https://github.com/mola-T/flymd
     markdown-mode
+    flymd
 
     ;; Integration with Lua
     ;; http://immerrr.github.io/lua-mode/
@@ -150,10 +152,9 @@
 (if (eq system-type 'darwin)
     (add-to-list 'my-packages 'exec-path-from-shell))
 
-(dolist (p my-packages)
+(dolist (p package-selected-packages)
   (when (not (package-installed-p p))
     (package-install p)))
-
 
 ;; Place downloaded elisp files in ~/.emacs.d/vendor. You'll then be able
 ;; to load them.
@@ -205,18 +206,3 @@
 (load "setup-js2.el")
 (load "setup-lua.el")
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   (quote
-    (xref-js2 which-key toml-mode tagedit smex rainbow-delimiters racer projectile markdown-mode magit lua-mode json-navigator json-mode js2-refactor ido-ubiquitous go-guru go-autocomplete flymake-json elpy company-tern clojure-mode-extra-font-locking clj-refactor))))
-
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
