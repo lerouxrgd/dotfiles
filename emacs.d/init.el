@@ -28,6 +28,10 @@
 (when (not package-archive-contents)
   (package-refresh-contents))
 
+;;(defvar ido-cur-item nil)
+;;(defvar ido-default-item nil)
+;;(defvar ido-cur-list nil)
+
 ;; Define packages to install
 (defvar my-packages
   '(;; Makes handling lisp expressions much, much easier
@@ -113,17 +117,14 @@
     ;; http://immerrr.github.io/lua-mode/
     lua-mode
 
-    ;; Integration with Octave
-    ;; https://github.com/coldnew/ac-octave
-    ac-octave
-
     ;; Integration with Git
     ;; https://github.com/magit/magit
     magit
 
     ;; Allows ido usage in as many contexts as possible.
     ;; See customizations/navigation.el for a description of ido
-    ido-ubiquitous
+    ;; https://github.com/DarwinAwardWinner/ido-completing-read-plus
+    ido-completing-read+
 
     ;; Enhances M-x to allow easier execution of commands.
     ;; Provides a filterable list of possible commands in the minibuffer
@@ -211,7 +212,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (tagedit smex rainbow-delimiters projectile paredit lua-mode ido-ubiquitous clojure-mode-extra-font-locking cider))))
+    (xref-js2 which-key toml-mode tagedit smex rainbow-delimiters racer projectile markdown-mode magit lua-mode json-navigator json-mode js2-refactor ido-ubiquitous go-guru go-autocomplete flymake-json elpy company-tern clojure-mode-extra-font-locking clj-refactor))))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
