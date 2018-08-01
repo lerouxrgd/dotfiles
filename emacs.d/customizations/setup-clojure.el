@@ -2,6 +2,8 @@
 ;; Clojure
 ;;;;
 
+(require 'clojure-mode-extra-font-locking)
+
 ;; Enable paredit for Clojure
 (add-hook 'clojure-mode-hook 'enable-paredit-mode)
 
@@ -22,15 +24,9 @@
             (define-clojure-indent (fact 1))
             (define-clojure-indent (facts 1))))
 
-;; A little more syntax highlighting
-(require 'clojure-mode-extra-font-locking)
-
 ;;;;
 ;; Cider
 ;;;;
-
-;; provides minibuffer documentation for the code you're typing into the repl
-(add-hook 'cider-mode-hook 'eldoc-mode)
 
 ;; go right to the REPL buffer when it's finished connecting
 (setq cider-repl-pop-to-buffer-on-connect t)
@@ -44,6 +40,9 @@
 
 ;; Wrap when navigating history.
 (setq cider-repl-wrap-history t)
+
+;; provides minibuffer documentation for the code you're typing into the repl
+(add-hook 'cider-mode-hook 'eldoc-mode)
 
 ;; enable paredit in your REPL
 (add-hook 'cider-repl-mode-hook 'paredit-mode)
@@ -101,10 +100,3 @@
 
 (add-hook 'clojure-mode-hook #'cljr-clojure-mode-hook)
 
-;;;;
-;; Which-key
-;;;;
-
-;; Helps with key binding auto completion
-(require 'which-key)
-(which-key-mode)

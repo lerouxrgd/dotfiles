@@ -67,7 +67,6 @@
     ;; https://github.com/dryman/toml-mode.el
     rust-mode
     racer
-    company
     toml-mode
     ;; rustup component add rustfmt-preview
     ;; rustup component add rust-src
@@ -123,6 +122,10 @@
     flycheck
     ;; sudo npm install jsonlint -g
     ;; sudo npm install js-yaml -g
+
+    ;; Text completion
+    ;; https://github.com/company-mode/company-mode
+    company
     
     ;; Allows ido usage in as many contexts as possible.
     ;; See customizations/navigation.el for a description of ido
@@ -159,6 +162,9 @@
 
 ;; Activate syntax checkers
 (global-flycheck-mode)
+
+;; Activate key autocompletion
+(which-key-mode)
 
 ;;;;
 ;; Customization
