@@ -52,14 +52,12 @@
 
     ;; Integration with Go
     ;; https://github.com/dominikh/go-mode.el
-    ;; https://github.com/dougm/goflymake
     ;; https://github.com/rogpeppe/godef
     ;; https://github.com/nsf/gocode#emacs-setup
     go-mode
     go-guru
     go-autocomplete
     ;; go get -u golang.org/x/tools/cmd/...
-    ;; go get -u github.com/dougm/goflymake
     ;; go get -u github.com/rogpeppe/godef/...
     ;; go get -u github.com/nsf/gocode
 
@@ -76,6 +74,10 @@
     ;; rustup toolchain add nightly
     ;; cargo +nightly install racer
 
+    ;; Integration with Lua
+    ;; http://immerrr.github.io/lua-mode/
+    lua-mode
+
     ;; Integration with Javascript
     ;; https://github.com/mooz/js2-mode
     ;; https://github.com/magnars/js2-refactor.el
@@ -89,14 +91,12 @@
     ;; sudo pacman -Syu the_silver_searcher
     ;; sudo npm install -g tern
 
-    ;; Validation for JSON
-    ;; https://github.com/purcell/flymake-json
+    ;; Integration with JSON
     ;; https://github.com/DamienCassou/json-navigator
     json-mode
-    flymake-json
     json-navigator
-    ;; sudo npm install jsonlint -g
 
+    ;; Integration with HTML
     ;; Edit html tags like sexps
     tagedit
 
@@ -106,9 +106,9 @@
     markdown-mode
     flymd
 
-    ;; Integration with Lua
-    ;; http://immerrr.github.io/lua-mode/
-    lua-mode
+    ;; Integration with YAML
+    ;; https://github.com/yoshiki/yaml-mode
+    yaml-mode
 
     ;; Integration with Docker
     ;; https://github.com/spotify/dockerfile-mode
@@ -118,6 +118,12 @@
     ;; https://github.com/magit/magit
     magit
 
+    ;; Syntax checkers
+    ;; https://github.com/flycheck/flycheck
+    flycheck
+    ;; sudo npm install jsonlint -g
+    ;; sudo npm install js-yaml -g
+    
     ;; Allows ido usage in as many contexts as possible.
     ;; See customizations/navigation.el for a description of ido
     ;; https://github.com/DarwinAwardWinner/ido-completing-read-plus
@@ -137,11 +143,8 @@
     ))
 
 (defun install-packages ()
-  "Install all required packages."
+  "Install/refresh all required packages, when needed"
   (interactive)
-  ;; Download the ELPA archive description if needed.
-  ;; This informs Emacs about the latest versions of all packages,
-  ;; and makes them available for download.
   (unless package-archive-contents
     (package-refresh-contents))
   (dolist (package package-selected-packages)
@@ -153,6 +156,9 @@
 ;; Place downloaded elisp files in ~/.emacs.d/vendor.
 ;; You'll then be able to load them.
 (add-to-list 'load-path "~/.emacs.d/vendor")
+
+;; Activate syntax checkers
+(global-flycheck-mode)
 
 ;;;;
 ;; Customization
@@ -188,5 +194,6 @@
 (load "setup-python.el")
 (load "setup-go.el")
 (load "setup-rust.el")
-(load "setup-js2.el")
 (load "setup-lua.el")
+(load "setup-js2.el")
+(load "setup-yaml.el")
