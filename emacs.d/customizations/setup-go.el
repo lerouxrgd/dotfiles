@@ -1,3 +1,7 @@
+;;;;
+;; Golang
+;;;;
+
 (add-to-list 'load-path (concat (getenv "GOPATH") "/src/github.com/dougm/goflymake"))
 (require 'go-flymake)
 ;;(require 'go-flycheck)

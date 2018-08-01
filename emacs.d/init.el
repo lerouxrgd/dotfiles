@@ -43,6 +43,7 @@
     ;; Integration with Python
     ;; https://github.com/jorgenschaefer/elpy
     elpy
+    ;; sudo pacman -Syu ipython
     ;; pip install --user rope
     ;; pip install --user flake8
     ;; pip install --user importmagic
@@ -109,6 +110,10 @@
     ;; http://immerrr.github.io/lua-mode/
     lua-mode
 
+    ;; Integration with Docker
+    ;; https://github.com/spotify/dockerfile-mode
+    dockerfile-mode
+
     ;; Integration with Git
     ;; https://github.com/magit/magit
     magit
@@ -145,25 +150,16 @@
 
 (install-packages)
 
-;; Place downloaded elisp files in ~/.emacs.d/vendor. You'll then be able
-;; to load them.
-;;
-;; For example, if you download yaml-mode.el to ~/.emacs.d/vendor,
-;; then you can add the following code to this file:
-;;
-;; (require 'yaml-mode)
-;; (add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
-;; 
-;; Adding this code will make Emacs enter yaml mode whenever you open
-;; a .yml file
+;; Place downloaded elisp files in ~/.emacs.d/vendor.
+;; You'll then be able to load them.
 (add-to-list 'load-path "~/.emacs.d/vendor")
 
 ;;;;
 ;; Customization
 ;;;;
 
-;; Add a directory to our load path so that when you `load` things
-;; below, Emacs knows where to look for the corresponding file.
+;; Add a directory to our load path so that when you `load` things below,
+;; Emacs knows where to look for the corresponding file.
 (add-to-list 'load-path "~/.emacs.d/customizations")
 
 ;; Sets up exec-path-from-shell so that Emacs will use the correct
@@ -178,7 +174,7 @@
 ;; some user interface elements
 (load "ui.el")
 
-;; These customizations make editing a bit nicer.
+;; These customizations make editing a bit nicer
 (load "editing.el")
 
 ;; Hard-to-categorize customizations
@@ -194,4 +190,3 @@
 (load "setup-rust.el")
 (load "setup-js2.el")
 (load "setup-lua.el")
-
