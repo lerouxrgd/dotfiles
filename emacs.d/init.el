@@ -63,9 +63,11 @@
 
     ;; Integration with Rust
     ;; https://github.com/rust-lang/rust-mode
+    ;; https://github.com/kwrooijen/cargo.el
     ;; https://github.com/racer-rust/emacs-racer
     ;; https://github.com/dryman/toml-mode.el
     rust-mode
+    cargo
     racer
     toml-mode
     ;; rustup component add rustfmt-preview
