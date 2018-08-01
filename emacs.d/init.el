@@ -9,7 +9,7 @@
 (add-to-list 'package-archives
 	     '("marmalade"    . "http://marmalade-repo.org/packages/") t)
 (add-to-list 'package-archives
-	     '("melpa"        . "https://melpa.org/packages/") t)
+	     '("melpa        ." "https://melpa.org/packages/") t)
 (add-to-list 'package-archives
 	     '("melpa-stable" . "https://stable.melpa.org/packages/") t)
 (add-to-list 'package-archives
@@ -36,7 +36,7 @@
     ;; https://github.com/clojure-emacs/cider
     ;; https://github.com/clojure-emacs/clj-refactor.el
     clojure-mode
-    clojure-mode-extra-font-locking    
+    clojure-mode-extra-font-locking
     cider
     clj-refactor
 
@@ -143,7 +143,7 @@
     ))
 
 (defun install-packages ()
-  "Install/refresh all required packages, when needed"
+  "Install/refresh all required packages, when needed."
   (interactive)
   (unless package-archive-contents
     (package-refresh-contents))
