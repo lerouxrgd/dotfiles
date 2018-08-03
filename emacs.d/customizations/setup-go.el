@@ -9,8 +9,7 @@
   (setq gofmt-command "goimports")                ;; gofmt uses invokes goimports
   (go-guru-hl-identifier-mode)                    ;; highlight identifiers
   (local-set-key (kbd "M-.") 'godef-jump)         ;; Go to definition
-  (local-set-key (kbd "M-,") 'pop-tag-mark)       ;; Return from whence you came
-  )
+  (local-set-key (kbd "M-,") 'pop-tag-mark))      ;; Return from whence you came
 
 (add-hook 'go-mode-hook 'my-go-mode-hook)
 
