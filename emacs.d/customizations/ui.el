@@ -28,8 +28,22 @@
 (add-to-list 'load-path "~/.emacs.d/themes")
 (load-theme 'darcula t)
 
+(defun setup-font-size ()
+  "Set font size based on pixel/height ratio.
+Parameters tuned with:
+x = numpy.array([1080/900, 1440/170])
+y = numpy.array([120, 180])
+numpy.polyfit(numpy.log(x), y, 1)"
+  (when window-system
+    (let* ((monitor (car (x-display-monitor-attributes-list)))
+           (height-pixel (car (last (nth 1 monitor))))
+           (height-mm (car (last (nth 3 monitor))))
+           (height-ratio (/ height-pixel height-mm 1.0))
+           (height (round (+ 114.30 (* 30.70 (log height-ratio))))))
+      (set-face-attribute 'default nil :height height))))
+
 ;; increase font size for better readability
-(set-face-attribute 'default nil :height 180)
+(setup-font-size)
 
 ;; Uncomment the lines below by removing semicolons and play with the
 ;; values in order to set the width (in characters wide) and height
