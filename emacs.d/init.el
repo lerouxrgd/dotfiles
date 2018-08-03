@@ -199,8 +199,8 @@
 
 ;; Langauage-specific
 (load "setup-clojure.el")
-(load "setup-python.el")
 (load "setup-go.el")
+(load "setup-python.el")
 (load "setup-rust.el")
 (load "setup-lua.el")
 (load "setup-js2.el")
