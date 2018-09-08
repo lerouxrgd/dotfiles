@@ -13,9 +13,16 @@ export PATH=$JAVA_HOME/bin:$PATH
 export PATH=/usr/local/go/bin:$PATH
 export PATH=${GOPATH//://bin:}/bin:$PATH
 
-alias intellij='setsid $TOOLS/intellij/bin/idea.sh'
-em-x() { setsid /usr/bin/emacs "$@" ;}
-em() { /usr/bin/emacs -nw "$@" ;}
+reverse_array() {
+    # Usage: reverse_array "array"
+    shopt -s extdebug
+    f()(printf '%s\n' "${BASH_ARGV[@]}"); f "$@"
+    shopt -u extdebug
+}
+
+em-x() { setsid /usr/bin/emacs $(reverse_array "$@") ;}
+em() { /usr/bin/emacs -nw $(reverse_array "$@") ;}
+
+dul() { root=${1-./}; ls $root | xargs -I DIR du -sh ${root%/}/DIR ;}
 
 alias ll='ls -alF'
-dul() { root=${1-./}; ls $root | xargs -I DIR du -sh ${root%/}/DIR ;}
