@@ -66,10 +66,12 @@
     ;; https://github.com/kwrooijen/cargo.el
     ;; https://github.com/racer-rust/emacs-racer
     ;; https://github.com/dryman/toml-mode.el
+    ;; https://github.com/flycheck/flycheck-rust
     rust-mode
     cargo
     racer
     toml-mode
+    flycheck-rust
     ;; rustup component add rustfmt-preview
     ;; rustup component add rust-src
     ;; rustup toolchain add nightly
