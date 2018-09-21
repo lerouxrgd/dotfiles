@@ -44,6 +44,7 @@ numpy.polyfit(numpy.log(x), y, 1)"
 
 ;; increase font size for better readability
 (setup-font-size)
+(set-face-attribute 'default nil :height 120)
 
 ;; Uncomment the lines below by removing semicolons and play with the
 ;; values in order to set the width (in characters wide) and height
