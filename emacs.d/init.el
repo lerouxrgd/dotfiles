@@ -11,10 +11,6 @@
 (add-to-list 'package-archives
 	     '("melpa"        . "https://melpa.org/packages/") t)
 (add-to-list 'package-archives
-	     '("melpa-stable" . "https://stable.melpa.org/packages/") t)
-(add-to-list 'package-archives
-	     '("melpa-milk"   . "http://melpa.milkbox.net/packages/") t)
-(add-to-list 'package-archives
 	     '("tromey"       . "http://tromey.com/elpa/") t)
 
 ;; Load and activate emacs packages. Do this first so that the
