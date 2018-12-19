@@ -99,31 +99,35 @@
 	 (clojure-mode . subword-mode)
 	 (clojure-mode . rainbow-delimiters-mode))
   :config
-  (use-package clojure-mode-extra-font-locking)
+  (use-package clojure-mode-extra-font-locking))
+
+(use-package cider
+  :after clojure-mode
+  :init
   (setq cider-repl-display-help-banner nil)
-  (use-package cider
-    :init
-    (add-hook 'cider-mode-hook #'eldoc-mode)
-    (add-hook 'cider-repl-mode-hook #'paredit-mode)
-    :bind
-    (("C-c C-M-b" . cider-browse-ns-all)
-     ("C-c M-b" .
-      (lambda ()
-        (interactive)
-        (cider-browse-ns
-         (with-current-buffer
-             (current-buffer) (cider-current-ns))))))
-    :config
-    (setq cider-show-error-buffer t)
-    (setq cider-auto-select-error-buffer t)
-    (setq cider-repl-history-file "~/.emacs.d/cider-history"))
-  (use-package clj-refactor
-    :init
-    (add-hook 'clojure-mode-hook 'clj-refactor-mode)
-    :config
-    (clj-refactor-mode 1)
-    (yas-minor-mode 1)
-    (cljr-add-keybindings-with-prefix "C-c r")))
+  (add-hook 'cider-mode-hook #'eldoc-mode)
+  (add-hook 'cider-repl-mode-hook #'paredit-mode)
+  :bind
+  (("C-c C-M-b" . cider-browse-ns-all)
+   ("C-c M-b" .
+    (lambda ()
+      (interactive)
+      (cider-browse-ns
+       (with-current-buffer
+           (current-buffer) (cider-current-ns))))))
+  :config
+  (setq cider-show-error-buffer t
+        cider-auto-select-error-buffer t
+        cider-repl-history-file "~/.emacs.d/cider-history"))
+
+(use-package clj-refactor
+  :after clojure-mode
+  :init
+  (add-hook 'clojure-mode-hook 'clj-refactor-mode)
+  :config
+  (clj-refactor-mode 1)
+  (yas-minor-mode 1)
+  (cljr-add-keybindings-with-prefix "C-c r"))
 
 ;;;;;; Rust
 
