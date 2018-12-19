@@ -1,6 +1,7 @@
-;;; init.el --- main Emacs initialization
+;;; init.el --- Main Emacs initialization
 ;;; Commentary:
-;;; Setup Emacs, make it homely and cosy
+;;; This is my Emacs config.
+;;; There are many like it, but this one is mine.
 ;;; Code:
 
 ;;;;;;;;;;;;;;;;;;; Package management ;;;;;;;;;;;;;;;;;;;
@@ -34,7 +35,6 @@
 
 ;;;;;; General packages
 
-(use-package rainbow-delimiters)
 (use-package smex)
 (use-package ido-completing-read+)
 
@@ -51,13 +51,14 @@
     :config
     (setq flycheck-pos-tip-timeout 7
 	  flycheck-display-errors-delay 0.5)
-    (flycheck-pos-tip-mode +1))
-  (define-fringe-bitmap 'flycheck-fringe-bitmap-double-arrow
-    [0 0 0 0 0 256 384 448 480 496 480 448 384 256 0 0 0 0 0]
-    ))
+    (flycheck-pos-tip-mode +1)))
 
 (use-package which-key
   :hook (after-init . which-key-mode))
+
+(use-package yasnippet
+  :commands yas-minor-mode
+  :hook (prog-mode . yas-minor-mode))
 
 ;;;;;; Navigation
 
@@ -86,6 +87,43 @@
   (setq magit-diff-refine-hunk t)
   (add-hook 'magit-post-refresh-hook
 	    'git-gutter:update-all-windows))
+
+;;;;;; Clojure
+
+(use-package clojure-mode
+  :mode (("\\.clj\\'" . clojure-mode)
+         ("\\.edn\\'" . clojure-mode)
+	 ("\\.cljc\\'" . clojurec-mode)
+	 ("\\.cljs\\'" . clojurescript-mode))
+  :hook ((clojure-mode . enable-paredit-mode)
+	 (clojure-mode . subword-mode)
+	 (clojure-mode . rainbow-delimiters-mode))
+  :config
+  (use-package clojure-mode-extra-font-locking)
+  (setq cider-repl-display-help-banner nil)
+  (use-package cider
+    :init
+    (add-hook 'cider-mode-hook #'eldoc-mode)
+    (add-hook 'cider-repl-mode-hook #'paredit-mode)
+    :bind
+    (("C-c C-M-b" . cider-browse-ns-all)
+     ("C-c M-b" .
+      (lambda ()
+        (interactive)
+        (cider-browse-ns
+         (with-current-buffer
+             (current-buffer) (cider-current-ns))))))
+    :config
+    (setq cider-show-error-buffer t)
+    (setq cider-auto-select-error-buffer t)
+    (setq cider-repl-history-file "~/.emacs.d/cider-history"))
+  (use-package clj-refactor
+    :init
+    (add-hook 'clojure-mode-hook 'clj-refactor-mode)
+    :config
+    (clj-refactor-mode 1)
+    (yas-minor-mode 1)
+    (cljr-add-keybindings-with-prefix "C-c r")))
 
 ;;;;;; Rust
 
