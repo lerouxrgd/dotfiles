@@ -1,0 +1,22 @@
+elpa/*
+custom.el
+auto-save-list
+backups
+*~
+
+# mode related temp files
+.recentf
+.smex-items
+ido.last
+ac-comphist.dat
+cider-history
+url
+bookmarks
+places
+
+# projectile
+projectile.cache
+projectile-bookmarks.eld
+
+#Network Security Manager
+network-security.data
