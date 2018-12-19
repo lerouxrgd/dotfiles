@@ -59,12 +59,24 @@
 (use-package which-key
   :hook (after-init . which-key-mode))
 
+;;;;;; Navigation
+
 (use-package projectile
   :defer 1
   :config
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
   (projectile-mode t)
   (setq projectile-switch-project-action 'projectile-dired))
+
+(use-package dired-x
+  :ensure nil
+  :bind (("C-x C-j" . dired-jump)))
+
+(use-package dired-subtree
+  :config
+  (bind-keys :map dired-mode-map
+             ("<right>" . dired-subtree-insert)
+             ("<left>" . dired-subtree-remove)))
 
 ;;;;;; Git
 
