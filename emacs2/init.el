@@ -14,6 +14,8 @@
 (add-to-list 'package-archives
 	     '("melpa"        . "https://melpa.org/packages/") t)
 (add-to-list 'package-archives
+	     '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+(add-to-list 'package-archives
 	     '("tromey"       . "http://tromey.com/elpa/") t)
 
 ;; No auto package loading, that's handled via use-package
@@ -29,6 +31,9 @@
   (use-package cl))
 
 (setq use-package-always-ensure t)
+
+(use-package use-package-ensure-system-package
+  :ensure t)
 
 (require 'bind-key)
 (require 'subr-x)
@@ -71,9 +76,8 @@
 ;;;;;; Navigation
 
 (use-package projectile
-  :defer 1
+  :bind-keymap ("C-c p" . projectile-command-map)
   :config
-  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
   (projectile-mode t)
   (setq projectile-switch-project-action 'projectile-dired))
 
@@ -82,10 +86,10 @@
   :bind (("C-x C-j" . dired-jump)))
 
 (use-package dired-subtree
-  :config
-  (bind-keys :map dired-mode-map
-             ("<right>" . dired-subtree-insert)
-             ("<left>" . dired-subtree-remove)))
+  :defer 1
+  :bind (:map dired-mode-map
+              ("<right>" . dired-subtree-insert)
+              ("<left>" . dired-subtree-remove)))
 
 ;;;;;; Git
 
@@ -134,6 +138,18 @@
   (clj-refactor-mode 1)
   (yas-minor-mode 1)
   (cljr-add-keybindings-with-prefix "C-c r"))
+
+;;;;;; Python
+
+(use-package elpy
+  :hook ((python-mode . elpy-enable))
+  :ensure-system-package
+  (pip-all . "pip install \
+    rope flake8 importmagic autopep8 yapf black --user")
+  :config
+  (setq python-shell-interpreter "ipython"
+        python-shell-interpreter-args "--simple-prompt -i")
+  (elpy-mode))
 
 ;;;;;; Rust
 
