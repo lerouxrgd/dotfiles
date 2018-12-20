@@ -60,6 +60,14 @@
   :commands yas-minor-mode
   :hook (prog-mode . yas-minor-mode))
 
+(use-package exec-path-from-shell
+  :if (memq system-type '(gnu gnu/linux darwin))
+  :init
+  (customize-set-variable 'exec-path-from-shell-arguments nil)
+  :config
+  (exec-path-from-shell-initialize)
+  (exec-path-from-shell-copy-envs '("PATH")))
+
 ;;;;;; Navigation
 
 (use-package projectile
@@ -104,21 +112,19 @@
 (use-package cider
   :after clojure-mode
   :init
-  (setq cider-repl-display-help-banner nil)
+  (setq cider-repl-display-help-banner nil
+        cider-repl-history-file "~/.emacs.d/cider-history")
   (add-hook 'cider-mode-hook #'eldoc-mode)
   (add-hook 'cider-repl-mode-hook #'paredit-mode)
+  (declare-function cider-current-ns "cider-current-ns" ())
   :bind
   (("C-c C-M-b" . cider-browse-ns-all)
    ("C-c M-b" .
     (lambda ()
       (interactive)
       (cider-browse-ns
-       (with-current-buffer
-           (current-buffer) (cider-current-ns))))))
-  :config
-  (setq cider-show-error-buffer t
-        cider-auto-select-error-buffer t
-        cider-repl-history-file "~/.emacs.d/cider-history"))
+       (with-current-buffer (current-buffer)
+         (cider-current-ns)))))))
 
 (use-package clj-refactor
   :after clojure-mode
@@ -170,11 +176,9 @@
   (load custom-file))
 
 (add-to-list 'load-path "~/.emacs.d/customizations")
-(load "shell-integration.el")
 (load "navigation.el")
 (load "ui.el")
 (load "editing.el")
 (load "misc.el")
-;;(load "elisp-editing.el")
 
 ;;; init.el ends here
