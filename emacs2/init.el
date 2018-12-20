@@ -175,10 +175,20 @@
 (when (file-exists-p custom-file)
   (load custom-file))
 
+;; Changes all yes/no questions to y/n type
+(fset 'yes-or-no-p 'y-or-n-p)
+
+;; Go straight to scratch buffer on startup
+(setq inhibit-startup-message t)
+(setq inhibit-splash-screen t)
+
+;; No need for ~ files when editing
+(setq create-lockfiles nil)
+
 (add-to-list 'load-path "~/.emacs.d/customizations")
 (load "navigation.el")
 (load "ui.el")
 (load "editing.el")
-(load "misc.el")
+
 
 ;;; init.el ends here
