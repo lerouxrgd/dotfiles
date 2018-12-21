@@ -47,6 +47,9 @@
 (use-package smex)
 (use-package ido-completing-read+)
 
+(use-package doom-themes
+  :init (load-theme 'doom-opera t))
+
 (use-package company
   :hook (after-init . global-company-mode)
   :config
@@ -190,24 +193,56 @@
 
 ;;;;;;;;;;;;;;;;;;; Customizations ;;;;;;;;;;;;;;;;;;;
 
+;;;;;; User Interface
+
+;; Max size window on startup
+(toggle-frame-maximized)
+
+;; Go straight to scratch buffer on startup
+(setq inhibit-startup-message t
+      inhibit-splash-screen t)
+
+;; Show line numbers
+(global-linum-mode)
+
+;; No blinking cursor
+(blink-cursor-mode 0)
+
+;; No bell
+(setq ring-bell-function 'ignore)
+
+;; Full path in title bar
+(setq-default frame-title-format "%b (%f)")
+
+;; Turn off menu bars
+(menu-bar-mode -1)
+(when (fboundp 'tool-bar-mode)
+  (tool-bar-mode -1))
+
+;; Don't show native OS scroll bars for buffers
+(when (fboundp 'scroll-bar-mode)
+  (scroll-bar-mode -1))
+
+;; Setup font size
+(if-let (font-height (getenv "EMACS_FONT_HEIGHT"))
+    (set-face-attribute 'default nil :height (string-to-number font-height))
+    (set-face-attribute 'default nil :height 120))
+
+;; Changes all yes/no questions to y/n type
+(fset 'yes-or-no-p 'y-or-n-p)
+
+;;;;;; Local files
+
+;; No need for ~ files when editing
+(setq create-lockfiles nil)
+
 ;; Write custom's settings to separate file (gitignored)
 (setq custom-file "~/.emacs.d/custom.el")
 (when (file-exists-p custom-file)
   (load custom-file))
 
-;; Changes all yes/no questions to y/n type
-(fset 'yes-or-no-p 'y-or-n-p)
-
-;; Go straight to scratch buffer on startup
-(setq inhibit-startup-message t)
-(setq inhibit-splash-screen t)
-
-;; No need for ~ files when editing
-(setq create-lockfiles nil)
-
 (add-to-list 'load-path "~/.emacs.d/customizations")
 (load "navigation.el")
-(load "ui.el")
 (load "editing.el")
 
 ;;; init.el ends here
