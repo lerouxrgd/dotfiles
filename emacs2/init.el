@@ -35,6 +35,10 @@
 (use-package use-package-ensure-system-package
   :ensure t)
 
+(declare-function
+ use-package-ensure-system-package-exists?
+ "use-package-ensure-system-package-exists?")
+
 (require 'bind-key)
 (require 'subr-x)
 
@@ -120,7 +124,7 @@
         cider-repl-history-file "~/.emacs.d/cider-history")
   (add-hook 'cider-mode-hook #'eldoc-mode)
   (add-hook 'cider-repl-mode-hook #'paredit-mode)
-  (declare-function cider-current-ns "cider-current-ns" ())
+  (declare-function cider-current-ns "cider-current-ns")
   :bind
   (("C-c C-M-b" . cider-browse-ns-all)
    ("C-c M-b" .
@@ -205,6 +209,5 @@
 (load "navigation.el")
 (load "ui.el")
 (load "editing.el")
-
 
 ;;; init.el ends here
