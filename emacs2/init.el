@@ -161,9 +161,9 @@
   (declare-function cider-current-ns "cider-current-ns")
   (defun browse-current-ns ()
     (interactive)
-      (cider-browse-ns
-       (with-current-buffer (current-buffer)
-         (cider-current-ns))))
+    (cider-browse-ns
+     (with-current-buffer (current-buffer)
+       (cider-current-ns))))
   :bind
   (("C-c C-M-b" . cider-browse-ns-all)
    ("C-c M-b" . browse-current-ns)))
@@ -249,7 +249,7 @@
   ((rust-mode . racer-mode)
    (rust-mode . eldoc-mode))
   :bind (:map rust-mode-map
-	 ("M-." . racer-find-definition))
+	      ("M-." . racer-find-definition))
   :config
   (use-package company-racer
     :config
