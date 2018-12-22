@@ -63,7 +63,7 @@
     :config
     (setq flycheck-pos-tip-timeout 7
 	  flycheck-display-errors-delay 0.5)
-    (flycheck-pos-tip-mode +1)))
+    (flycheck-pos-tip-mode 1)))
 
 (use-package which-key
   :hook (after-init . which-key-mode))
@@ -85,7 +85,7 @@
 (use-package projectile
   :bind-keymap ("C-c p" . projectile-command-map)
   :config
-  (projectile-mode t)
+  (projectile-mode 1)
   (setq projectile-switch-project-action 'projectile-dired))
 
 (use-package dired-x
@@ -106,6 +106,12 @@
   (setq magit-diff-refine-hunk t)
   (add-hook 'magit-post-refresh-hook
 	    'git-gutter:update-all-windows))
+
+;;;;;; Lisp
+
+(use-package paredit
+  :hook ((emacs-lisp-mode . enable-paredit-mode)
+         (lisp-mode . enable-paredit-mode)))
 
 ;;;;;; Clojure
 
@@ -132,14 +138,14 @@
   (add-hook 'cider-mode-hook #'eldoc-mode)
   (add-hook 'cider-repl-mode-hook #'paredit-mode)
   (declare-function cider-current-ns "cider-current-ns")
-  :bind
-  (("C-c C-M-b" . cider-browse-ns-all)
-   ("C-c M-b" .
-    (lambda ()
-      (interactive)
+  (defun browse-current-ns ()
+    (interactive)
       (cider-browse-ns
        (with-current-buffer (current-buffer)
-         (cider-current-ns)))))))
+         (cider-current-ns))))
+  :bind
+  (("C-c C-M-b" . cider-browse-ns-all)
+   ("C-c M-b" . browse-current-ns)))
 
 (use-package clj-refactor
   :after clojure-mode
@@ -271,16 +277,53 @@
 
 ;; Setup font size
 (if-let (font-height (getenv "EMACS_FONT_HEIGHT"))
-    (set-face-attribute 'default nil :height (string-to-number font-height))
-    (set-face-attribute 'default nil :height 120))
+    (set-face-attribute
+     'default nil :height (string-to-number font-height))
+  (set-face-attribute 'default nil :height 120))
 
 ;; Changes all yes/no questions to y/n type
 (fset 'yes-or-no-p 'y-or-n-p)
+
+;;;;;; Editing
+
+;; Use hippie-expand for text autocompletion
+(global-set-key (kbd "M-/") 'hippie-expand)
+(setq hippie-expand-try-functions-list
+      '(try-expand-dabbrev
+        try-expand-dabbrev-all-buffers
+        try-expand-dabbrev-from-kill
+        try-complete-lisp-symbol-partially
+        try-complete-lisp-symbol))
+
+;; Highlights matching parenthesis
+(show-paren-mode 1)
+
+;; Highlight current line
+(global-hl-line-mode 1)
+
+;; Don't use hard tabs
+(setq-default indent-tabs-mode nil)
+
+(defun toggle-comment-on-line ()
+  "Comment or uncomment current line."
+  (interactive)
+  (comment-or-uncomment-region
+   (line-beginning-position) (line-end-position)))
+
+(global-set-key (kbd "C-;") 'toggle-comment-on-line)
+
+;; Auto indent on new line
+(electric-indent-mode 1)
 
 ;;;;;; Local files
 
 ;; No need for ~ files when editing
 (setq create-lockfiles nil)
+
+;; Automatic backups
+(setq backup-directory-alist
+      `(("." . ,(concat user-emacs-directory "backups")))
+      auto-save-default nil)
 
 ;; Write custom's settings to separate file (gitignored)
 (setq custom-file "~/.emacs.d/custom.el")
@@ -289,6 +332,5 @@
 
 (add-to-list 'load-path "~/.emacs.d/customizations")
 (load "navigation.el")
-(load "editing.el")
 
 ;;; init.el ends here
