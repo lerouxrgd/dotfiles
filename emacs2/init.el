@@ -109,6 +109,10 @@
 
 ;;;;;; Clojure
 
+;; https://github.com/clojure-emacs/clojure-mode
+;; https://github.com/clojure-emacs/cider
+;; https://github.com/clojure-emacs/clj-refactor.el
+
 (use-package clojure-mode
   :mode (("\\.clj\\'" . clojure-mode)
          ("\\.edn\\'" . clojure-mode)
@@ -148,6 +152,9 @@
 
 ;;;;;; Python
 
+;; https://github.com/jorgenschaefer/elpy
+;; sudo pacman -Sy ipython
+
 (use-package elpy
   :hook ((python-mode . elpy-enable))
   :ensure-system-package
@@ -158,7 +165,46 @@
         python-shell-interpreter-args "--simple-prompt -i")
   (elpy-mode))
 
+;;;;;; Go
+
+;; https://github.com/dominikh/go-mode.el
+;; https://github.com/rogpeppe/godef
+;; https://github.com/nsf/gocode#emacs-setup
+;; https://github.com/syohex/emacs-go-eldoc
+;; go get -u golang.org/x/tools/cmd/...
+;; go get -u github.com/rogpeppe/godef/...
+;; go get -u github.com/nsf/gocode
+
+(use-package go-mode
+  :mode "\\.go\\'"
+  :bind (:map go-mode-map
+	      ("M-." . godef-jump)
+	      ("M-," . pop-tag-mark)
+	      ("C-c C-r" . go-rename))
+  :config
+  (add-hook 'before-save-hook 'gofmt-before-save)
+  (setq gofmt-command "goimports")
+  (use-package go-guru)
+  (use-package go-autocomplete)
+  (ac-config-default))
+
+(use-package go-rename
+  :commands (go-rename))
+
+(use-package go-eldoc
+  :hook (go-mode . go-eldoc-setup))
+
 ;;;;;; Rust
+
+;; https://github.com/rust-lang/rust-mode
+;; https://github.com/kwrooijen/cargo.el
+;; https://github.com/racer-rust/emacs-racer
+;; https://github.com/dryman/toml-mode.el
+;; https://github.com/flycheck/flycheck-rust
+;; rustup component add rustfmt-preview
+;; rustup component add rust-src
+;; rustup toolchain add nightly
+;; cargo +nightly install racer
 
 (use-package rust-mode
   :mode "\\.rs\\'"
