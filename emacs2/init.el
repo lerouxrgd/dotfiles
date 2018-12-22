@@ -134,6 +134,30 @@
   :hook ((emacs-lisp-mode . enable-paredit-mode)
          (lisp-mode . enable-paredit-mode)))
 
+;;;;;; Docker
+
+;; https://github.com/spotify/dockerfile-mode
+(use-package dockerfile-mode
+  :mode "Dockerfile\\'")
+
+;;;;;; Yaml
+
+;; https://github.com/yoshiki/yaml-mode
+(use-package yaml-mode
+  :mode "\\.yaml\\'")
+
+;;;;;; Markdown
+
+;; https://github.com/jrblevin/markdown-mode
+;; https://github.com/mola-T/flymd
+
+(use-package markdown-mode
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :config
+  (use-package flymd))
+
 ;;;;;; Clojure
 
 ;; https://github.com/clojure-emacs/clojure-mode
