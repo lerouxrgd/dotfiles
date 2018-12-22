@@ -33,22 +33,18 @@
 (setq use-package-always-ensure t)
 
 (use-package use-package-ensure-system-package
-  :ensure t)
-
-(declare-function
- use-package-ensure-system-package-exists?
- "use-package-ensure-system-package-exists?")
+  :ensure t
+  :config
+  (declare-function
+   use-package-ensure-system-package-exists?
+   "use-package-ensure-system-package-exists?"))
 
 (require 'bind-key)
-(require 'subr-x)
 
 ;;;;;; General packages
 
-(use-package smex)
-(use-package ido-completing-read+)
-
-(use-package doom-themes
-  :init (load-theme 'doom-opera t))
+(use-package which-key
+  :hook (after-init . which-key-mode))
 
 (use-package company
   :hook (after-init . global-company-mode)
@@ -65,9 +61,6 @@
 	  flycheck-display-errors-delay 0.5)
     (flycheck-pos-tip-mode 1)))
 
-(use-package which-key
-  :hook (after-init . which-key-mode))
-
 (use-package yasnippet
   :commands yas-minor-mode
   :hook (prog-mode . yas-minor-mode))
@@ -79,6 +72,12 @@
   :config
   (exec-path-from-shell-initialize)
   (exec-path-from-shell-copy-envs '("PATH")))
+
+(use-package smex
+  :bind (("M-x" . smex))
+  :config
+  (setq smex-save-file "~/.emacs.d/smex-items")
+  (smex-initialize))
 
 ;;;;;; Navigation
 
@@ -97,6 +96,28 @@
   :bind (:map dired-mode-map
               ("<right>" . dired-subtree-insert)
               ("<left>" . dired-subtree-remove)))
+
+(use-package ido-completing-read+
+  :ensure t
+  :config
+  (setq ido-auto-merge-work-directories-length -1
+        ido-enable-flex-matching t
+        ido-use-filename-at-point nil)
+  (ido-mode 1)
+  (ido-ubiquitous-mode 1))
+
+(use-package recentf
+  :defer 1
+  :init
+  (setq recentf-exclude
+        '("/\\.git/.*\\'"
+          "/elpa/.*\\'"
+          "/cache/.*\\'"
+          ".*\\.gz\\'")
+        recentf-max-saved-items 50
+        recentf-max-menu-items 35
+	recentf-auto-cleanup 'never)
+  (recentf-mode 1))
 
 ;;;;;; Git
 
@@ -247,6 +268,9 @@
 
 ;;;;;; User Interface
 
+(use-package doom-themes
+  :init (load-theme 'doom-opera t))
+
 ;; Max size window on startup
 (toggle-frame-maximized)
 
@@ -276,10 +300,19 @@
   (scroll-bar-mode -1))
 
 ;; Setup font size
+(require 'subr-x)
 (if-let (font-height (getenv "EMACS_FONT_HEIGHT"))
     (set-face-attribute
      'default nil :height (string-to-number font-height))
   (set-face-attribute 'default nil :height 120))
+
+;; Unique buffer names dependent on file name
+(require 'uniquify)
+(setq uniquify-buffer-name-style 'forward)
+(setq uniquify-after-kill-buffer-p t)
+
+;; Shows a list of buffers
+(global-set-key (kbd "C-x C-b") 'ibuffer)
 
 ;; Changes all yes/no questions to y/n type
 (fset 'yes-or-no-p 'y-or-n-p)
@@ -321,16 +354,12 @@
 (setq create-lockfiles nil)
 
 ;; Automatic backups
-(setq backup-directory-alist
-      `(("." . ,(concat user-emacs-directory "backups")))
+(setq backup-directory-alist` (("." . ,"~/.emacs.d/backups"))
       auto-save-default nil)
 
 ;; Write custom's settings to separate file (gitignored)
 (setq custom-file "~/.emacs.d/custom.el")
 (when (file-exists-p custom-file)
   (load custom-file))
-
-(add-to-list 'load-path "~/.emacs.d/customizations")
-(load "navigation.el")
 
 ;;; init.el ends here

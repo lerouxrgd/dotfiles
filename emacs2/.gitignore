@@ -5,13 +5,11 @@ backups
 *~
 
 # mode related temp files
-.recentf
-.smex-items
+recentf
 ido.last
+smex-items
 ac-comphist.dat
 cider-history
-url
-bookmarks
 
 # projectile
 projectile.cache
