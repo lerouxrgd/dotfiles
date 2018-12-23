@@ -11,9 +11,12 @@ smex-items
 ac-comphist.dat
 cider-history
 
+# lsp
+.lsp-session*
+
 # projectile
 projectile.cache
 projectile-bookmarks.eld
 
-#Network Security Manager
+# Network Security Manager
 network-security.data

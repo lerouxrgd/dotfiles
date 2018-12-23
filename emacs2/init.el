@@ -158,6 +158,30 @@
   :config
   (use-package flymd))
 
+;;;;;; Lsp
+
+(use-package lsp-mode
+  :hook (prog-mode-hook . lsp-mode))
+
+(use-package lsp-ui
+  :hook (lsp-mode . lsp-ui-mode)
+  :config
+  (setq lsp-ui-sideline-enable nil
+        lsp-ui-doc-enable nil)
+  :bind (:map lsp-ui-mode-map
+	      ("C-z ." . lsp-ui-peek-find-definitions)
+	      ("C-z ?" . lsp-ui-peek-find-references)
+	      ("C-z i" . lsp-ui-imenu)
+	      ("C-z R" . lsp-rename)))
+
+(use-package company-lsp
+  :after (company lsp-mode)
+  :config
+  (add-to-list 'company-backends 'company-lsp)
+  :custom
+  (company-lsp-async t)
+  (company-lsp-enable-snippet t))
+
 ;;;;;; Clojure
 
 ;; https://github.com/clojure-emacs/clojure-mode
@@ -252,8 +276,10 @@
 ;; https://github.com/racer-rust/emacs-racer
 ;; https://github.com/dryman/toml-mode.el
 ;; https://github.com/flycheck/flycheck-rust
-;; rustup component add rustfmt-preview
 ;; rustup component add rust-src
+;; rustup component add rust-analysis
+;; rustup component add rustfmt-preview
+;; rustup component add rls-preview
 ;; rustup toolchain add nightly
 ;; cargo +nightly install racer
 
@@ -265,7 +291,8 @@
     :after flycheck
     :commands flycheck-rust-setup
     :init
-    (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)))
+    (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
+  (use-package lsp-rust))
 
 (use-package racer
   :commands racer-mode
@@ -342,6 +369,9 @@
 (fset 'yes-or-no-p 'y-or-n-p)
 
 ;;;;;; Editing
+
+;; Disable Ctrl-Z minimization/suspension of emacs
+(global-set-key (kbd "C-z") nil)
 
 ;; Use hippie-expand for text autocompletion
 (global-set-key (kbd "M-/") 'hippie-expand)
