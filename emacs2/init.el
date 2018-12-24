@@ -240,6 +240,20 @@
         python-shell-interpreter-args "--simple-prompt -i")
   (elpy-mode))
 
+;;;;;; Javascript
+
+;; https://github.com/mooz/js2-mode
+
+(use-package js2-mode
+  :mode "\\.js\\'")
+
+(use-package json-mode
+  :mode (("\\.json\\'" . json-mode)
+         ("\\.avsc\\'" . json-mode)
+	 ("/Pipfile.lock\\'" . json-mode))
+  :init
+  (setq js-indent-level 2))
+
 ;;;;;; Go
 
 ;; https://github.com/dominikh/go-mode.el
@@ -356,6 +370,9 @@
     (set-face-attribute
      'default nil :height (string-to-number font-height))
   (set-face-attribute 'default nil :height 120))
+
+;; Use UTF-8
+(prefer-coding-system 'utf-8)
 
 ;; Unique buffer names dependent on file name
 (require 'uniquify)
