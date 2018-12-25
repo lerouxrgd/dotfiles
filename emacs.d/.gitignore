@@ -1,17 +1,22 @@
-.smex-items
-*~$
-places
-.recentf
-.recentf~
-ido.last
-ido.last~
-network-security.data
-ac-comphist.dat
-cider-history
-projectile-bookmarks.eld
-projectile.cache
+elpa/*
+custom.el
 auto-save-list
 backups
-elpa
-url
-bookmarks
+*~
+
+# mode related temp files
+recentf
+ido.last
+smex-items
+ac-comphist.dat
+cider-history
+
+# lsp
+.lsp-session*
+
+# projectile
+projectile.cache
+projectile-bookmarks.eld
+
+# Network Security Manager
+network-security.data

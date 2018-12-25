@@ -1,8 +1,11 @@
-;;;;
-;; Packages
-;;;;
+;;; init.el --- Main Emacs initialization
+;;; Commentary:
+;;; This is my Emacs config.
+;;; There are many like it, but this one is mine.
+;;; Code:
 
-;; Define package repositories
+;;;;;;;;;;;;;;;;;;; Package management ;;;;;;;;;;;;;;;;;;;
+
 (require 'package)
 (add-to-list 'package-archives
              '("gnu"          . "http://elpa.gnu.org/packages/") t)
@@ -11,195 +14,430 @@
 (add-to-list 'package-archives
 	     '("melpa"        . "https://melpa.org/packages/") t)
 (add-to-list 'package-archives
+	     '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+(add-to-list 'package-archives
 	     '("tromey"       . "http://tromey.com/elpa/") t)
 
-;; Load and activate emacs packages. Do this first so that the
-;; packages are loaded before you start trying to modify them.
-;; This also sets the load path.
+;; No auto package loading, that's handled via use-package
+(setq package-enable-at-startup nil)
 (package-initialize)
 
-;; Define packages to install
-(setq package-selected-packages
-  '(;; Makes handling lisp expressions much, much easier
-    ;; Cheatsheet: http://www.emacswiki.org/emacs/PareditCheatsheet
-    paredit
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
 
-    ;; Colorful parenthesis matching
-    rainbow-delimiters
+(eval-when-compile
+  (require 'use-package)
+  (use-package cl))
 
-    ;; Integration with Clojure
-    ;; https://github.com/clojure-emacs/clojure-mode
-    ;; https://github.com/clojure-emacs/cider
-    ;; https://github.com/clojure-emacs/clj-refactor.el
-    clojure-mode
-    clojure-mode-extra-font-locking
-    cider
-    clj-refactor
+(setq use-package-always-ensure t)
 
-    ;; Integration with Python
-    ;; https://github.com/jorgenschaefer/elpy
-    elpy
-    ;; sudo pacman -Syu ipython
-    ;; pip install --user rope
-    ;; pip install --user flake8
-    ;; pip install --user importmagic
-    ;; pip install --user autopep8
-    ;; pip install --user yapf
+(use-package use-package-ensure-system-package
+  :ensure t
+  :config
+  (declare-function
+   use-package-ensure-system-package-exists?
+   "use-package-ensure-system-package-exists?"))
 
-    ;; Integration with Go
-    ;; https://github.com/dominikh/go-mode.el
-    ;; https://github.com/rogpeppe/godef
-    ;; https://github.com/nsf/gocode#emacs-setup
-    go-mode
-    go-guru
-    go-autocomplete
-    ;; go get -u golang.org/x/tools/cmd/...
-    ;; go get -u github.com/rogpeppe/godef/...
-    ;; go get -u github.com/nsf/gocode
+(require 'bind-key)
 
-    ;; Integration with Rust
-    ;; https://github.com/rust-lang/rust-mode
-    ;; https://github.com/kwrooijen/cargo.el
-    ;; https://github.com/racer-rust/emacs-racer
-    ;; https://github.com/dryman/toml-mode.el
-    ;; https://github.com/flycheck/flycheck-rust
-    rust-mode
-    cargo
-    racer
-    toml-mode
-    flycheck-rust
-    ;; rustup component add rustfmt-preview
-    ;; rustup component add rust-src
-    ;; rustup toolchain add nightly
-    ;; cargo +nightly install racer
+;;;;;; General packages
 
-    ;; Integration with Lua
-    ;; http://immerrr.github.io/lua-mode/
-    lua-mode
+(use-package which-key
+  :hook (after-init . which-key-mode))
 
-    ;; Integration with Javascript
-    ;; https://github.com/mooz/js2-mode
-    ;; https://github.com/magnars/js2-refactor.el
-    ;; https://github.com/nicolaspetton/xref-js2
-    ;; https://github.com/ggreer/the_silver_searcher
-    ;; https://github.com/ternjs/tern
-    js2-mode
-    js2-refactor
-    xref-js2
-    company-tern
-    ;; sudo pacman -Syu the_silver_searcher
-    ;; sudo npm install -g tern
+(use-package company
+  :hook (after-init . global-company-mode)
+  :config
+  (setq company-tooltip-align-annotations t))
 
-    ;; Integration with JSON
-    ;; https://github.com/DamienCassou/json-navigator
-    json-mode
-    json-navigator
+(use-package flycheck
+  :commands global-flycheck-mode
+  :hook (after-init . global-flycheck-mode)
+  :config
+  (use-package flycheck-pos-tip
+    :config
+    (setq flycheck-pos-tip-timeout 7
+	  flycheck-display-errors-delay 0.5)
+    (flycheck-pos-tip-mode 1)))
 
-    ;; Integration with HTML
-    ;; Edit html tags like sexps
-    tagedit
+(use-package yasnippet
+  :commands yas-minor-mode
+  :hook (prog-mode . yas-minor-mode))
 
-    ;; Integration with Markdown (and live preview)
-    ;; https://github.com/jrblevin/markdown-mode
-    ;; https://github.com/mola-T/flymd
-    markdown-mode
-    flymd
+(use-package exec-path-from-shell
+  :if (memq system-type '(gnu gnu/linux darwin))
+  :init
+  (customize-set-variable 'exec-path-from-shell-arguments nil)
+  :config
+  (exec-path-from-shell-initialize)
+  (exec-path-from-shell-copy-envs '("PATH")))
 
-    ;; Integration with YAML
-    ;; https://github.com/yoshiki/yaml-mode
-    yaml-mode
+(use-package smex
+  :bind (("M-x" . smex))
+  :config
+  (setq smex-save-file "~/.emacs.d/smex-items")
+  (smex-initialize))
 
-    ;; Integration with Docker
-    ;; https://github.com/spotify/dockerfile-mode
-    dockerfile-mode
+;;;;;; Navigation
 
-    ;; Integration with Git
-    ;; https://github.com/magit/magit
-    magit
+(use-package projectile
+  :bind-keymap ("C-c p" . projectile-command-map)
+  :config
+  (projectile-mode 1)
+  (setq projectile-switch-project-action 'projectile-dired))
 
-    ;; Syntax checkers
-    ;; https://github.com/flycheck/flycheck
-    flycheck
-    ;; sudo npm install jsonlint -g
-    ;; sudo npm install js-yaml -g
+(use-package dired-x
+  :ensure nil
+  :bind (("C-x C-j" . dired-jump)))
 
-    ;; Text completion
-    ;; https://github.com/company-mode/company-mode
-    company
-    
-    ;; Allows ido usage in as many contexts as possible.
-    ;; See customizations/navigation.el for a description of ido
-    ;; https://github.com/DarwinAwardWinner/ido-completing-read-plus
-    ido-completing-read+
+(use-package dired-subtree
+  :defer 1
+  :bind (:map dired-mode-map
+              ("<right>" . dired-subtree-insert)
+              ("<left>" . dired-subtree-remove)))
 
-    ;; Enhances M-x to allow easier execution of commands.
-    ;; Provides a filterable list of possible commands in the minibuffer
-    ;; http://www.emacswiki.org/emacs/Smex
-    smex
+(use-package ido-completing-read+
+  :ensure t
+  :config
+  (setq ido-auto-merge-work-directories-length -1
+        ido-enable-flex-matching t
+        ido-use-filename-at-point nil)
+  (ido-mode 1)
+  (ido-ubiquitous-mode 1))
 
-    ;; Displays the key bindings following current incomplete command
-    ;; https://github.com/justbur/emacs-which-key
-    which-key
+(use-package dumb-jump
+  :ensure t
+  :bind (("C-c ." . dumb-jump-go)
+         ("C-c d j" . dumb-jump-go)
+         ("C-c d o" . dumb-jump-go-other-window)
+         ("C-c d i" . dumb-jump-go-prompt)
+         ("C-c d x" . dumb-jump-go-prefer-external)
+         ("C-c d z" . dumb-jump-go-prefer-external-other-window))
+  :config (setq dumb-jump-selector 'ivy))
 
-    ;; project navigation
-    projectile
-    ))
+(use-package recentf
+  :defer 1
+  :init
+  (setq recentf-exclude
+        '("/\\.git/.*\\'"
+          "/elpa/.*\\'"
+          "/cache/.*\\'"
+          ".*\\.gz\\'")
+        recentf-max-saved-items 50
+        recentf-max-menu-items 35
+	recentf-auto-cleanup 'never)
+  (recentf-mode 1))
 
-(defun install-packages ()
-  "Install/refresh all required packages, when needed."
+;;;;;; Git
+
+(use-package magit
+  :bind (("C-x g" . magit-status))
+  :config
+  (setq magit-diff-refine-hunk t)
+  (add-hook 'magit-post-refresh-hook
+	    'git-gutter:update-all-windows))
+
+;;;;;; Lisp
+
+(use-package paredit
+  :hook ((emacs-lisp-mode . enable-paredit-mode)
+         (lisp-mode . enable-paredit-mode)))
+
+;;;;;; Docker
+
+;; https://github.com/spotify/dockerfile-mode
+(use-package dockerfile-mode
+  :mode "Dockerfile\\'")
+
+;;;;;; Yaml
+
+;; https://github.com/yoshiki/yaml-mode
+(use-package yaml-mode
+  :mode "\\.yaml\\'")
+
+;;;;;; Markdown
+
+;; https://github.com/jrblevin/markdown-mode
+;; https://github.com/mola-T/flymd
+
+(use-package markdown-mode
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :config
+  (use-package flymd))
+
+;;;;;; Lsp
+
+(use-package lsp-mode
+  :hook (prog-mode-hook . lsp-mode))
+
+(use-package lsp-ui
+  :hook (lsp-mode . lsp-ui-mode)
+  :config
+  (setq lsp-ui-sideline-enable nil
+        lsp-ui-doc-enable nil)
+  :bind (:map lsp-ui-mode-map
+	      ("C-z ." . lsp-ui-peek-find-definitions)
+	      ("C-z ?" . lsp-ui-peek-find-references)
+	      ("C-z i" . lsp-ui-imenu)
+              ("C-z d" . lsp-describe-thing-at-point)
+              ("C-z r" . lsp-find-references)
+	      ("C-z R" . lsp-rename)))
+
+(use-package company-lsp
+  :after (company lsp-mode)
+  :config
+  (add-to-list 'company-backends 'company-lsp)
+  :custom
+  (company-lsp-async t)
+  (company-lsp-enable-snippet t))
+
+;;;;;; Clojure
+
+;; https://github.com/clojure-emacs/clojure-mode
+;; https://github.com/clojure-emacs/cider
+;; https://github.com/clojure-emacs/clj-refactor.el
+
+(use-package clojure-mode
+  :mode (("\\.clj\\'" . clojure-mode)
+         ("\\.edn\\'" . clojure-mode)
+	 ("\\.cljc\\'" . clojurec-mode)
+	 ("\\.cljs\\'" . clojurescript-mode))
+  :hook ((clojure-mode . enable-paredit-mode)
+	 (clojure-mode . subword-mode)
+	 (clojure-mode . rainbow-delimiters-mode))
+  :config
+  (use-package clojure-mode-extra-font-locking))
+
+(use-package cider
+  :after clojure-mode
+  :init
+  (setq cider-repl-display-help-banner nil
+        cider-repl-history-file "~/.emacs.d/cider-history")
+  (add-hook 'cider-mode-hook #'eldoc-mode)
+  (add-hook 'cider-repl-mode-hook #'paredit-mode)
+  (declare-function cider-current-ns "cider-current-ns")
+  (defun browse-current-ns ()
+    (interactive)
+    (cider-browse-ns
+     (with-current-buffer (current-buffer)
+       (cider-current-ns))))
+  :bind
+  (("C-c C-M-b" . cider-browse-ns-all)
+   ("C-c M-b" . browse-current-ns)))
+
+(use-package clj-refactor
+  :after clojure-mode
+  :init
+  (add-hook 'clojure-mode-hook 'clj-refactor-mode)
+  :config
+  (clj-refactor-mode 1)
+  (yas-minor-mode 1)
+  (cljr-add-keybindings-with-prefix "C-c r"))
+
+;;;;;; Python
+
+;; https://github.com/jorgenschaefer/elpy
+;; sudo pacman -Sy ipython
+
+(use-package elpy
+  :hook ((python-mode . elpy-enable))
+  :ensure-system-package
+  (pip-all . "pip install \
+    rope flake8 importmagic autopep8 yapf black --user")
+  :config
+  (setq python-shell-interpreter "ipython"
+        python-shell-interpreter-args "--simple-prompt -i")
+  (elpy-mode))
+
+;;;;;; Javascript
+
+(use-package json-mode
+  :mode (("\\.json\\'" . json-mode)
+         ("\\.avsc\\'" . json-mode)
+	 ("/Pipfile.lock\\'" . json-mode))
+  :init
+  (setq js-indent-level 2))
+
+;;;;;; Go
+
+;; https://github.com/dominikh/go-mode.el
+;; https://github.com/rogpeppe/godef
+;; https://github.com/nsf/gocode#emacs-setup
+;; https://github.com/syohex/emacs-go-eldoc
+;; go get -u golang.org/x/tools/cmd/...
+;; go get -u github.com/rogpeppe/godef/...
+;; go get -u github.com/nsf/gocode
+
+(use-package go-mode
+  :mode "\\.go\\'"
+  :bind (:map go-mode-map
+	      ("M-." . godef-jump)
+	      ("M-," . pop-tag-mark)
+	      ("C-c C-r" . go-rename))
+  :config
+  (add-hook 'before-save-hook 'gofmt-before-save)
+  (setq gofmt-command "goimports")
+  (use-package go-guru)
+  (use-package go-autocomplete)
+  (ac-config-default))
+
+(use-package go-rename
+  :commands (go-rename))
+
+(use-package go-eldoc
+  :hook (go-mode . go-eldoc-setup))
+
+;;;;;; Rust
+
+;; https://github.com/rust-lang/rust-mode
+;; https://github.com/kwrooijen/cargo.el
+;; https://github.com/racer-rust/emacs-racer
+;; https://github.com/dryman/toml-mode.el
+;; https://github.com/flycheck/flycheck-rust
+;; rustup component add rust-src
+;; rustup component add rust-analysis
+;; rustup component add rustfmt-preview
+;; rustup component add rls-preview
+;; rustup toolchain add nightly
+;; cargo +nightly install racer
+
+(use-package rust-mode
+  :mode "\\.rs\\'"
+  :config
+  (setq rust-format-on-save t)
+  (use-package flycheck-rust
+    :after flycheck
+    :commands flycheck-rust-setup
+    :init
+    (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
+  (use-package lsp-rust))
+
+(use-package racer
+  :commands racer-mode
+  :hook
+  ((rust-mode . racer-mode)
+   (rust-mode . eldoc-mode))
+  :bind (:map rust-mode-map
+	      ("M-." . racer-find-definition))
+  :config
+  (use-package company-racer
+    :config
+    (add-to-list 'company-backends 'company-racer)
+    (setq company-tooltip-align-annotations t)))
+
+(use-package cargo
+  :commands cargo-minor-mode
+  :hook (rust-mode . cargo-minor-mode))
+
+(use-package toml-mode
+  :mode (("\\.toml\\'" . toml-mode)
+	 ("/Pipfile\\'" . toml-mode)))
+
+;;;;;;;;;;;;;;;;;;; Customizations ;;;;;;;;;;;;;;;;;;;
+
+;;;;;; User Interface
+
+(use-package doom-themes
+  :init (load-theme 'doom-opera t))
+
+;; Max size window on startup
+(toggle-frame-maximized)
+
+;; Go straight to scratch buffer on startup
+(setq inhibit-startup-message t
+      inhibit-splash-screen t)
+
+;; Show line numbers
+(global-linum-mode)
+
+;; No blinking cursor
+(blink-cursor-mode 0)
+
+;; No bell
+(setq ring-bell-function 'ignore)
+
+;; Full path in title bar
+(setq-default frame-title-format "%b (%f)")
+
+;; Turn off menu bars
+(menu-bar-mode -1)
+(when (fboundp 'tool-bar-mode)
+  (tool-bar-mode -1))
+
+;; Don't show native OS scroll bars for buffers
+(when (fboundp 'scroll-bar-mode)
+  (scroll-bar-mode -1))
+
+;; Setup font size
+(require 'subr-x)
+(if-let (font-height (getenv "EMACS_FONT_HEIGHT"))
+    (set-face-attribute
+     'default nil :height (string-to-number font-height))
+  (set-face-attribute 'default nil :height 120))
+
+;; Use UTF-8
+(prefer-coding-system 'utf-8)
+
+;; Unique buffer names dependent on file name
+(require 'uniquify)
+(setq uniquify-buffer-name-style 'forward)
+(setq uniquify-after-kill-buffer-p t)
+
+;; Shows a list of buffers
+(global-set-key (kbd "C-x C-b") 'ibuffer)
+
+;; Changes all yes/no questions to y/n type
+(fset 'yes-or-no-p 'y-or-n-p)
+
+;;;;;; Editing
+
+;; Disable Ctrl-Z minimization/suspension of emacs
+(global-set-key (kbd "C-z") nil)
+
+;; Use hippie-expand for text autocompletion
+(global-set-key (kbd "M-/") 'hippie-expand)
+(setq hippie-expand-try-functions-list
+      '(try-expand-dabbrev
+        try-expand-dabbrev-all-buffers
+        try-expand-dabbrev-from-kill
+        try-complete-lisp-symbol-partially
+        try-complete-lisp-symbol))
+
+;; Highlights matching parenthesis
+(show-paren-mode 1)
+
+;; Highlight current line
+(global-hl-line-mode 1)
+
+;; Don't use hard tabs
+(setq-default indent-tabs-mode nil)
+
+(defun toggle-comment-on-line ()
+  "Comment or uncomment current line."
   (interactive)
-  (unless package-archive-contents
-    (package-refresh-contents))
-  (dolist (package package-selected-packages)
-    (unless (package-installed-p package)
-      (package-install package))))
+  (comment-or-uncomment-region
+   (line-beginning-position) (line-end-position)))
 
-(install-packages)
+(global-set-key (kbd "C-;") 'toggle-comment-on-line)
 
-;; Place downloaded elisp files in ~/.emacs.d/vendor.
-;; You'll then be able to load them.
-(add-to-list 'load-path "~/.emacs.d/vendor")
+;; Auto indent on new line
+(electric-indent-mode 1)
 
-;; Activate syntax checkers
-(global-flycheck-mode)
+;;;;;; Local files
 
-;; Activate key autocompletion
-(which-key-mode)
+;; No need for ~ files when editing
+(setq create-lockfiles nil)
 
-;;;;
-;; Customization
-;;;;
+;; Automatic backups
+(setq backup-directory-alist` (("." . ,"~/.emacs.d/backups"))
+      auto-save-default nil)
 
-;; Add a directory to our load path so that when you `load` things below,
-;; Emacs knows where to look for the corresponding file.
-(add-to-list 'load-path "~/.emacs.d/customizations")
+;; Write custom's settings to separate file (gitignored)
+(setq custom-file "~/.emacs.d/custom.el")
+(when (file-exists-p custom-file)
+  (load custom-file))
 
-;; Sets up exec-path-from-shell so that Emacs will use the correct
-;; environment variables
-(load "shell-integration.el")
-
-;; These customizations make it easier for you to navigate files,
-;; switch buffers, and choose options from the minibuffer.
-(load "navigation.el")
-
-;; These customizations change the way emacs looks and disable/enable
-;; some user interface elements
-(load "ui.el")
-
-;; These customizations make editing a bit nicer
-(load "editing.el")
-
-;; Hard-to-categorize customizations
-(load "misc.el")
-
-;; For editing lisps
-(load "elisp-editing.el")
-
-;; Langauage-specific
-(load "setup-clojure.el")
-(load "setup-go.el")
-(load "setup-python.el")
-(load "setup-rust.el")
-(load "setup-lua.el")
-(load "setup-js2.el")
-(load "setup-yaml.el")
+;;; init.el ends here
