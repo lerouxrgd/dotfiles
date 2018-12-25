@@ -106,6 +106,16 @@
   (ido-mode 1)
   (ido-ubiquitous-mode 1))
 
+(use-package dumb-jump
+  :ensure t
+  :bind (("C-c ." . dumb-jump-go)
+         ("C-c d j" . dumb-jump-go)
+         ("C-c d o" . dumb-jump-go-other-window)
+         ("C-c d i" . dumb-jump-go-prompt)
+         ("C-c d x" . dumb-jump-go-prefer-external)
+         ("C-c d z" . dumb-jump-go-prefer-external-other-window))
+  :config (setq dumb-jump-selector 'ivy))
+
 (use-package recentf
   :defer 1
   :init
@@ -172,6 +182,8 @@
 	      ("C-z ." . lsp-ui-peek-find-definitions)
 	      ("C-z ?" . lsp-ui-peek-find-references)
 	      ("C-z i" . lsp-ui-imenu)
+              ("C-z d" . lsp-describe-thing-at-point)
+              ("C-z r" . lsp-find-references)
 	      ("C-z R" . lsp-rename)))
 
 (use-package company-lsp
@@ -241,11 +253,6 @@
   (elpy-mode))
 
 ;;;;;; Javascript
-
-;; https://github.com/mooz/js2-mode
-
-(use-package js2-mode
-  :mode "\\.js\\'")
 
 (use-package json-mode
   :mode (("\\.json\\'" . json-mode)
