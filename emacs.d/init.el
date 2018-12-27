@@ -171,7 +171,24 @@
 ;;;;;; Lsp
 
 (use-package lsp-mode
-  :hook (prog-mode-hook . lsp-mode))
+  :preface
+  ;; Hack to get a dedicated flow-mode
+  (define-derived-mode flow-mode js-mode "flow-mode")
+  (add-to-list 'magic-mode-alist
+               '("// @flow" . flow-mode))
+  (add-to-list 'magic-mode-alist
+               '("/* flow */" . flow-mode))
+  :hook (prog-mode-hook . lsp-mode)
+  :config
+  ;; https://github.com/flowtype/flow-language-server
+  ;; npm install -g flow-language-server
+  (lsp-register-client
+   (make-lsp-client
+    :new-connection
+    (lsp-stdio-connection
+     '("flow-language-server" "--stdio" "--try-flow-bin"))
+    :major-modes '(flow-mode)
+    :server-id 'flow-ls)))
 
 (use-package lsp-ui
   :hook (lsp-mode . lsp-ui-mode)
@@ -258,8 +275,8 @@
   :mode (("\\.json\\'" . json-mode)
          ("\\.avsc\\'" . json-mode)
 	 ("/Pipfile.lock\\'" . json-mode))
-  :init
-  (setq js-indent-level 2))
+  :config
+  (setq-default js-indent-level 2))
 
 ;;;;;; Go
 
