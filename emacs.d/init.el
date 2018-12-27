@@ -172,14 +172,19 @@
 
 (use-package lsp-mode
   :preface
-  ;; Hack to get a dedicated flow-mode
+  ;; Hack to get a dedicated major flow-mode
   (define-derived-mode flow-mode js-mode "flow-mode")
   (add-to-list 'magic-mode-alist
                '("// @flow" . flow-mode))
   (add-to-list 'magic-mode-alist
                '("/* flow */" . flow-mode))
+
   :hook (prog-mode-hook . lsp-mode)
+
   :config
+  ;; https://github.com/sourcegraph/javascript-typescript-langserver
+  ;; npm install -g javascript-typescript-langserver
+
   ;; https://github.com/flowtype/flow-language-server
   ;; npm install -g flow-language-server
   (lsp-register-client
