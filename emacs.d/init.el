@@ -299,8 +299,8 @@
 ;; https://github.com/flycheck/flycheck-rust
 ;; rustup component add rust-src
 ;; rustup component add rust-analysis
-;; rustup component add rustfmt-preview
-;; rustup component add rls-preview
+;; rustup component add rustfmt
+;; rustup component add rls
 ;; rustup toolchain add nightly
 ;; cargo +nightly install racer
 
@@ -312,8 +312,7 @@
     :after flycheck
     :commands flycheck-rust-setup
     :init
-    (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
-  (use-package lsp-rust))
+    (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)))
 
 (use-package racer
   :commands racer-mode
