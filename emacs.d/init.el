@@ -281,7 +281,7 @@
          ("\\.avsc\\'" . json-mode)
 	 ("/Pipfile.lock\\'" . json-mode))
   :config
-  (setq-default js-indent-level 2))
+  (setq js-indent-level 2))
 
 ;;;;;; Go
 
