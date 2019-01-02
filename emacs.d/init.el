@@ -176,7 +176,7 @@
   ;; Hack to get a dedicated major flow-mode
   (define-derived-mode flow-mode js-mode "flow-mode")
   (add-to-list 'magic-mode-alist '("// @flow" . flow-mode))
-  (add-to-list 'magic-mode-alist '("/* flow */" . flow-mode))
+  (add-to-list 'magic-mode-alist '("/\\* @flow \\*/" . flow-mode))
   :hook (prog-mode-hook . lsp-mode)
   :config
   (lsp-register-client
