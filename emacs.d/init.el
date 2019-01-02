@@ -33,11 +33,7 @@
 (setq use-package-always-ensure t)
 
 (use-package use-package-ensure-system-package
-  :ensure t
-  :config
-  (declare-function
-   use-package-ensure-system-package-exists?
-   "use-package-ensure-system-package-exists?"))
+  :ensure t)
 
 (require 'bind-key)
 
@@ -78,6 +74,11 @@
   :config
   (setq smex-save-file "~/.emacs.d/smex-items")
   (smex-initialize))
+
+(use-package editorconfig
+  :ensure t
+  :config
+  (editorconfig-mode 1))
 
 ;;;;;; Navigation
 
@@ -138,11 +139,23 @@
   (add-hook 'magit-post-refresh-hook
 	    'git-gutter:update-all-windows))
 
-;;;;;; Lisp
+(use-package markdown-mode
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :config
+  ;; https://github.com/mola-T/flymd
+  (use-package flymd))
 
-(use-package paredit
-  :hook ((emacs-lisp-mode . enable-paredit-mode)
-         (lisp-mode . enable-paredit-mode)))
+;;;;;; Config files
+
+;; https://github.com/yoshiki/yaml-mode
+(use-package yaml-mode
+  :mode "\\.yaml\\'")
+
+;; https://github.com/dryman/toml-mode.el
+(use-package toml-mode
+  :mode "\\.toml\\'")
 
 ;;;;;; Docker
 
@@ -150,48 +163,27 @@
 (use-package dockerfile-mode
   :mode "Dockerfile\\'")
 
-;;;;;; Yaml
+;;;;;; Lisp
 
-;; https://github.com/yoshiki/yaml-mode
-(use-package yaml-mode
-  :mode "\\.yaml\\'")
+(use-package paredit
+  :hook ((emacs-lisp-mode . enable-paredit-mode)
+         (lisp-mode . enable-paredit-mode)))
 
-;;;;;; Markdown
-
-;; https://github.com/jrblevin/markdown-mode
-;; https://github.com/mola-T/flymd
-
-(use-package markdown-mode
-  :mode (("README\\.md\\'" . gfm-mode)
-         ("\\.md\\'" . markdown-mode)
-         ("\\.markdown\\'" . markdown-mode))
-  :config
-  (use-package flymd))
-
-;;;;;; Lsp
+;;;;;; LSP
 
 (use-package lsp-mode
   :preface
   ;; Hack to get a dedicated major flow-mode
   (define-derived-mode flow-mode js-mode "flow-mode")
-  (add-to-list 'magic-mode-alist
-               '("// @flow" . flow-mode))
-  (add-to-list 'magic-mode-alist
-               '("/* flow */" . flow-mode))
-
+  (add-to-list 'magic-mode-alist '("// @flow" . flow-mode))
+  (add-to-list 'magic-mode-alist '("/* flow */" . flow-mode))
   :hook (prog-mode-hook . lsp-mode)
-
   :config
-  ;; https://github.com/sourcegraph/javascript-typescript-langserver
-  ;; npm install -g javascript-typescript-langserver
-
-  ;; https://github.com/flowtype/flow-language-server
-  ;; npm install -g flow-language-server
   (lsp-register-client
    (make-lsp-client
     :new-connection
     (lsp-stdio-connection
-     '("flow-language-server" "--stdio" "--try-flow-bin"))
+     '("flow" "lsp" "--flowconfig-name" "../.flowconfig"))
     :major-modes '(flow-mode)
     :server-id 'flow-ls)))
 
@@ -240,7 +232,6 @@
         cider-repl-history-file "~/.emacs.d/cider-history")
   (add-hook 'cider-mode-hook #'eldoc-mode)
   (add-hook 'cider-repl-mode-hook #'paredit-mode)
-  (declare-function cider-current-ns "cider-current-ns")
   (defun browse-current-ns ()
     (interactive)
     (cider-browse-ns
@@ -265,9 +256,9 @@
 ;; sudo pacman -Sy ipython
 
 (use-package elpy
-  :hook ((python-mode . elpy-enable))
+  :hook (python-mode . elpy-enable)
   :ensure-system-package
-  (pip-all . "pip install \
+  (pip-elpy . "pip install \
     rope flake8 importmagic autopep8 yapf black --user")
   :config
   (setq python-shell-interpreter "ipython"
@@ -276,10 +267,12 @@
 
 ;;;;;; Javascript
 
+(use-package add-node-modules-path
+  :hook (js-mode . add-node-modules-path))
+
 (use-package json-mode
   :mode (("\\.json\\'" . json-mode)
-         ("\\.avsc\\'" . json-mode)
-	 ("/Pipfile.lock\\'" . json-mode))
+         ("\\.avsc\\'" . json-mode))
   :config
   (setq js-indent-level 2))
 
@@ -317,7 +310,6 @@
 ;; https://github.com/rust-lang/rust-mode
 ;; https://github.com/kwrooijen/cargo.el
 ;; https://github.com/racer-rust/emacs-racer
-;; https://github.com/dryman/toml-mode.el
 ;; https://github.com/flycheck/flycheck-rust
 ;; rustup component add rust-src
 ;; rustup component add rust-analysis
@@ -352,10 +344,6 @@
 (use-package cargo
   :commands cargo-minor-mode
   :hook (rust-mode . cargo-minor-mode))
-
-(use-package toml-mode
-  :mode (("\\.toml\\'" . toml-mode)
-	 ("/Pipfile\\'" . toml-mode)))
 
 ;;;;;;;;;;;;;;;;;;; Customizations ;;;;;;;;;;;;;;;;;;;
 
