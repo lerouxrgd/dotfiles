@@ -32,9 +32,6 @@
 
 (setq use-package-always-ensure t)
 
-(use-package use-package-ensure-system-package
-  :ensure t)
-
 (require 'bind-key)
 
 ;;;;;; General packages
@@ -138,15 +135,7 @@
   (add-hook 'magit-post-refresh-hook
 	    'git-gutter:update-all-windows))
 
-(use-package markdown-mode
-  :mode (("README\\.md\\'" . gfm-mode)
-         ("\\.md\\'" . markdown-mode)
-         ("\\.markdown\\'" . markdown-mode))
-  :config
-  ;; https://github.com/mola-T/flymd
-  (use-package flymd))
-
-;;;;;; Config files
+;;;;;; Simple formatting
 
 ;; https://github.com/yoshiki/yaml-mode
 (use-package yaml-mode
@@ -156,17 +145,25 @@
 (use-package toml-mode
   :mode "\\.toml\\'")
 
-;;;;;; Docker
+;; https://github.com/joshwnj/json-mode
+(use-package json-mode
+  :mode (("\\.json\\'" . json-mode)
+         ("\\.avsc\\'" . json-mode))
+  :config
+  (setq js-indent-level 2))
 
 ;; https://github.com/spotify/dockerfile-mode
 (use-package dockerfile-mode
   :mode "Dockerfile\\'")
 
-;;;;;; Lisp
-
-(use-package paredit
-  :hook ((emacs-lisp-mode . enable-paredit-mode)
-         (lisp-mode . enable-paredit-mode)))
+;; https://github.com/jrblevin/markdown-mode
+(use-package markdown-mode
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :config
+  ;; https://github.com/mola-T/flymd
+  (use-package flymd))
 
 ;;;;;; LSP
 
@@ -201,6 +198,12 @@
   :custom
   (company-lsp-async t)
   (company-lsp-enable-snippet t))
+
+;;;;;; Lisp
+
+(use-package paredit
+  :hook ((emacs-lisp-mode . enable-paredit-mode)
+         (lisp-mode . enable-paredit-mode)))
 
 ;;;;;; Clojure
 
@@ -248,12 +251,10 @@
 
 ;; https://github.com/jorgenschaefer/elpy
 ;; sudo pacman -Sy ipython
+;; pip install rope flake8 importmagic autopep8 yapf black --user
 
 (use-package elpy
   :hook (python-mode . elpy-enable)
-  :ensure-system-package
-  (pip-elpy . "pip install \
-    rope flake8 importmagic autopep8 yapf black --user")
   :config
   (setq python-shell-interpreter "ipython"
         python-shell-interpreter-args "--simple-prompt -i")
@@ -262,7 +263,6 @@
 ;;;;;; Javascript
 
 ;; https://github.com/codesuki/add-node-modules-path
-;; https://github.com/joshwnj/json-mode
 
 (use-package add-node-modules-path
   :preface
@@ -274,12 +274,6 @@
   :hook (js-mode . add-node-modules-path)
   :config
   (flycheck-add-mode 'javascript-eslint 'flow-mode))
-
-(use-package json-mode
-  :mode (("\\.json\\'" . json-mode)
-         ("\\.avsc\\'" . json-mode))
-  :config
-  (setq js-indent-level 2))
 
 ;;;;;; Go
 
@@ -313,13 +307,11 @@
 ;;;;;; Rust
 
 ;; https://github.com/rust-lang/rust-mode
-;; https://github.com/kwrooijen/cargo.el
-;; https://github.com/racer-rust/emacs-racer
 ;; https://github.com/flycheck/flycheck-rust
-;; rustup component add rust-src
-;; rustup component add rust-analysis
-;; rustup component add rustfmt
-;; rustup component add rls
+;; https://github.com/racer-rust/emacs-racer
+;; https://github.com/kwrooijen/cargo.el
+;; rustup component add rust-src rust-analysis
+;; rustup component add rustfmt rls
 ;; rustup toolchain add nightly
 ;; cargo +nightly install racer
 
