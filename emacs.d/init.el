@@ -172,9 +172,7 @@
   :config
   (lsp-register-client
    (make-lsp-client
-    :new-connection
-    (lsp-stdio-connection
-     '("flow" "lsp" "--flowconfig-name" "../.flowconfig"))
+    :new-connection (lsp-stdio-connection '("flow" "lsp"))
     :major-modes '(flow-mode)
     :server-id 'flow-ls)))
 
