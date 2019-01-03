@@ -66,8 +66,7 @@
   :init
   (customize-set-variable 'exec-path-from-shell-arguments nil)
   :config
-  (exec-path-from-shell-initialize)
-  (exec-path-from-shell-copy-envs '("PATH")))
+  (exec-path-from-shell-initialize))
 
 (use-package smex
   :bind (("M-x" . smex))
@@ -172,11 +171,6 @@
 ;;;;;; LSP
 
 (use-package lsp-mode
-  :preface
-  ;; Hack to get a dedicated major flow-mode
-  (define-derived-mode flow-mode js-mode "flow-mode")
-  (add-to-list 'magic-mode-alist '("// @flow" . flow-mode))
-  (add-to-list 'magic-mode-alist '("/\\* @flow \\*/" . flow-mode))
   :hook (prog-mode-hook . lsp-mode)
   :config
   (lsp-register-client
@@ -189,16 +183,16 @@
 
 (use-package lsp-ui
   :hook (lsp-mode . lsp-ui-mode)
-  :config
-  (setq lsp-ui-sideline-enable nil
-        lsp-ui-doc-enable nil)
   :bind (:map lsp-ui-mode-map
 	      ("C-z ." . lsp-ui-peek-find-definitions)
 	      ("C-z ?" . lsp-ui-peek-find-references)
 	      ("C-z i" . lsp-ui-imenu)
               ("C-z d" . lsp-describe-thing-at-point)
               ("C-z r" . lsp-find-references)
-	      ("C-z R" . lsp-rename)))
+	      ("C-z R" . lsp-rename))
+  :config
+  (setq lsp-ui-sideline-enable nil
+        lsp-ui-doc-enable nil))
 
 (use-package company-lsp
   :after (company lsp-mode)
@@ -267,8 +261,19 @@
 
 ;;;;;; Javascript
 
+;; https://github.com/codesuki/add-node-modules-path
+;; https://github.com/joshwnj/json-mode
+
 (use-package add-node-modules-path
-  :hook (js-mode . add-node-modules-path))
+  :preface
+  ;; Hack to get a dedicated major flow-mode
+  (define-derived-mode flow-mode js-mode "flow-mode")
+  (add-to-list 'magic-mode-alist '("// @flow" . flow-mode))
+  (add-to-list 'magic-mode-alist '("/\\* @flow \\*/" . flow-mode))
+  :after flycheck
+  :hook (js-mode . add-node-modules-path)
+  :config
+  (flycheck-add-mode 'javascript-eslint 'flow-mode))
 
 (use-package json-mode
   :mode (("\\.json\\'" . json-mode)
