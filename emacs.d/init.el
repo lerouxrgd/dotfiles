@@ -186,6 +186,8 @@
               ("C-z r" . lsp-find-references)
 	      ("C-z R" . lsp-rename))
   :config
+  (remove-hook 'flymake-diagnostic-functions
+               'flymake-proc-legacy-flymake)
   (setq lsp-ui-sideline-enable nil
         lsp-ui-doc-enable nil))
 
@@ -264,8 +266,8 @@
 
 (use-package add-node-modules-path
   :preface
-  ;; Hack to get a dedicated major flow-mode
-  (define-derived-mode flow-mode js-mode "flow-mode")
+  (define-derived-mode flow-mode js-mode "flow-mode"
+    "A dedicated major flow-mode, useful for LSP setup")
   (add-to-list 'magic-mode-alist '("// @flow" . flow-mode))
   (add-to-list 'magic-mode-alist '("/\\* @flow \\*/" . flow-mode))
   :after flycheck
