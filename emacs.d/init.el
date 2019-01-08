@@ -76,6 +76,8 @@
   :config
   (editorconfig-mode 1))
 
+(use-package windresize)
+
 ;;;;;; Navigation
 
 (use-package projectile
@@ -93,6 +95,8 @@
   :bind (:map dired-mode-map
               ("<right>" . dired-subtree-insert)
               ("<left>" . dired-subtree-remove)))
+
+(use-package treemacs)
 
 (use-package ido-completing-read+
   :ensure t
@@ -394,6 +398,9 @@
 
 ;; Shows a list of buffers
 (global-set-key (kbd "C-x C-b") 'ibuffer)
+
+;; Go to previous window (opposite of "C-x o")
+(global-set-key (kbd "C-x p") (kbd "C-u - C-x o"))
 
 ;; Changes all yes/no questions to y/n type
 (fset 'yes-or-no-p 'y-or-n-p)

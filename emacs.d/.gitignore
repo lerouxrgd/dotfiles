@@ -11,8 +11,9 @@ smex-items
 ac-comphist.dat
 cider-history
 
-# lsp
+# workspace local files
 .lsp-session*
+.cache
 
 # projectile
 projectile.cache
