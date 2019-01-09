@@ -66,7 +66,7 @@
   (exec-path-from-shell-initialize))
 
 (use-package smex
-  :bind (("M-x" . smex))
+  :bind ("M-x" . smex)
   :config
   (setq smex-save-file "~/.emacs.d/smex-items")
   (smex-initialize))
@@ -88,7 +88,7 @@
 
 (use-package dired-x
   :ensure nil
-  :bind (("C-x C-j" . dired-jump)))
+  :bind ("C-x C-j" . dired-jump))
 
 (use-package dired-subtree
   :defer 1
@@ -96,7 +96,9 @@
               ("<right>" . dired-subtree-insert)
               ("<left>" . dired-subtree-remove)))
 
-(use-package treemacs)
+(use-package treemacs
+  :config
+  (setq treemacs-is-never-other-window t))
 
 (use-package ido-completing-read+
   :ensure t
@@ -109,13 +111,11 @@
 
 (use-package dumb-jump
   :ensure t
-  :bind (("C-c ." . dumb-jump-go)
-         ("C-c d j" . dumb-jump-go)
-         ("C-c d o" . dumb-jump-go-other-window)
-         ("C-c d i" . dumb-jump-go-prompt)
-         ("C-c d x" . dumb-jump-go-prefer-external)
-         ("C-c d z" . dumb-jump-go-prefer-external-other-window))
+  :bind ("C-c ." . dumb-jump-go)
   :config (setq dumb-jump-selector 'ivy))
+
+(use-package helm-rg
+  :bind ("C-c c" . helm-rg))
 
 (use-package recentf
   :defer 1
@@ -133,7 +133,7 @@
 ;;;;;; Git
 
 (use-package magit
-  :bind (("C-x g" . magit-status))
+  :bind ("C-x g" . magit-status)
   :config
   (setq magit-diff-refine-hunk t)
   (add-hook 'magit-post-refresh-hook
