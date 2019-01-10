@@ -135,9 +135,7 @@
 (use-package magit
   :bind ("C-x g" . magit-status)
   :config
-  (setq magit-diff-refine-hunk t)
-  (add-hook 'magit-post-refresh-hook
-	    'git-gutter:update-all-windows))
+  (setq magit-diff-refine-hunk t))
 
 ;;;;;; Simple formatting
 
