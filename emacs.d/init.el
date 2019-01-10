@@ -86,10 +86,6 @@
   (projectile-mode 1)
   (setq projectile-switch-project-action 'projectile-dired))
 
-(use-package dired-x
-  :ensure nil
-  :bind ("C-x C-j" . dired-jump))
-
 (use-package dired-subtree
   :defer 1
   :bind (:map dired-mode-map
@@ -115,7 +111,13 @@
   :config (setq dumb-jump-selector 'ivy))
 
 (use-package helm-rg
-  :bind ("C-c c" . helm-rg))
+  :init
+  (defun helm-find-here ()
+    (interactive)
+    (let ((default-directory (cdr (project-current))))
+      (helm-find "")))
+  :bind (("C-c c" . helm-rg)
+         ("C-c C-f" . helm-find-here)))
 
 (use-package recentf
   :defer 1
