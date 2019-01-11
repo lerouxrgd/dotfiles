@@ -41,8 +41,7 @@
 
 (use-package company
   :hook (after-init . global-company-mode)
-  :config
-  (setq company-tooltip-align-annotations t))
+  :config (setq company-tooltip-align-annotations t))
 
 (use-package flycheck
   :commands global-flycheck-mode
@@ -73,8 +72,7 @@
 
 (use-package editorconfig
   :ensure t
-  :config
-  (editorconfig-mode 1))
+  :config (editorconfig-mode 1))
 
 (use-package windresize)
 
@@ -93,8 +91,7 @@
               ("<left>" . dired-subtree-remove)))
 
 (use-package treemacs
-  :config
-  (setq treemacs-is-never-other-window t))
+  :config (setq treemacs-is-never-other-window t))
 
 (use-package ido-completing-read+
   :ensure t
@@ -117,7 +114,7 @@
     (let ((default-directory (cdr (project-current))))
       (helm-find "")))
   :bind (("C-c c" . helm-rg)
-         ("C-c C-f" . helm-find-here)))
+         ("C-c f" . helm-find-here)))
 
 (use-package recentf
   :defer 1
@@ -136,8 +133,7 @@
 
 (use-package magit
   :bind ("C-x g" . magit-status)
-  :config
-  (setq magit-diff-refine-hunk t))
+  :config (setq magit-diff-refine-hunk t))
 
 ;;;;;; Simple formatting
 
@@ -445,7 +441,7 @@
 (setq create-lockfiles nil)
 
 ;; Automatic backups
-(setq backup-directory-alist` (("." . ,"~/.emacs.d/backups"))
+(setq backup-directory-alist `(("." . ,"~/.emacs.d/backups"))
       auto-save-default nil)
 
 ;; Write custom's settings to separate file (gitignored)
