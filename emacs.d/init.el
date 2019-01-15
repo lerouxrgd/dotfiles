@@ -1,8 +1,15 @@
 ;;; init.el --- Main Emacs initialization
+
 ;;; Commentary:
+
 ;;; This is my Emacs config.
 ;;; There are many like it, but this one is mine.
+
 ;;; Code:
+
+;; Reduce the frequency of garbage collection by making it happen on
+;; each 50MB of allocated data (the default is on every 0.76MB)
+(setq gc-cons-threshold 50000000)
 
 ;;;;;;;;;;;;;;;;;;; Package management ;;;;;;;;;;;;;;;;;;;
 
@@ -71,8 +78,10 @@
   (smex-initialize))
 
 (use-package editorconfig
-  :ensure t
   :config (editorconfig-mode 1))
+
+(use-package volatile-highlights
+  :config (volatile-highlights-mode t))
 
 (use-package windresize)
 
@@ -90,8 +99,11 @@
               ("<right>" . dired-subtree-insert)
               ("<left>" . dired-subtree-remove)))
 
-(use-package treemacs
-  :config (setq treemacs-is-never-other-window t))
+(use-package treemacs)
+
+(use-package windmove
+  :config
+  (windmove-default-keybindings))
 
 (use-package ido-completing-read+
   :ensure t
@@ -103,7 +115,6 @@
   (ido-ubiquitous-mode 1))
 
 (use-package dumb-jump
-  :ensure t
   :bind ("C-c ." . dumb-jump-go)
   :config (setq dumb-jump-selector 'ivy))
 
@@ -117,14 +128,8 @@
          ("C-c f" . helm-find-here)))
 
 (use-package recentf
-  :defer 1
-  :init
-  (setq recentf-exclude
-        '("/\\.git/.*\\'"
-          "/elpa/.*\\'"
-          "/cache/.*\\'"
-          ".*\\.gz\\'")
-        recentf-max-saved-items 50
+  :config
+  (setq recentf-max-saved-items 50
         recentf-max-menu-items 35
 	recentf-auto-cleanup 'never)
   (recentf-mode 1))
@@ -377,6 +382,14 @@
 (when (fboundp 'scroll-bar-mode)
   (scroll-bar-mode -1))
 
+;; Unique buffer names dependent on file name
+(require 'uniquify)
+(setq uniquify-buffer-name-style 'forward)
+(setq uniquify-after-kill-buffer-p t)
+
+;; Use UTF-8
+(prefer-coding-system 'utf-8)
+
 ;; Setup font size
 (require 'subr-x)
 (if-let (font-height (getenv "EMACS_FONT_HEIGHT"))
@@ -384,19 +397,8 @@
      'default nil :height (string-to-number font-height))
   (set-face-attribute 'default nil :height 120))
 
-;; Use UTF-8
-(prefer-coding-system 'utf-8)
-
-;; Unique buffer names dependent on file name
-(require 'uniquify)
-(setq uniquify-buffer-name-style 'forward)
-(setq uniquify-after-kill-buffer-p t)
-
 ;; Shows a list of buffers
 (global-set-key (kbd "C-x C-b") 'ibuffer)
-
-;; Go to previous window (opposite of "C-x o")
-(global-set-key (kbd "C-x p") (kbd "C-u - C-x o"))
 
 ;; Changes all yes/no questions to y/n type
 (fset 'yes-or-no-p 'y-or-n-p)
@@ -423,6 +425,9 @@
 
 ;; Don't use hard tabs
 (setq-default indent-tabs-mode nil)
+
+;; Smart tab behavior - indent or complete
+(setq tab-always-indent 'complete)
 
 (defun toggle-comment-on-line ()
   "Comment or uncomment current line."
