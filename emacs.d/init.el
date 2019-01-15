@@ -83,8 +83,6 @@
 (use-package volatile-highlights
   :config (volatile-highlights-mode t))
 
-(use-package windresize)
-
 ;;;;;; Navigation
 
 (use-package projectile
@@ -396,6 +394,12 @@
     (set-face-attribute
      'default nil :height (string-to-number font-height))
   (set-face-attribute 'default nil :height 120))
+
+;; Window resize shortcuts
+(global-set-key (kbd "S-C-<left>") 'shrink-window-horizontally)
+(global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally)
+(global-set-key (kbd "S-C-<down>") 'shrink-window)
+(global-set-key (kbd "S-C-<up>") 'enlarge-window)
 
 ;; Shows a list of buffers
 (global-set-key (kbd "C-x C-b") 'ibuffer)
