@@ -7,9 +7,10 @@
 
 ;;; Code:
 
-;; Reduce the frequency of garbage collection by making it happen on
-;; each 50MB of allocated data (the default is on every 0.76MB)
-(setq gc-cons-threshold 50000000)
+;; Startup GC tuning
+(setq gc-cons-threshold (* 256 1024 1024))
+(add-hook 'emacs-startup-hook
+          (lambda () (setq gc-cons-threshold (* 16 1024 1024))))
 
 ;;;;;;;;;;;;;;;;;;; Package management ;;;;;;;;;;;;;;;;;;;
 
@@ -48,6 +49,9 @@
 
 (use-package company
   :hook (after-init . global-company-mode)
+  :bind (("TAB" . company-indent-or-complete-common)
+         :map company-active-map
+         ("<right>" . company-abort))
   :config (setq company-tooltip-align-annotations t))
 
 (use-package flycheck
@@ -429,9 +433,6 @@
 
 ;; Don't use hard tabs
 (setq-default indent-tabs-mode nil)
-
-;; Smart tab behavior - indent or complete
-(setq tab-always-indent 'complete)
 
 (defun toggle-comment-on-line ()
   "Comment or uncomment current line."
