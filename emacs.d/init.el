@@ -85,7 +85,7 @@
   :config (editorconfig-mode 1))
 
 (use-package volatile-highlights
-  :config (volatile-highlights-mode t))
+  :config (volatile-highlights-mode 1))
 
 ;;;;;; Navigation
 
@@ -104,8 +104,13 @@
 (use-package treemacs)
 
 (use-package windmove
-  :config
-  (windmove-default-keybindings))
+  :config (windmove-default-keybindings))
+
+(use-package buffer-move
+  :bind (("<M-S-up>" . buf-move-up)
+         ("<M-S-down>" . buf-move-down)
+         ("<M-S-left>" . buf-move-left)
+         ("<M-S-right>" . buf-move-right)))
 
 (use-package ido-completing-read+
   :ensure t
@@ -120,7 +125,7 @@
   :bind ("C-c ." . dumb-jump-go)
   :config (setq dumb-jump-selector 'ivy))
 
-(use-package helm-rg
+(use-package helm-rg ; sudo pacman -Sy ripgrep
   :init
   (defun helm-find-here ()
     (interactive)
@@ -408,13 +413,13 @@
 ;; Shows a list of buffers
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 
+;; Disable Ctrl-Z minimization/suspension of emacs
+(global-set-key (kbd "C-z") nil)
+
 ;; Changes all yes/no questions to y/n type
 (fset 'yes-or-no-p 'y-or-n-p)
 
 ;;;;;; Editing
-
-;; Disable Ctrl-Z minimization/suspension of emacs
-(global-set-key (kbd "C-z") nil)
 
 ;; Use hippie-expand for text autocompletion
 (global-set-key (kbd "M-/") 'hippie-expand)
