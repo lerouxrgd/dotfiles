@@ -217,6 +217,8 @@
   :hook ((emacs-lisp-mode . enable-paredit-mode)
          (lisp-mode . enable-paredit-mode)))
 
+(use-package rainbow-delimiters)
+
 ;;;;;; Clojure
 
 ;; https://github.com/clojure-emacs/clojure-mode
