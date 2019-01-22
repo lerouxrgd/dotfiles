@@ -360,6 +360,12 @@
 (use-package doom-themes
   :init (load-theme 'doom-opera t))
 
+(use-package hi-lock
+  :bind (("s-a" . highlight-symbol-at-point)
+         ("s-d" . unhighlight-regexp))
+  :config
+  (setq hi-lock-face-defaults '("hi-pink"))) ; pink4
+
 ;; Max size window on startup
 (toggle-frame-maximized)
 
