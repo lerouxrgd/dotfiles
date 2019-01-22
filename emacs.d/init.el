@@ -180,13 +180,13 @@
 ;;;;;; LSP
 
 (use-package lsp-mode
-  :hook (prog-mode-hook . lsp-mode)
+  :hook (prog-mode . lsp-mode)
   :config
   (lsp-register-client
    (make-lsp-client
     :new-connection (lsp-stdio-connection '("flow" "lsp"))
     :major-modes '(flow-mode)
-    :server-id 'flow-ls)))
+    :server-id 'flow-mode)))
 
 (use-package lsp-ui
   :hook (lsp-mode . lsp-ui-mode)
