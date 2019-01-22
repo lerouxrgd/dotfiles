@@ -84,9 +84,6 @@
 (use-package editorconfig
   :config (editorconfig-mode 1))
 
-(use-package volatile-highlights
-  :config (volatile-highlights-mode 1))
-
 ;;;;;; Navigation
 
 (use-package projectile
