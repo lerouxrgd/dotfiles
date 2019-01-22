@@ -72,8 +72,7 @@
   :if (memq system-type '(gnu gnu/linux darwin))
   :init
   (customize-set-variable 'exec-path-from-shell-arguments nil)
-  :config
-  (exec-path-from-shell-initialize))
+  :config (exec-path-from-shell-initialize))
 
 (use-package smex
   :bind ("M-x" . smex)
@@ -158,8 +157,7 @@
 (use-package json-mode
   :mode (("\\.json\\'" . json-mode)
          ("\\.avsc\\'" . json-mode))
-  :config
-  (setq js-indent-level 2))
+  :config (setq js-indent-level 2))
 
 ;; https://github.com/spotify/dockerfile-mode
 (use-package dockerfile-mode
@@ -172,7 +170,13 @@
          ("\\.markdown\\'" . markdown-mode))
   :config
   ;; https://github.com/mola-T/flymd
-  (use-package flymd))
+  (use-package flymd
+    :config (setq flymd-close-buffer-delete-temp-files t)))
+
+(use-package hi-lock
+  :bind (("s-a" . highlight-symbol-at-point)
+         ("s-d" . unhighlight-regexp))
+  :config (setq hi-lock-face-defaults '("hi-pink"))) ; pink4
 
 ;;;;;; LSP
 
@@ -359,12 +363,6 @@
 
 (use-package doom-themes
   :init (load-theme 'doom-opera t))
-
-(use-package hi-lock
-  :bind (("s-a" . highlight-symbol-at-point)
-         ("s-d" . unhighlight-regexp))
-  :config
-  (setq hi-lock-face-defaults '("hi-pink"))) ; pink4
 
 ;; Max size window on startup
 (toggle-frame-maximized)
