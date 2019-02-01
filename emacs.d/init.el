@@ -128,7 +128,10 @@
     (let ((default-directory (cdr (project-current))))
       (helm-find "")))
   :bind (("C-c c" . helm-rg)
-         ("C-c f" . helm-find-here)))
+         ("C-c f" . helm-find-here))
+  :config
+  (setq helm-always-two-windows t
+        helm-split-window-inside-p t))
 
 (use-package recentf
   :config
