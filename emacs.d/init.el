@@ -108,6 +108,17 @@
          ("<M-S-left>" . buf-move-left)
          ("<M-S-right>" . buf-move-right)))
 
+(use-package cycbuf
+  :bind(("C-<tab>" . cycbuf-switch-to-next-buffer)
+        ( "<C-iso-lefttab>" . cycbuf-switch-to-previous-buffer))
+  :config
+  (setq cycbuf-buffer-sort-function 'cycbuf-sort-by-recency
+        cycbuf-clear-delay 2
+        cycbuf-dont-show-regexp
+        '("^ "
+          "^\\*cycbuf\\*$"
+          "^\\*.*\\*$")))
+
 (use-package ido-completing-read+
   :ensure t
   :config
