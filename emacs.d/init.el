@@ -4,6 +4,8 @@
 
 ;;; This is my Emacs config.
 ;;; There are many like it, but this one is mine.
+;;; My Emacs config is my best friend.  It is my life.
+;;; I must master it as I must master my life.
 
 ;;; Code:
 
@@ -109,6 +111,10 @@
   :bind(("C-<tab>" . cycbuf-switch-to-next-buffer)
         ( "<C-iso-lefttab>" . cycbuf-switch-to-previous-buffer))
   :config
+  (defun file-name ()
+    (interactive)
+    (let ((curr (expand-file-name (cdr (project-current)))))
+      (replace-regexp-in-string curr "" (cycbuf-get-file-name))))
   (setq cycbuf-buffer-sort-function 'cycbuf-sort-by-recency
         cycbuf-clear-delay 2
         cycbuf-mode-name-replacements
@@ -122,7 +128,7 @@
           (""          2                      left "  ")
           ("Buffer"    cycbuf-get-name-length left cycbuf-get-name)
           (""          2                      left "  ")
-          ("Directory" cycbuf-get-file-length left cycbuf-get-file-name))
+          ("Directory" cycbuf-get-file-length left file-name))
         cycbuf-dont-show-regexp
         '("^ "
           "^\\*.*\\*$"
