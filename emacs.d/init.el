@@ -68,9 +68,8 @@
 
 (use-package exec-path-from-shell
   :if (memq system-type '(gnu gnu/linux darwin))
-  :init
-  (customize-set-variable 'exec-path-from-shell-arguments nil)
-  :config (exec-path-from-shell-initialize))
+  :config (exec-path-from-shell-initialize)
+  :custom (exec-path-from-shell-arguments nil))
 
 (use-package smex
   :bind ("M-x" . smex)
@@ -127,7 +126,10 @@
         cycbuf-dont-show-regexp
         '("^ "
           "^\\*.*\\*$"
-          "^Magit.*")))
+          "^Magit.*"))
+  :custom-face
+  (cycbuf-current-face
+   ((t (:background "#80A0C2" :foreground "#323334" :weight bold)))))
 
 (use-package ido-completing-read+
   :ensure t
@@ -200,7 +202,10 @@
 (use-package hi-lock
   :bind (("s-a" . highlight-symbol-at-point)
          ("s-d" . unhighlight-regexp))
-  :config (setq hi-lock-face-defaults '("hi-pink"))) ; pink4
+  :config
+  (setq hi-lock-face-defaults '("hi-pink"))
+  :custom-face
+  (hi-pink ((t (:background "pink4")))))
 
 ;;;;;; LSP
 
@@ -230,7 +235,13 @@
   (remove-hook 'flymake-diagnostic-functions
                'flymake-proc-legacy-flymake)
   (setq lsp-ui-sideline-enable nil
-        lsp-ui-doc-enable nil))
+        lsp-ui-doc-enable nil)
+  :custom
+  (lsp-ui-peek-fontify 'always)
+  :custom-face
+  (lsp-ui-peek-highlight
+   ((t (:inherit lsp-ui-peek-header
+                 :background "#80A0C2" :foreground "#323334")))))
 
 (use-package company-lsp
   :after (company lsp-mode)
