@@ -117,13 +117,13 @@
           ("Lisp Interaction" "Lisp I.")
           ("^Dired.*" "Dired"))
         cycbuf-attributes-list
-        '(("M"          1                      left  cycbuf-get-modified-string)
-          ("R"          2                      left  cycbuf-get-readonly-string)
-          ("Mode"       8                      left  cycbuf-get-mode-name)
-          (""           2                      left  "  ")
-          ("Buffer"     cycbuf-get-name-length left  cycbuf-get-name)
-          (""           2                      left  "  ")
-          ("Directory"  cycbuf-get-file-length right cycbuf-get-file-name))
+        '(("M"         1                      left cycbuf-get-modified-string)
+          ("R"         2                      left cycbuf-get-readonly-string)
+          ("Mode"      8                      left cycbuf-get-mode-name)
+          (""          2                      left "  ")
+          ("Buffer"    cycbuf-get-name-length left cycbuf-get-name)
+          (""          2                      left "  ")
+          ("Directory" cycbuf-get-file-length left cycbuf-get-file-name))
         cycbuf-dont-show-regexp
         '("^ "
           "^\\*cycbuf\\*$"
@@ -221,10 +221,11 @@
               ("C-z i" . lsp-ui-peek-find-implementation)
 	      ("C-z m" . lsp-ui-imenu)
               ("C-z d" . lsp-describe-thing-at-point)
+              ("C-z r" . lsp-rename)
+              ("C-z R" . lsp-find-references)
+              ("C-z I" . lsp-find-ui-implementation)
               ("C-z D" . lsp-find-declaration)
-              ("C-z t" . lsp-find-type-definition)
-              ("C-z r" . lsp-find-references)
-	      ("C-z R" . lsp-rename))
+              ("C-z T" . lsp-find-type-definition))
   :config
   (remove-hook 'flymake-diagnostic-functions
                'flymake-proc-legacy-flymake)
