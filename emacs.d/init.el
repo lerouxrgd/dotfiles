@@ -119,15 +119,15 @@
         cycbuf-attributes-list
         '(("M"         1                      left cycbuf-get-modified-string)
           ("R"         2                      left cycbuf-get-readonly-string)
-          ("Mode"      8                      left cycbuf-get-mode-name)
+          ("Mode"      10                     left cycbuf-get-mode-name)
           (""          2                      left "  ")
           ("Buffer"    cycbuf-get-name-length left cycbuf-get-name)
           (""          2                      left "  ")
           ("Directory" cycbuf-get-file-length left cycbuf-get-file-name))
         cycbuf-dont-show-regexp
         '("^ "
-          "^\\*cycbuf\\*$"
-          "^\\*.*\\*$")))
+          "^\\*.*\\*$"
+          "^Magit.*")))
 
 (use-package ido-completing-read+
   :ensure t
