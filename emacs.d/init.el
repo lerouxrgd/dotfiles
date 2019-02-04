@@ -112,6 +112,18 @@
   :config
   (setq cycbuf-buffer-sort-function 'cycbuf-sort-by-recency
         cycbuf-clear-delay 2
+        cycbuf-mode-name-replacements
+        '(("Fundamental" "Fund.")
+          ("Lisp Interaction" "Lisp I.")
+          ("^Dired.*" "Dired"))
+        cycbuf-attributes-list
+        '(("M"          1                      left  cycbuf-get-modified-string)
+          ("R"          2                      left  cycbuf-get-readonly-string)
+          ("Mode"       8                      left  cycbuf-get-mode-name)
+          (""           2                      left  "  ")
+          ("Buffer"     cycbuf-get-name-length left  cycbuf-get-name)
+          (""           2                      left  "  ")
+          ("Directory"  cycbuf-get-file-length right cycbuf-get-file-name))
         cycbuf-dont-show-regexp
         '("^ "
           "^\\*cycbuf\\*$"
@@ -206,8 +218,11 @@
   :bind (:map lsp-ui-mode-map
 	      ("C-z ." . lsp-ui-peek-find-definitions)
 	      ("C-z ?" . lsp-ui-peek-find-references)
-	      ("C-z i" . lsp-ui-imenu)
+              ("C-z i" . lsp-ui-peek-find-implementation)
+	      ("C-z m" . lsp-ui-imenu)
               ("C-z d" . lsp-describe-thing-at-point)
+              ("C-z D" . lsp-find-declaration)
+              ("C-z t" . lsp-find-type-definition)
               ("C-z r" . lsp-find-references)
 	      ("C-z R" . lsp-rename))
   :config
