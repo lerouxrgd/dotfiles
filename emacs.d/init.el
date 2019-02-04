@@ -64,10 +64,6 @@
 	  flycheck-display-errors-delay 0.5)
     (flycheck-pos-tip-mode 1)))
 
-(use-package yasnippet
-  :commands yas-minor-mode
-  :hook (prog-mode . yas-minor-mode))
-
 (use-package exec-path-from-shell
   :if (memq system-type '(gnu gnu/linux darwin))
   :config (exec-path-from-shell-initialize)
@@ -94,7 +90,7 @@
   :defer 1
   :bind (:map dired-mode-map
               ("<right>" . dired-subtree-insert)
-              ("<left>" . dired-subtree-remove)))
+              ("<left>"  . dired-subtree-remove)))
 
 (use-package treemacs
   :bind ("C-x t" . treemacs-here)
@@ -108,19 +104,19 @@
      (car (last (butlast (split-string (cdr (project-current)) "/")))))
     (treemacs-select-window))
   (setq treemacs-persist-file "/dev/null"
-        treemacs-collapse-dirs 5))
+        treemacs-collapse-dirs 7))
 
 (use-package windmove
   :config (windmove-default-keybindings))
 
 (use-package buffer-move
-  :bind (("<M-S-up>" . buf-move-up)
-         ("<M-S-down>" . buf-move-down)
-         ("<M-S-left>" . buf-move-left)
+  :bind (("<M-S-up>"    . buf-move-up)
+         ("<M-S-down>"  . buf-move-down)
+         ("<M-S-left>"  . buf-move-left)
          ("<M-S-right>" . buf-move-right)))
 
 (use-package cycbuf
-  :bind(("C-<tab>" . cycbuf-switch-to-next-buffer)
+  :bind(("C-<tab>"          . cycbuf-switch-to-next-buffer)
         ( "<C-iso-lefttab>" . cycbuf-switch-to-previous-buffer))
   :config
   (defun file-name ()
@@ -189,6 +185,14 @@
   :config (setq magit-diff-refine-hunk t))
 
 ;;;;;; Simple formatting
+
+(use-package yasnippet
+  :commands yas-minor-mode
+  :hook (prog-mode . yas-minor-mode)
+  :bind (:map yas-minor-mode-map
+              ("C-c C-s" . yas-insert-snippet)))
+
+(use-package yasnippet-snippets)
 
 ;; https://github.com/yoshiki/yaml-mode
 (use-package yaml-mode
@@ -285,8 +289,8 @@
 ;; https://github.com/clojure-emacs/clj-refactor.el
 
 (use-package clojure-mode
-  :mode (("\\.clj\\'" . clojure-mode)
-         ("\\.edn\\'" . clojure-mode)
+  :mode (("\\.clj\\'"  . clojure-mode)
+         ("\\.edn\\'"  . clojure-mode)
 	 ("\\.cljc\\'" . clojurec-mode)
 	 ("\\.cljs\\'" . clojurescript-mode))
   :hook ((clojure-mode . enable-paredit-mode)
@@ -466,10 +470,10 @@
   (set-face-attribute 'default nil :height 120))
 
 ;; Window resize shortcuts
-(global-set-key (kbd "S-C-<left>") 'shrink-window-horizontally)
+(global-set-key (kbd "S-C-<left>")  'shrink-window-horizontally)
 (global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally)
-(global-set-key (kbd "S-C-<down>") 'shrink-window)
-(global-set-key (kbd "S-C-<up>") 'enlarge-window)
+(global-set-key (kbd "S-C-<down>")  'shrink-window)
+(global-set-key (kbd "S-C-<up>")    'enlarge-window)
 
 ;; Shows a list of buffers
 (global-set-key (kbd "C-x C-b") 'ibuffer)
@@ -488,8 +492,7 @@
       '(try-expand-dabbrev
         try-expand-dabbrev-all-buffers
         try-expand-dabbrev-from-kill
-        try-complete-lisp-symbol-partially
-        try-complete-lisp-symbol))
+        yas-hippie-try-expand))
 
 ;; Highlights matching parenthesis
 (show-paren-mode 1)
