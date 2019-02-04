@@ -96,7 +96,19 @@
               ("<right>" . dired-subtree-insert)
               ("<left>" . dired-subtree-remove)))
 
-(use-package treemacs)
+(use-package treemacs
+  :bind ("C-x t" . treemacs-here)
+  :config
+  (defun treemacs-here ()
+    (interactive)
+    (unless (treemacs-current-workspace)
+      (treemacs--find-workspace))
+    (treemacs-do-add-project-to-workspace
+     (cdr (project-current))
+     (car (last (butlast (split-string (cdr (project-current)) "/")))))
+    (treemacs-select-window))
+  (setq treemacs-persist-file "/dev/null"
+        treemacs-collapse-dirs 5))
 
 (use-package windmove
   :config (windmove-default-keybindings))
@@ -132,7 +144,8 @@
         cycbuf-dont-show-regexp
         '("^ "
           "^\\*.*\\*$"
-          "^Magit.*"))
+          "^Magit.*"
+          "null"))
   :custom-face
   (cycbuf-current-face
    ((t (:background "#80A0C2" :foreground "#323334" :weight bold)))))
@@ -234,7 +247,7 @@
               ("C-z d" . lsp-describe-thing-at-point)
               ("C-z r" . lsp-rename)
               ("C-z R" . lsp-find-references)
-              ("C-z I" . lsp-find-ui-implementation)
+              ("C-z I" . lsp-find-implementation)
               ("C-z D" . lsp-find-declaration)
               ("C-z T" . lsp-find-type-definition))
   :config
