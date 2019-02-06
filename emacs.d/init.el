@@ -86,25 +86,14 @@
   (projectile-mode 1)
   (setq projectile-switch-project-action 'projectile-dired))
 
-(use-package dired-subtree
-  :defer 1
-  :bind (:map dired-mode-map
-              ("<right>" . dired-subtree-insert)
-              ("<left>"  . dired-subtree-remove)))
-
-(use-package treemacs
-  :bind ("C-x t" . treemacs-here)
+(use-package ido-completing-read+
+  :ensure t
   :config
-  (defun treemacs-here ()
-    (interactive)
-    (unless (treemacs-current-workspace)
-      (treemacs--find-workspace))
-    (treemacs-do-add-project-to-workspace
-     (cdr (project-current))
-     (car (last (butlast (split-string (cdr (project-current)) "/")))))
-    (treemacs-select-window))
-  (setq treemacs-persist-file "/dev/null"
-        treemacs-collapse-dirs 7))
+  (setq ido-auto-merge-work-directories-length -1
+        ido-enable-flex-matching t
+        ido-use-filename-at-point nil)
+  (ido-mode 1)
+  (ido-ubiquitous-mode 1))
 
 (use-package windmove
   :config (windmove-default-keybindings))
@@ -116,13 +105,14 @@
          ("<M-S-right>" . buf-move-right)))
 
 (use-package cycbuf
-  :bind(("C-<tab>"          . cycbuf-switch-to-next-buffer)
-        ( "<C-iso-lefttab>" . cycbuf-switch-to-previous-buffer))
+  :bind(("C-<tab>"         . cycbuf-switch-to-next-buffer)
+        ("<C-iso-lefttab>" . cycbuf-switch-to-previous-buffer))
   :config
-  (defun file-name ()
+  (defun dir-name-here ()
     (interactive)
     (let ((curr (expand-file-name (cdr (project-current)))))
       (replace-regexp-in-string curr "" (cycbuf-get-file-name))))
+
   (setq cycbuf-buffer-sort-function 'cycbuf-sort-by-recency
         cycbuf-clear-delay 2
         cycbuf-mode-name-replacements
@@ -136,38 +126,56 @@
           (""          2                      left "  ")
           ("Buffer"    cycbuf-get-name-length left cycbuf-get-name)
           (""          2                      left "  ")
-          ("Directory" cycbuf-get-file-length left file-name))
+          ("Directory" cycbuf-get-file-length left dir-name-here))
         cycbuf-dont-show-regexp
         '("^ "
           "^\\*.*\\*$"
           "^Magit.*"
           "null"))
-  :custom-face
-  (cycbuf-current-face
-   ((t (:background "#80A0C2" :foreground "#323334" :weight bold)))))
 
-(use-package ido-completing-read+
-  :ensure t
+  (custom-set-faces
+   `(cycbuf-current-face
+     ((t (:weight bold
+                  :background ,(doom-color 'blue)
+                  :foreground ,(doom-color 'bg)))))
+   `(cycbuf-header-face
+     ((t (:foreground ,(doom-color 'yellow) :weight bold))))))
+
+(use-package treemacs
+  :bind (("C-x t" . treemacs-here)
+         :map treemacs-mode-map
+         ("C-<tab>"         . (lambda () (interactive)))
+         ("<C-iso-lefttab>" . (lambda () (interactive))))
   :config
-  (setq ido-auto-merge-work-directories-length -1
-        ido-enable-flex-matching t
-        ido-use-filename-at-point nil)
-  (ido-mode 1)
-  (ido-ubiquitous-mode 1))
+  (defun treemacs-here ()
+    (interactive)
+    (unless (treemacs-current-workspace)
+      (treemacs--find-workspace))
+    (treemacs-do-add-project-to-workspace
+     (cdr (project-current))
+     (car (last (butlast (split-string (cdr (project-current)) "/")))))
+    (treemacs-select-window))
+  (setq treemacs-persist-file "/dev/null"
+        treemacs-collapse-dirs 7))
+
+(use-package dired-subtree
+  :defer 1
+  :bind (:map dired-mode-map
+              ("<right>" . dired-subtree-insert)
+              ("<left>"  . dired-subtree-remove)))
 
 (use-package dumb-jump
   :bind ("C-c ." . dumb-jump-go)
   :config (setq dumb-jump-selector 'ivy))
 
 (use-package helm-rg ; sudo pacman -Sy ripgrep
-  :init
+  :bind (("C-c c" . helm-rg)
+         ("C-c f" . helm-find-here))
+  :config
   (defun helm-find-here ()
     (interactive)
     (let ((default-directory (cdr (project-current))))
       (helm-find "")))
-  :bind (("C-c c" . helm-rg)
-         ("C-c f" . helm-find-here))
-  :config
   (setq helm-always-two-windows t
         helm-split-window-inside-p t))
 
@@ -215,7 +223,7 @@
 ;; https://github.com/jrblevin/markdown-mode
 (use-package markdown-mode
   :mode (("README\\.md\\'" . gfm-mode)
-         ("\\.md\\'" . markdown-mode)
+         ("\\.md\\'"       . markdown-mode)
          ("\\.markdown\\'" . markdown-mode))
   :config
   ;; https://github.com/mola-T/flymd
@@ -257,14 +265,17 @@
   :config
   (remove-hook 'flymake-diagnostic-functions
                'flymake-proc-legacy-flymake)
+
   (setq lsp-ui-sideline-enable nil
         lsp-ui-doc-enable nil)
+
+  (custom-set-faces
+   `(lsp-ui-peek-highlight
+     ((t (:inherit lsp-ui-peek-header
+                   :background ,(doom-color 'blue)
+                   :foreground ,(doom-color 'bg))))))
   :custom
-  (lsp-ui-peek-fontify 'always)
-  :custom-face
-  (lsp-ui-peek-highlight
-   ((t (:inherit lsp-ui-peek-header
-                 :background "#80A0C2" :foreground "#323334")))))
+  (lsp-ui-peek-fontify 'always))
 
 (use-package company-lsp
   :after (company lsp-mode)
@@ -278,7 +289,7 @@
 
 (use-package paredit
   :hook ((emacs-lisp-mode . enable-paredit-mode)
-         (lisp-mode . enable-paredit-mode)))
+         (lisp-mode       . enable-paredit-mode)))
 
 (use-package rainbow-delimiters)
 
@@ -313,7 +324,7 @@
        (cider-current-ns))))
   :bind
   (("C-c C-M-b" . cider-browse-ns-all)
-   ("C-c M-b" . browse-current-ns)))
+   ("C-c M-b"   . browse-current-ns)))
 
 (use-package clj-refactor
   :after clojure-mode
@@ -345,7 +356,7 @@
   :preface
   (define-derived-mode flow-mode js-mode "flow-mode"
     "A dedicated major flow-mode, useful for LSP setup")
-  (add-to-list 'magic-mode-alist '("// @flow" . flow-mode))
+  (add-to-list 'magic-mode-alist '("// @flow"        . flow-mode))
   (add-to-list 'magic-mode-alist '("/\\* @flow \\*/" . flow-mode))
   :after flycheck
   :hook (js-mode . add-node-modules-path)
@@ -365,8 +376,8 @@
 (use-package go-mode
   :mode "\\.go\\'"
   :bind (:map go-mode-map
-	      ("M-." . godef-jump)
-	      ("M-," . pop-tag-mark)
+	      ("M-."     . godef-jump)
+	      ("M-,"     . pop-tag-mark)
 	      ("C-c C-r" . go-rename))
   :config
   (add-hook 'before-save-hook 'gofmt-before-save)
