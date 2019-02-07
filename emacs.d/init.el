@@ -241,13 +241,32 @@
 (use-package helm-rg
   :bind (("C-c c" . helm-rg)
          ("C-c f" . helm-find-here))
+
   :config
   (defun helm-find-here ()
     (interactive)
     (let ((default-directory (cdr (project-current))))
-      (helm-find "")))
+      (helm-find nil)))
+
   (setq helm-always-two-windows t
-        helm-split-window-inside-p t))
+        helm-split-window-inside-p t
+        helm-rg-default-directory (cdr (project-current))
+        helm-rg--color-format-argument-alist
+        '((red :cmd-line magenta :text-property magenta)))
+
+  (custom-set-faces
+   `(helm-rg-active-arg-face
+     ((t (:foreground ,(doom-color 'green)))))
+   `(helm-rg-error-message
+     ((t (:foreground ,(doom-color 'yellow)))))
+   `(helm-rg-line-number-match-face
+     ((t (:foreground ,(doom-color 'teal) :underline t))))
+   `(helm-rg-file-match-face
+     ((t (:foreground ,(doom-color 'teal) :underline t))))
+   `(helm-rg-preview-line-highlight
+     ((t (:weight bold
+                  :background ,(doom-color 'blue)
+                  :foreground ,(doom-color 'bg)))))))
 
 ;; yay -Syu global
 ;; sudo pacman -Syu ctags
@@ -279,6 +298,7 @@
 
   (setq helm-always-two-windows t
         helm-split-window-inside-p t)
+
   :custom
   (helm-gtags-auto-update t)
   (helm-gtags-path-style 'relative))
