@@ -47,6 +47,12 @@
 (use-package which-key
   :hook (after-init . which-key-mode))
 
+(use-package smex
+  :bind ("M-x" . smex)
+  :config
+  (setq smex-save-file "~/.emacs.d/smex-items")
+  (smex-initialize))
+
 (use-package company
   :hook (after-init . global-company-mode)
   :bind (("TAB" . company-indent-or-complete-common)
@@ -64,16 +70,21 @@
 	  flycheck-display-errors-delay 0.5)
     (flycheck-pos-tip-mode 1)))
 
+(use-package magit
+  :bind ("C-x g" . magit-status)
+  :config (setq magit-diff-refine-hunk t))
+
 (use-package exec-path-from-shell
   :if (memq system-type '(gnu gnu/linux darwin))
   :config (exec-path-from-shell-initialize)
   :custom (exec-path-from-shell-arguments nil))
 
-(use-package smex
-  :bind ("M-x" . smex)
+(use-package recentf
   :config
-  (setq smex-save-file "~/.emacs.d/smex-items")
-  (smex-initialize))
+  (setq recentf-max-saved-items 50
+        recentf-max-menu-items 35
+	recentf-auto-cleanup 'never)
+  (recentf-mode 1))
 
 (use-package editorconfig
   :config (editorconfig-mode 1))
@@ -105,8 +116,8 @@
          ("<M-S-right>" . buf-move-right)))
 
 (use-package cycbuf
-  :bind(("C-<tab>"         . cycbuf-switch-to-next-buffer)
-        ("<C-iso-lefttab>" . cycbuf-switch-to-previous-buffer))
+  :bind (("C-<tab>"         . cycbuf-switch-to-next-buffer)
+         ("<C-iso-lefttab>" . cycbuf-switch-to-previous-buffer))
   :config
   (defun dir-name-here ()
     (interactive)
@@ -114,7 +125,7 @@
       (replace-regexp-in-string curr "" (cycbuf-get-file-name))))
 
   (setq cycbuf-buffer-sort-function 'cycbuf-sort-by-recency
-        cycbuf-clear-delay 2
+        cycbuf-clear-delay 3
         cycbuf-mode-name-replacements
         '(("Fundamental" "Fund.")
           ("Lisp Interaction" "Lisp I.")
@@ -164,11 +175,8 @@
               ("<right>" . dired-subtree-insert)
               ("<left>"  . dired-subtree-remove)))
 
-(use-package dumb-jump
-  :bind ("C-c ." . dumb-jump-go)
-  :config (setq dumb-jump-selector 'ivy))
-
-(use-package helm-rg ; sudo pacman -Sy ripgrep
+;; sudo pacman -Syu ripgrep
+(use-package helm-rg
   :bind (("C-c c" . helm-rg)
          ("C-c f" . helm-find-here))
   :config
@@ -179,18 +187,29 @@
   (setq helm-always-two-windows t
         helm-split-window-inside-p t))
 
-(use-package recentf
+;; yay -Syu global
+;; sudo pacman -Syu ctags
+;; pip install --user pygments
+(use-package helm-gtags
+  :bind (("C-c g" .  helm-gtags-mode)
+         :map helm-gtags-mode-map
+         ("C-c C-t" . helm-gtags-create-tags)
+         ("M-." . helm-gtags-find-tag-from-here)
+         ("M-," . helm-gtags-pop-stack))
   :config
-  (setq recentf-max-saved-items 50
-        recentf-max-menu-items 35
-	recentf-auto-cleanup 'never)
-  (recentf-mode 1))
+  (setq helm-always-two-windows t
+        helm-split-window-inside-p t)
+  :custom
+  (helm-gtags-auto-update t)
+  (helm-gtags-path-style 'relative))
 
-;;;;;; Git
-
-(use-package magit
-  :bind ("C-x g" . magit-status)
-  :config (setq magit-diff-refine-hunk t))
+(use-package dumb-jump
+  :bind ("C-c ." . dumb-jump-go)
+  :hook (c-mode-common
+         . (lambda ()
+             (local-set-key (kbd "C-c .") 'dumb-jump-go)))
+  :config
+  (setq dumb-jump-selector 'ivy))
 
 ;;;;;; Simple formatting
 
@@ -221,12 +240,12 @@
   :mode "Dockerfile\\'")
 
 ;; https://github.com/jrblevin/markdown-mode
+;; https://github.com/mola-T/flymd
 (use-package markdown-mode
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'"       . markdown-mode)
          ("\\.markdown\\'" . markdown-mode))
   :config
-  ;; https://github.com/mola-T/flymd
   (use-package flymd
     :config (setq flymd-close-buffer-delete-temp-files t)))
 
@@ -338,8 +357,9 @@
 ;;;;;; Python
 
 ;; https://github.com/jorgenschaefer/elpy
-;; sudo pacman -Sy ipython
-;; pip install rope flake8 importmagic autopep8 yapf black --user
+
+;; sudo pacman -Syu ipython
+;; pip install --user rope flake8 importmagic autopep8 yapf black
 
 (use-package elpy
   :hook (python-mode . elpy-enable)
@@ -369,6 +389,7 @@
 ;; https://github.com/rogpeppe/godef
 ;; https://github.com/nsf/gocode#emacs-setup
 ;; https://github.com/syohex/emacs-go-eldoc
+
 ;; go get -u golang.org/x/tools/cmd/...
 ;; go get -u github.com/rogpeppe/godef/...
 ;; go get -u github.com/nsf/gocode
@@ -398,6 +419,7 @@
 ;; https://github.com/flycheck/flycheck-rust
 ;; https://github.com/racer-rust/emacs-racer
 ;; https://github.com/kwrooijen/cargo.el
+
 ;; rustup component add rust-src rust-analysis
 ;; rustup component add rustfmt rls
 ;; rustup toolchain add nightly
