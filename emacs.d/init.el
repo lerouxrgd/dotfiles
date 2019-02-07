@@ -42,6 +42,65 @@
 
 (require 'bind-key)
 
+;;;;;; Interface
+
+(use-package doom-themes
+  :init
+  (load-theme 'doom-opera t)    ; Define theme
+  (menu-bar-mode         -1)    ; Turn off menu bars
+  (tool-bar-mode         -1)    ; Turn off tool bar
+  (scroll-bar-mode       -1)    ; Don't show native OS scroll bars
+  (global-linum-mode      1)    ; Show line numbers
+  (blink-cursor-mode     -1)    ; No blinking cursor
+  (global-hl-line-mode    1)    ; Highlight current line
+  (show-paren-mode        1)    ; Highlights matching parenthesis
+  (electric-indent-mode   1)    ; Auto indent on new line
+  (toggle-frame-maximized)      ; Max size window on startup
+  (prefer-coding-system 'utf-8) ; Use UTF-8
+  (fset 'yes-or-no-p 'y-or-n-p) ; Use y/n for questions
+  (set-face-attribute           ; Setup font size
+   'default nil
+   :height (string-to-number (or (getenv "EMACS_FONT_HEIGHT") "110")))
+
+  (require 'uniquify)
+  (setq-default
+   frame-title-format "%b (%f)"          ; Full path in title bar
+   indent-tabs-mode   nil)               ; Don't use hard tabs
+  (setq
+   inhibit-startup-message      t        ; Go to scratch buffer on startup
+   inhibit-splash-screen        t        ; No splash screen
+   ring-bell-function           'ignore  ; No bell
+   create-lockfiles             nil      ; No need for ~ files when editing
+   auto-save-default            nil      ; No auto-save of file-visiting buffers
+   uniquify-buffer-name-style   'forward ; Unique buffer names depend on file names
+   uniquify-after-kill-buffer-p t        ; Rerationalize buffer names after kill
+   hippie-expand-try-functions-list      ; Basic text autocompletion candidates
+   '(try-expand-dabbrev
+     try-expand-dabbrev-all-buffers
+     try-expand-dabbrev-from-kill
+     yas-hippie-try-expand)
+   ;; Local files
+   backup-directory-alist '(("." . "~/.emacs.d/backups"))
+   custom-file            "~/.emacs.d/custom.el")
+
+  (when (file-exists-p custom-file)
+    (load custom-file))
+
+  (defun toggle-comment-on-line ()
+    (interactive)
+    (comment-or-uncomment-region
+     (line-beginning-position) (line-end-position)))
+
+  :bind
+  (("S-C-<left>"  . shrink-window-horizontally)
+   ("S-C-<right>" . enlarge-window-horizontally)
+   ("S-C-<down>"  . shrink-window)
+   ("S-C-<up>"    . enlarge-window)
+   ("C-x C-b"     . ibuffer)
+   ("M-/"         . hippie-expand)
+   ("C-;"         . toggle-comment-on-line)
+   ("C-z"         . nil)))
+
 ;;;;;; General packages
 
 (use-package which-key
@@ -70,6 +129,21 @@
 	  flycheck-display-errors-delay 0.5)
     (flycheck-pos-tip-mode 1)))
 
+(use-package projectile
+  :bind-keymap ("C-c p" . projectile-command-map)
+  :config
+  (projectile-mode 1)
+  (setq projectile-switch-project-action 'projectile-dired))
+
+(use-package ido-completing-read+
+  :ensure t
+  :config
+  (setq ido-auto-merge-work-directories-length -1
+        ido-enable-flex-matching t
+        ido-use-filename-at-point nil)
+  (ido-mode 1)
+  (ido-ubiquitous-mode 1))
+
 (use-package magit
   :bind ("C-x g" . magit-status)
   :config (setq magit-diff-refine-hunk t))
@@ -91,21 +165,6 @@
 
 ;;;;;; Navigation
 
-(use-package projectile
-  :bind-keymap ("C-c p" . projectile-command-map)
-  :config
-  (projectile-mode 1)
-  (setq projectile-switch-project-action 'projectile-dired))
-
-(use-package ido-completing-read+
-  :ensure t
-  :config
-  (setq ido-auto-merge-work-directories-length -1
-        ido-enable-flex-matching t
-        ido-use-filename-at-point nil)
-  (ido-mode 1)
-  (ido-ubiquitous-mode 1))
-
 (use-package windmove
   :config (windmove-default-keybindings))
 
@@ -118,6 +177,7 @@
 (use-package cycbuf
   :bind (("C-<tab>"         . cycbuf-switch-to-next-buffer)
          ("<C-iso-lefttab>" . cycbuf-switch-to-previous-buffer))
+
   :config
   (defun dir-name-here ()
     (interactive)
@@ -157,6 +217,7 @@
          :map treemacs-mode-map
          ("C-<tab>"         . (lambda () (interactive)))
          ("<C-iso-lefttab>" . (lambda () (interactive))))
+
   :config
   (defun treemacs-here ()
     (interactive)
@@ -166,6 +227,7 @@
      (cdr (project-current))
      (car (last (butlast (split-string (cdr (project-current)) "/")))))
     (treemacs-select-window))
+
   (setq treemacs-persist-file "/dev/null"
         treemacs-collapse-dirs 7))
 
@@ -229,52 +291,6 @@
   :config
   (setq dumb-jump-selector 'ivy))
 
-;;;;;; Simple formatting
-
-(use-package yasnippet
-  :commands yas-minor-mode
-  :hook (prog-mode . yas-minor-mode)
-  :bind (:map yas-minor-mode-map
-              ("C-c C-s" . yas-insert-snippet)))
-
-(use-package yasnippet-snippets)
-
-;; https://github.com/yoshiki/yaml-mode
-(use-package yaml-mode
-  :mode "\\.yaml\\'")
-
-;; https://github.com/dryman/toml-mode.el
-(use-package toml-mode
-  :mode "\\.toml\\'")
-
-;; https://github.com/joshwnj/json-mode
-(use-package json-mode
-  :mode (("\\.json\\'" . json-mode)
-         ("\\.avsc\\'" . json-mode))
-  :config (setq js-indent-level 2))
-
-;; https://github.com/spotify/dockerfile-mode
-(use-package dockerfile-mode
-  :mode "Dockerfile\\'")
-
-;; https://github.com/jrblevin/markdown-mode
-;; https://github.com/mola-T/flymd
-(use-package markdown-mode
-  :mode (("README\\.md\\'" . gfm-mode)
-         ("\\.md\\'"       . markdown-mode)
-         ("\\.markdown\\'" . markdown-mode))
-  :config
-  (use-package flymd
-    :config (setq flymd-close-buffer-delete-temp-files t)))
-
-(use-package hi-lock
-  :bind (("s-a" . highlight-symbol-at-point)
-         ("s-d" . unhighlight-regexp))
-  :config
-  (setq hi-lock-face-defaults '("hi-pink"))
-  :custom-face
-  (hi-pink ((t (:background "pink4")))))
-
 ;;;;;; LSP
 
 (use-package lsp-mode
@@ -321,6 +337,52 @@
   :custom
   (company-lsp-async t)
   (company-lsp-enable-snippet t))
+
+;;;;;; Simple formatting
+
+(use-package yasnippet
+  :commands yas-minor-mode
+  :hook (prog-mode . yas-minor-mode)
+  :bind (:map yas-minor-mode-map
+              ("C-c C-s" . yas-insert-snippet)))
+
+(use-package yasnippet-snippets)
+
+;; https://github.com/yoshiki/yaml-mode
+(use-package yaml-mode
+  :mode "\\.yaml\\'")
+
+;; https://github.com/dryman/toml-mode.el
+(use-package toml-mode
+  :mode "\\.toml\\'")
+
+;; https://github.com/joshwnj/json-mode
+(use-package json-mode
+  :mode (("\\.json\\'" . json-mode)
+         ("\\.avsc\\'" . json-mode))
+  :config (setq js-indent-level 2))
+
+;; https://github.com/spotify/dockerfile-mode
+(use-package dockerfile-mode
+  :mode "Dockerfile\\'")
+
+;; https://github.com/jrblevin/markdown-mode
+;; https://github.com/mola-T/flymd
+(use-package markdown-mode
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'"       . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :config
+  (use-package flymd
+    :config (setq flymd-close-buffer-delete-temp-files t)))
+
+(use-package hi-lock
+  :bind (("s-a" . highlight-symbol-at-point)
+         ("s-d" . unhighlight-regexp))
+  :config
+  (setq hi-lock-face-defaults '("hi-pink"))
+  :custom-face
+  (hi-pink ((t (:background "pink4")))))
 
 ;;;;;; Lisp
 
@@ -469,114 +531,5 @@
 (use-package cargo
   :commands cargo-minor-mode
   :hook (rust-mode . cargo-minor-mode))
-
-;;;;;;;;;;;;;;;;;;; Customizations ;;;;;;;;;;;;;;;;;;;
-
-;;;;;; User Interface
-
-(use-package doom-themes
-  :init (load-theme 'doom-opera t))
-
-;; Max size window on startup
-(toggle-frame-maximized)
-
-;; Go straight to scratch buffer on startup
-(setq inhibit-startup-message t
-      inhibit-splash-screen t)
-
-;; Show line numbers
-(global-linum-mode)
-
-;; No blinking cursor
-(blink-cursor-mode 0)
-
-;; No bell
-(setq ring-bell-function 'ignore)
-
-;; Full path in title bar
-(setq-default frame-title-format "%b (%f)")
-
-;; Turn off menu bars
-(menu-bar-mode -1)
-(when (fboundp 'tool-bar-mode)
-  (tool-bar-mode -1))
-
-;; Don't show native OS scroll bars for buffers
-(when (fboundp 'scroll-bar-mode)
-  (scroll-bar-mode -1))
-
-;; Unique buffer names dependent on file name
-(require 'uniquify)
-(setq uniquify-buffer-name-style 'forward)
-(setq uniquify-after-kill-buffer-p t)
-
-;; Use UTF-8
-(prefer-coding-system 'utf-8)
-
-;; Setup font size
-(require 'subr-x)
-(if-let (font-height (getenv "EMACS_FONT_HEIGHT"))
-    (set-face-attribute
-     'default nil :height (string-to-number font-height))
-  (set-face-attribute 'default nil :height 120))
-
-;; Window resize shortcuts
-(global-set-key (kbd "S-C-<left>")  'shrink-window-horizontally)
-(global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally)
-(global-set-key (kbd "S-C-<down>")  'shrink-window)
-(global-set-key (kbd "S-C-<up>")    'enlarge-window)
-
-;; Shows a list of buffers
-(global-set-key (kbd "C-x C-b") 'ibuffer)
-
-;; Disable Ctrl-Z minimization/suspension of emacs
-(global-set-key (kbd "C-z") nil)
-
-;; Changes all yes/no questions to y/n type
-(fset 'yes-or-no-p 'y-or-n-p)
-
-;;;;;; Editing
-
-;; Use hippie-expand for text autocompletion
-(global-set-key (kbd "M-/") 'hippie-expand)
-(setq hippie-expand-try-functions-list
-      '(try-expand-dabbrev
-        try-expand-dabbrev-all-buffers
-        try-expand-dabbrev-from-kill
-        yas-hippie-try-expand))
-
-;; Highlights matching parenthesis
-(show-paren-mode 1)
-
-;; Highlight current line
-(global-hl-line-mode 1)
-
-;; Don't use hard tabs
-(setq-default indent-tabs-mode nil)
-
-(defun toggle-comment-on-line ()
-  "Comment or uncomment current line."
-  (interactive)
-  (comment-or-uncomment-region
-   (line-beginning-position) (line-end-position)))
-
-(global-set-key (kbd "C-;") 'toggle-comment-on-line)
-
-;; Auto indent on new line
-(electric-indent-mode 1)
-
-;;;;;; Local files
-
-;; No need for ~ files when editing
-(setq create-lockfiles nil)
-
-;; Automatic backups
-(setq backup-directory-alist `(("." . ,"~/.emacs.d/backups"))
-      auto-save-default nil)
-
-;; Write custom's settings to separate file (gitignored)
-(setq custom-file "~/.emacs.d/custom.el")
-(when (file-exists-p custom-file)
-  (load custom-file))
 
 ;;; init.el ends here
