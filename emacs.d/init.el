@@ -191,12 +191,30 @@
 ;; sudo pacman -Syu ctags
 ;; pip install --user pygments
 (use-package helm-gtags
-  :bind (("C-c g" .  helm-gtags-mode)
+  :bind (("C-c g"   . toggle-helm-gtags-mode)
          :map helm-gtags-mode-map
          ("C-c C-t" . helm-gtags-create-tags)
-         ("M-." . helm-gtags-find-tag-from-here)
-         ("M-," . helm-gtags-pop-stack))
+         ("M-."     . helm-gtags-find-tag-from-here)
+         ("M-,"     . helm-gtags-pop-stack))
+
+  :preface
+  (defvar helm-gtags-on nil)
   :config
+  (defun toggle-helm-gtags-mode ()
+    (interactive)
+    (cond (helm-gtags-on ; toggle off
+           (setq helm-gtags-on nil)
+           (remove-hook 'prog-mode-hook 'helm-gtags-mode)
+           (dolist (buffer (buffer-list))
+             (with-current-buffer buffer
+               (funcall 'helm-gtags-mode -1))))
+          (t ; toggle on
+           (setq helm-gtags-on t)
+           (add-hook 'prog-mode-hook 'helm-gtags-mode)
+           (dolist (buffer (buffer-list))
+             (with-current-buffer buffer
+               (funcall 'helm-gtags-mode 1))))))
+
   (setq helm-always-two-windows t
         helm-split-window-inside-p t)
   :custom
