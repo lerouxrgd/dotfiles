@@ -431,27 +431,24 @@
 
 (use-package cider
   :after clojure-mode
+  :bind (("C-c C-M-b" . cider-browse-ns-all)
+         ("C-c M-b"   . browse-current-ns))
+  :hook ((cider-mode      . eldoc-mode)
+         (cider-repl-mode . paredit-mode))
   :init
-  (setq cider-repl-display-help-banner nil
-        cider-repl-history-file "~/.emacs.d/cider-history")
-  (add-hook 'cider-mode-hook #'eldoc-mode)
-  (add-hook 'cider-repl-mode-hook #'paredit-mode)
   (defun browse-current-ns ()
     (interactive)
     (cider-browse-ns
      (with-current-buffer (current-buffer)
        (cider-current-ns))))
-  :bind
-  (("C-c C-M-b" . cider-browse-ns-all)
-   ("C-c M-b"   . browse-current-ns)))
+  (setq cider-repl-display-help-banner nil
+        cider-repl-history-file "~/.emacs.d/cider-history"))
 
 (use-package clj-refactor
   :after clojure-mode
-  :init
-  (add-hook 'clojure-mode-hook 'clj-refactor-mode)
+  :hook (clojure-mode . clj-refactor-mode)
   :config
   (clj-refactor-mode 1)
-  (yas-minor-mode 1)
   (cljr-add-keybindings-with-prefix "C-c r"))
 
 ;;;;;; Python
@@ -500,8 +497,8 @@
 	      ("M-."     . godef-jump)
 	      ("M-,"     . pop-tag-mark)
 	      ("C-c C-r" . go-rename))
+  :hook (before-save . gofmt-before-save)
   :config
-  (add-hook 'before-save-hook 'gofmt-before-save)
   (setq gofmt-command "goimports")
   (use-package go-guru)
   (use-package go-autocomplete)
@@ -532,8 +529,7 @@
   (use-package flycheck-rust
     :after flycheck
     :commands flycheck-rust-setup
-    :init
-    (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)))
+    :hook (flycheck-mode . flycheck-rust-setup)))
 
 (use-package racer
   :commands racer-mode
