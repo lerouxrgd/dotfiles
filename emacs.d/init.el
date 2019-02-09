@@ -120,7 +120,6 @@
   :config (setq company-tooltip-align-annotations t))
 
 (use-package flycheck
-  :commands global-flycheck-mode
   :hook (after-init . global-flycheck-mode)
   :config
   (use-package flycheck-pos-tip
@@ -147,6 +146,12 @@
 (use-package magit
   :bind ("C-x g" . magit-status)
   :config (setq magit-diff-refine-hunk t))
+
+(use-package yasnippet
+  :hook (prog-mode . yas-minor-mode)
+  :bind (:map yas-minor-mode-map
+              ("M-s M-s" . yas-insert-snippet))
+  :config (use-package yasnippet-snippets))
 
 (use-package exec-path-from-shell
   :if (memq system-type '(gnu gnu/linux darwin))
@@ -272,7 +277,7 @@
 ;; sudo pacman -Syu ctags
 ;; pip install --user pygments
 (use-package helm-gtags
-  :bind (("C-c g"   . toggle-helm-gtags-mode)
+  :bind (("C-M-m g" . toggle-helm-gtags-mode)
          :map helm-gtags-mode-map
          ("C-c C-t" . helm-gtags-create-tags)
          ("M-."     . helm-gtags-find-tag-from-here)
@@ -359,14 +364,6 @@
   (company-lsp-enable-snippet t))
 
 ;;;;;; Simple formatting
-
-(use-package yasnippet
-  :commands yas-minor-mode
-  :hook (prog-mode . yas-minor-mode)
-  :bind (:map yas-minor-mode-map
-              ("C-c C-s" . yas-insert-snippet)))
-
-(use-package yasnippet-snippets)
 
 ;; https://github.com/yoshiki/yaml-mode
 (use-package yaml-mode
@@ -501,11 +498,9 @@
   :config
   (setq gofmt-command "goimports")
   (use-package go-guru)
+  (use-package go-rename)
   (use-package go-autocomplete)
   (ac-config-default))
-
-(use-package go-rename
-  :commands (go-rename))
 
 (use-package go-eldoc
   :hook (go-mode . go-eldoc-setup))
@@ -528,11 +523,9 @@
   (setq rust-format-on-save t)
   (use-package flycheck-rust
     :after flycheck
-    :commands flycheck-rust-setup
     :hook (flycheck-mode . flycheck-rust-setup)))
 
 (use-package racer
-  :commands racer-mode
   :hook
   ((rust-mode . racer-mode)
    (rust-mode . eldoc-mode))
@@ -545,7 +538,6 @@
     (setq company-tooltip-align-annotations t)))
 
 (use-package cargo
-  :commands cargo-minor-mode
   :hook (rust-mode . cargo-minor-mode))
 
 ;;; init.el ends here
