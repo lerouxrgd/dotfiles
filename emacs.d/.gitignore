@@ -12,7 +12,9 @@ ac-comphist.dat
 cider-history
 
 # workspace local files
+workspace/
 .lsp-session*
+eclipse.jdt.ls/
 .cache
 
 # projectile

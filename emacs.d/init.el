@@ -184,13 +184,8 @@
          ("<C-iso-lefttab>" . cycbuf-switch-to-previous-buffer))
 
   :config
-  (defun dir-name-here ()
-    (interactive)
-    (let ((curr (expand-file-name (cdr (project-current)))))
-      (replace-regexp-in-string curr "" (cycbuf-get-file-name))))
-
   (setq cycbuf-buffer-sort-function 'cycbuf-sort-by-recency
-        cycbuf-clear-delay 3
+        cycbuf-clear-delay 2
         cycbuf-mode-name-replacements
         '(("Fundamental" "Fund.")
           ("Lisp Interaction" "Lisp I.")
@@ -200,9 +195,7 @@
           ("R"         2                      left cycbuf-get-readonly-string)
           ("Mode"      10                     left cycbuf-get-mode-name)
           (""          2                      left "  ")
-          ("Buffer"    cycbuf-get-name-length left cycbuf-get-name)
-          (""          2                      left "  ")
-          ("Directory" cycbuf-get-file-length left dir-name-here))
+          ("Buffer"    cycbuf-get-name-length left cycbuf-get-name))
         cycbuf-dont-show-regexp
         '("^ "
           "^\\*.*\\*$"
@@ -309,6 +302,18 @@
   (helm-gtags-auto-update t)
   (helm-gtags-path-style 'relative))
 
+(use-package helm-xref
+  :config
+  (defun xref-apropos-at-point (x)
+    (interactive (list (xref--read-identifier "Find apropos of: ")))
+    (xref-find-apropos x))
+  (setq helm-always-two-windows t
+        helm-split-window-inside-p t
+        xref-show-xrefs-function 'helm-xref-show-xrefs)
+  (custom-set-faces
+   `(helm-xref-file-name
+     ((t (:foreground ,(doom-color 'teal)))))))
+
 (use-package dumb-jump
   :bind ("C-c ." . dumb-jump-go)
   :hook (c-mode-common
@@ -331,6 +336,8 @@
 (use-package lsp-ui
   :hook (lsp-mode . lsp-ui-mode)
   :bind (:map lsp-ui-mode-map
+              ("C-z !" . flymake-show-diagnostics-buffer)
+              ("C-z a" . xref-apropos-at-point)
 	      ("C-z ." . lsp-ui-peek-find-definitions)
 	      ("C-z ?" . lsp-ui-peek-find-references)
               ("C-z i" . lsp-ui-peek-find-implementation)
@@ -448,6 +455,18 @@
   :config
   (clj-refactor-mode 1)
   (cljr-add-keybindings-with-prefix "C-c r"))
+
+;;;;;; Java
+
+;; https://github.com/emacs-lsp/lsp-java
+
+(use-package lsp-java
+  :after lsp
+  :config (add-hook 'java-mode-hook 'lsp))
+
+(use-package lsp-java-treemacs
+  :load-path "lsp-java-treemacs.el"
+  :commands lsp-java-treemacs-register)
 
 ;;;;;; Python
 
