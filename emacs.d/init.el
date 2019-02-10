@@ -245,7 +245,8 @@
 ;; sudo pacman -Syu ripgrep
 (use-package helm-rg
   :bind (("C-c c" . helm-rg)
-         ("C-c f" . helm-find-here))
+         ("C-c f" . helm-find-here)
+         ("C-c F" . helm-recentf))
 
   :config
   (defun helm-find-here ()
