@@ -77,8 +77,7 @@
    hippie-expand-try-functions-list      ; Basic text autocompletion candidates
    '(try-expand-dabbrev
      try-expand-dabbrev-all-buffers
-     try-expand-dabbrev-from-kill
-     yas-hippie-try-expand)
+     try-expand-dabbrev-from-kill)
    ;; Local files
    backup-directory-alist '(("." . "~/.emacs.d/backups"))
    custom-file            "~/.emacs.d/custom.el")
@@ -87,9 +86,29 @@
     (load custom-file))
 
   (defun toggle-comment-on-line ()
+    "Toggle comment of the current line."
     (interactive)
     (comment-or-uncomment-region
      (line-beginning-position) (line-end-position)))
+
+  (defun revert-all-file-buffers ()
+  "Refresh all open file buffers without confirmation.
+Buffers in modified (not yet saved) state in emacs will not be reverted.
+They will be reverted though if they were modified outside emacs.
+Buffers visiting files which do not exist any more or are no longer readable
+will be killed."
+  (interactive)
+  (dolist (buf (buffer-list))
+    (let ((filename (buffer-file-name buf)))
+      (when (and filename (not (buffer-modified-p buf)))
+        (if (file-readable-p filename)
+            (with-demoted-errors "Error: %S"
+              (with-current-buffer buf
+                (revert-buffer :ignore-auto :noconfirm)))
+          (let (kill-buffer-query-functions)
+            (kill-buffer buf)
+            (message "Killed unreadable file buffer: %s" filename))))))
+  (message "Finished reverting buffers containing unmodified files."))
 
   :bind
   (("S-C-<left>"  . shrink-window-horizontally)
@@ -97,6 +116,7 @@
    ("S-C-<down>"  . shrink-window)
    ("S-C-<up>"    . enlarge-window)
    ("C-x C-b"     . ibuffer)
+   ("C-x R"       . revert-all-file-buffers)
    ("M-/"         . hippie-expand)
    ("C-;"         . toggle-comment-on-line)
    ("C-z"         . nil)))
@@ -151,7 +171,12 @@
   :hook (prog-mode . yas-minor-mode)
   :bind (:map yas-minor-mode-map
               ("M-s M-s" . yas-insert-snippet))
-  :config (use-package yasnippet-snippets))
+  :config
+  (use-package yasnippet-snippets)
+  (add-to-list 'hippie-expand-try-functions-list 'yas-hippie-try-expand))
+
+(use-package iedit
+  :custom (iedit-toggle-key-default (kbd "C-:")))
 
 (use-package exec-path-from-shell
   :if (memq system-type '(gnu gnu/linux darwin))
@@ -304,9 +329,6 @@
 
 (use-package helm-xref
   :config
-  (defun xref-apropos-at-point (x)
-    (interactive (list (xref--read-identifier "Find apropos of: ")))
-    (xref-find-apropos x))
   (setq helm-always-two-windows t
         helm-split-window-inside-p t
         xref-show-xrefs-function 'helm-xref-show-xrefs)
@@ -351,6 +373,10 @@
   :config
   (remove-hook 'flymake-diagnostic-functions
                'flymake-proc-legacy-flymake)
+
+  (defun xref-apropos-at-point (x)
+    (interactive (list (xref--read-identifier "Find apropos of: ")))
+    (xref-find-apropos x))
 
   (setq lsp-ui-sideline-enable nil
         lsp-ui-doc-enable nil)
