@@ -236,13 +236,14 @@ will be killed."
      ((t (:foreground ,(doom-color 'yellow) :weight bold))))))
 
 (use-package treemacs
-  :bind (("C-x t" . treemacs-here)
+  :bind (("C-x t" . treemacs-project)
+         ("C-x T" . treemacs-here)
          :map treemacs-mode-map
          ("C-<tab>"         . (lambda () (interactive)))
          ("<C-iso-lefttab>" . (lambda () (interactive))))
 
   :config
-  (defun treemacs-here ()
+  (defun treemacs-project ()
     (interactive)
     (unless (treemacs-current-workspace)
       (treemacs--find-workspace))
@@ -262,19 +263,24 @@ will be killed."
 
 ;; sudo pacman -Syu ripgrep
 (use-package helm-rg
-  :bind (("C-c c" . helm-rg)
-         ("C-c f" . helm-find-here)
+  :bind (("C-c c" . helm-rg-project)
+         ("C-c C" . helm-rg)
+         ("C-c f" . helm-find-project)
          ("C-c F" . helm-recentf))
 
   :config
-  (defun helm-find-here ()
+  (defun helm-rg-project (pattern)
+    (interactive (list (helm-rg--get-thing-at-pt)))
+    (let ((default-directory (cdr (project-current))))
+      (helm-rg pattern t)))
+  
+  (defun helm-find-project ()
     (interactive)
     (let ((default-directory (cdr (project-current))))
       (helm-find nil)))
 
   (setq helm-always-two-windows t
         helm-split-window-inside-p t
-        helm-rg-default-directory (cdr (project-current))
         helm-rg--color-format-argument-alist
         '((red :cmd-line magenta :text-property magenta)))
 
@@ -359,17 +365,15 @@ will be killed."
   :hook (lsp-mode . lsp-ui-mode)
   :bind (:map lsp-ui-mode-map
               ("C-z !" . flymake-show-diagnostics-buffer)
-              ("C-z a" . xref-apropos-at-point)
-	      ("C-z ." . lsp-ui-peek-find-definitions)
-	      ("C-z ?" . lsp-ui-peek-find-references)
-              ("C-z i" . lsp-ui-peek-find-implementation)
-	      ("C-z m" . lsp-ui-imenu)
               ("C-z d" . lsp-describe-thing-at-point)
+              ("C-z m" . lsp-ui-imenu)
               ("C-z r" . lsp-rename)
-              ("C-z R" . lsp-find-references)
+              ("C-z ." . lsp-find-definition)
+	      ("C-z ?" . lsp-find-references)
               ("C-z I" . lsp-find-implementation)
               ("C-z D" . lsp-find-declaration)
-              ("C-z T" . lsp-find-type-definition))
+              ("C-z T" . lsp-find-type-definition)
+              ("C-z A" . xref-apropos-at-point))
   :config
   (remove-hook 'flymake-diagnostic-functions
                'flymake-proc-legacy-flymake)
@@ -379,15 +383,7 @@ will be killed."
     (xref-find-apropos x))
 
   (setq lsp-ui-sideline-enable nil
-        lsp-ui-doc-enable nil)
-
-  (custom-set-faces
-   `(lsp-ui-peek-highlight
-     ((t (:inherit lsp-ui-peek-header
-                   :background ,(doom-color 'blue)
-                   :foreground ,(doom-color 'bg))))))
-  :custom
-  (lsp-ui-peek-fontify 'always))
+        lsp-ui-doc-enable nil))
 
 (use-package company-lsp
   :after (company lsp-mode)
