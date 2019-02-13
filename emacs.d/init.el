@@ -237,7 +237,6 @@ will be killed."
 
 (use-package treemacs
   :bind (("C-x t" . treemacs-project)
-         ("C-x T" . treemacs-here)
          :map treemacs-mode-map
          ("C-<tab>"         . (lambda () (interactive)))
          ("<C-iso-lefttab>" . (lambda () (interactive))))
