@@ -347,7 +347,7 @@ will be killed."
          . (lambda ()
              (local-set-key (kbd "C-c .") 'dumb-jump-go)))
   :config
-  (setq dumb-jump-selector 'ivy))
+  (setq dumb-jump-selector 'helm))
 
 ;;;;;; LSP
 
