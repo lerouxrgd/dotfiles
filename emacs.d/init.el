@@ -46,26 +46,25 @@
 
 (use-package doom-themes
   :init
-  (load-theme 'doom-opera t)    ; Define theme
-  (menu-bar-mode         -1)    ; Turn off menu bars
-  (tool-bar-mode         -1)    ; Turn off tool bar
-  (scroll-bar-mode       -1)    ; Don't show native OS scroll bars
-  (global-linum-mode      1)    ; Show line numbers
-  (blink-cursor-mode     -1)    ; No blinking cursor
-  (global-hl-line-mode    1)    ; Highlight current line
-  (show-paren-mode        1)    ; Highlights matching parenthesis
-  (electric-indent-mode   1)    ; Auto indent on new line
-  (toggle-frame-maximized)      ; Max size window on startup
-  (prefer-coding-system 'utf-8) ; Use UTF-8
-  (fset 'yes-or-no-p 'y-or-n-p) ; Use y/n for questions
-  (set-face-attribute           ; Setup font size
+  (load-theme 'doom-opera t) ; Define theme
+  (menu-bar-mode         -1) ; Turn off menu bars
+  (tool-bar-mode         -1) ; Turn off tool bar
+  (scroll-bar-mode       -1) ; Don't show native OS scroll bars
+  (global-linum-mode      1) ; Show line numbers
+  (blink-cursor-mode     -1) ; No blinking cursor
+  (global-hl-line-mode    1) ; Highlight current line
+  (show-paren-mode        1) ; Highlights matching parenthesis
+  (electric-indent-mode   1) ; Auto indent on new line
+  (set-frame-parameter nil 'undecorated t) ; No window decoration
+  (toggle-frame-maximized)                 ; Max size window on startup
+  (prefer-coding-system 'utf-8)            ; Use UTF-8
+  (fset 'yes-or-no-p 'y-or-n-p)            ; Use y/n for questions
+  (set-face-attribute                      ; Setup font size
    'default nil
    :height (string-to-number (or (getenv "EMACS_FONT_HEIGHT") "110")))
 
   (require 'uniquify)
-  (setq-default
-   frame-title-format "%b (%f)"          ; Full path in title bar
-   indent-tabs-mode   nil)               ; Don't use hard tabs
+  (setq-default indent-tabs-mode nil)    ; Don't use hard tabs
   (setq
    inhibit-startup-message      t        ; Go to scratch buffer on startup
    inhibit-splash-screen        t        ; No splash screen
@@ -86,17 +85,19 @@
     (load custom-file))
 
   (defun toggle-comment-on-line ()
-    "Toggle comment of the current line."
     (interactive)
     (comment-or-uncomment-region
      (line-beginning-position) (line-end-position)))
+
+  (defun show-file-name ()
+    (interactive)
+    (message (buffer-file-name)))
 
   (defun revert-all-file-buffers ()
   "Refresh all open file buffers without confirmation.
 Buffers in modified (not yet saved) state in emacs will not be reverted.
 They will be reverted though if they were modified outside emacs.
-Buffers visiting files which do not exist any more or are no longer readable
-will be killed."
+Buffers visiting files no existing/readable will be killed."
   (interactive)
   (dolist (buf (buffer-list))
     (let ((filename (buffer-file-name buf)))
@@ -116,6 +117,7 @@ will be killed."
    ("S-C-<down>"  . shrink-window)
    ("S-C-<up>"    . enlarge-window)
    ("C-x C-b"     . ibuffer)
+   ("C-x C-."     . show-file-name)
    ("C-x R"       . revert-all-file-buffers)
    ("M-/"         . hippie-expand)
    ("C-;"         . toggle-comment-on-line)
