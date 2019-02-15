@@ -46,15 +46,15 @@
 
 (use-package doom-themes
   :init
-  (load-theme 'doom-opera t) ; Define theme
-  (menu-bar-mode         -1) ; Turn off menu bars
-  (tool-bar-mode         -1) ; Turn off tool bar
-  (scroll-bar-mode       -1) ; Don't show native OS scroll bars
-  (global-linum-mode      1) ; Show line numbers
-  (blink-cursor-mode     -1) ; No blinking cursor
-  (global-hl-line-mode    1) ; Highlight current line
-  (show-paren-mode        1) ; Highlights matching parenthesis
-  (electric-indent-mode   1) ; Auto indent on new line
+  (load-theme 'doom-opera t)  ; Define theme
+  (menu-bar-mode         -1)  ; Turn off menu bars
+  (tool-bar-mode         -1)  ; Turn off tool bar
+  (scroll-bar-mode       -1)  ; Turn off native OS scroll bars
+  (blink-cursor-mode     -1)  ; Turn off blinking cursor
+  (global-hl-line-mode    1)  ; Highlight current line
+  (show-paren-mode        1)  ; Highlight matching parenthesis
+  (global-linum-mode      1)  ; Show line numbers
+  (electric-indent-mode   1)  ; Auto indent on new line
   (set-frame-parameter nil 'undecorated t) ; No window decoration
   (toggle-frame-maximized)                 ; Max size window on startup
   (prefer-coding-system 'utf-8)            ; Use UTF-8
@@ -150,12 +150,6 @@ Buffers visiting files no existing/readable will be killed."
 	  flycheck-display-errors-delay 0.5)
     (flycheck-pos-tip-mode 1)))
 
-(use-package projectile
-  :bind-keymap ("C-c p" . projectile-command-map)
-  :config
-  (projectile-mode 1)
-  (setq projectile-switch-project-action 'projectile-dired))
-
 (use-package ido-completing-read+
   :ensure t
   :config
@@ -172,7 +166,7 @@ Buffers visiting files no existing/readable will be killed."
 (use-package yasnippet
   :hook (prog-mode . yas-minor-mode)
   :bind (:map yas-minor-mode-map
-              ("M-s M-s" . yas-insert-snippet))
+              ("C-x S" . yas-insert-snippet))
   :config
   (use-package yasnippet-snippets)
   (add-to-list 'hippie-expand-try-functions-list 'yas-hippie-try-expand))
@@ -267,7 +261,7 @@ Buffers visiting files no existing/readable will be killed."
   :bind (("C-c c" . helm-rg-project)
          ("C-c C" . helm-rg)
          ("C-c f" . helm-find-project)
-         ("C-c F" . helm-recentf))
+         ("C-x F" . helm-recentf))
 
   :config
   (defun helm-rg-project (pattern)
@@ -427,10 +421,8 @@ Buffers visiting files no existing/readable will be killed."
 (use-package hi-lock
   :bind (("s-a" . highlight-symbol-at-point)
          ("s-d" . unhighlight-regexp))
-  :config
-  (setq hi-lock-face-defaults '("hi-pink"))
-  :custom-face
-  (hi-pink ((t (:background "pink4")))))
+  :config (setq hi-lock-face-defaults '("hi-pink"))
+  :custom-face (hi-pink ((t (:background "pink4")))))
 
 ;;;;;; Lisp
 
