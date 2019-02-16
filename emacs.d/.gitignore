@@ -10,16 +10,13 @@ ido.last
 smex-items
 ac-comphist.dat
 cider-history
+transient
 
 # workspace local files
 workspace/
 .lsp-session*
 eclipse.jdt.ls/
 .cache
-
-# projectile
-projectile.cache
-projectile-bookmarks.eld
 
 # Network Security Manager
 network-security.data
