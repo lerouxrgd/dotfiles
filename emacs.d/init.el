@@ -116,9 +116,10 @@ Buffers visiting files no existing/readable will be killed."
    ("S-C-<right>" . enlarge-window-horizontally)
    ("S-C-<down>"  . shrink-window)
    ("S-C-<up>"    . enlarge-window)
+   ("C-x C-x"     . nil)
+   ("C-x C-x C-." . show-file-name)
+   ("C-x C-x C-r" . revert-all-file-buffers)
    ("C-x C-b"     . ibuffer)
-   ("C-x C-."     . show-file-name)
-   ("C-x R"       . revert-all-file-buffers)
    ("M-/"         . hippie-expand)
    ("C-;"         . toggle-comment-on-line)
    ("C-z"         . nil)))
@@ -166,7 +167,7 @@ Buffers visiting files no existing/readable will be killed."
 (use-package yasnippet
   :hook (prog-mode . yas-minor-mode)
   :bind (:map yas-minor-mode-map
-              ("C-x S" . yas-insert-snippet))
+              ("C-x C-x C-s" . yas-insert-snippet))
   :config
   (use-package yasnippet-snippets)
   (add-to-list 'hippie-expand-try-functions-list 'yas-hippie-try-expand))
