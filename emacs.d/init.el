@@ -144,7 +144,11 @@ Buffers visiting files no existing/readable will be killed."
   :config (setq company-tooltip-align-annotations t))
 
 (use-package flycheck
-  :hook (after-init . global-flycheck-mode)
+  :hook ((after-init      . global-flycheck-mode)
+         (emacs-lisp-mode . flycheck-on-save))
+  :init
+  (defun flycheck-on-save ()
+    (setq flycheck-check-syntax-automatically '(mode-enabled save)))
   :config
   (use-package flycheck-pos-tip
     :config
