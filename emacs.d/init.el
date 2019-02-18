@@ -117,6 +117,7 @@ Buffers visiting files no existing/readable will be killed."
    ("S-C-<down>"  . shrink-window)
    ("S-C-<up>"    . enlarge-window)
    ("C-x C-x"     . nil)
+   ("C-x C-x C-x" . exchange-point-and-mark)
    ("C-x C-x C-." . show-file-name)
    ("C-x C-x C-r" . revert-all-file-buffers)
    ("C-x C-b"     . ibuffer)
@@ -230,7 +231,7 @@ Buffers visiting files no existing/readable will be killed."
                   :background ,(doom-color 'blue)
                   :foreground ,(doom-color 'bg)))))
    `(cycbuf-header-face
-     ((t (:foreground ,(doom-color 'yellow) :weight bold))))))
+     ((t (:foreground ,(doom-color 'magenta) :weight bold))))))
 
 (use-package treemacs
   :bind (("C-x t" . treemacs-project)
