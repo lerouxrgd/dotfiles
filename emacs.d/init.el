@@ -262,6 +262,9 @@ Buffers visiting files no existing/readable will be killed."
               ("<right>" . dired-subtree-insert)
               ("<left>"  . dired-subtree-remove)))
 
+(use-package helm
+  :bind ("M-X" . 'helm-M-x))
+
 ;; sudo pacman -Syu ripgrep
 (use-package helm-rg
   :bind (("C-c c" . helm-rg-project)
