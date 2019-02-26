@@ -125,6 +125,11 @@ Buffers visiting files no existing/readable will be killed."
    ("C-;"         . toggle-comment-on-line)
    ("C-z"         . nil)))
 
+(use-package all-the-icons)
+
+(use-package doom-modeline
+  :hook (after-init . doom-modeline-mode))
+
 ;;;;;; General packages
 
 (use-package which-key
