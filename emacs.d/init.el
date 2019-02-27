@@ -216,36 +216,22 @@ Buffers visiting files no existing/readable will be killed."
          ("<M-S-left>"  . buf-move-left)
          ("<M-S-right>" . buf-move-right)))
 
-(use-package cycbuf
-  :bind (("C-<tab>"         . cycbuf-switch-to-next-buffer)
-         ("<C-iso-lefttab>" . cycbuf-switch-to-previous-buffer))
-
+(use-package nswbuff
+  :bind (("C-<tab>"         . nswbuff-switch-to-next-buffer)
+         ("<C-iso-lefttab>" . nswbuff-switch-to-previous-buffer))
   :config
-  (setq cycbuf-buffer-sort-function 'cycbuf-sort-by-recency
-        cycbuf-clear-delay 2
-        cycbuf-mode-name-replacements
-        '(("Fundamental" "Fund.")
-          ("Lisp Interaction" "Lisp I.")
-          ("^Dired.*" "Dired"))
-        cycbuf-attributes-list
-        '(("M"         1                      left cycbuf-get-modified-string)
-          ("R"         2                      left cycbuf-get-readonly-string)
-          ("Mode"      10                     left cycbuf-get-mode-name)
-          (""          2                      left "  ")
-          ("Buffer"    cycbuf-get-name-length left cycbuf-get-name))
-        cycbuf-dont-show-regexp
-        '("^ "
-          "^\\*.*\\*$"
-          "^Magit.*"
-          "null"))
-
+  (setq nswbuff-display-intermediate-buffers t
+        nswbuff-exclude-buffer-regexps
+        '("^ " "^[*]" "null" "^Magit.*"))
   (custom-set-faces
-   `(cycbuf-current-face
+   `(nswbuff-current-buffer-face
      ((t (:weight bold
                   :background ,(doom-color 'blue)
                   :foreground ,(doom-color 'bg)))))
-   `(cycbuf-header-face
-     ((t (:foreground ,(doom-color 'magenta) :weight bold))))))
+   `(nswbuff-separator-face
+     ((t (:foreground ,(doom-color 'magenta)))))
+   `(nswbuff-special-buffers-face
+     ((t (:foreground ,(doom-color 'yellow)))))))
 
 (use-package treemacs
   :bind (("C-x t" . treemacs-project)
