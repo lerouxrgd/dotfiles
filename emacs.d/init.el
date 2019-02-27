@@ -172,7 +172,12 @@ Buffers visiting files no existing/readable will be killed."
 
 (use-package magit
   :bind ("C-x g" . magit-status)
-  :config (setq magit-diff-refine-hunk t))
+  :config
+  (setq magit-diff-refine-hunk t
+        magit-ediff-dwim-show-on-hunks t)
+  :custom
+  (ediff-split-window-function (quote split-window-horizontally))
+  (ediff-prefer-iconified-control-frame t))
 
 (use-package yasnippet
   :hook (prog-mode . yas-minor-mode)
