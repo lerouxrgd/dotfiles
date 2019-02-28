@@ -63,24 +63,18 @@
    'default nil
    :height (string-to-number (or (getenv "EMACS_FONT_HEIGHT") "110")))
 
-  (require 'uniquify)
   (setq-default indent-tabs-mode nil)    ; Don't use hard tabs
   (setq
    inhibit-startup-message      t        ; Go to scratch buffer on startup
    inhibit-splash-screen        t        ; No splash screen
    ring-bell-function           'ignore  ; No bell
    create-lockfiles             nil      ; No need for ~ files when editing
-   auto-save-default            nil      ; No auto-save of file-visiting buffers
-   uniquify-buffer-name-style   'forward ; Unique buffer names depend on file names
-   uniquify-after-kill-buffer-p t        ; Rerationalize buffer names after kill
-   hippie-expand-try-functions-list      ; Basic text autocompletion candidates
-   '(try-expand-dabbrev
-     try-expand-dabbrev-all-buffers
-     try-expand-dabbrev-from-kill)
-   ;; Local files
+   auto-save-default            nil)     ; No auto-save of file-visiting buffers
+
+  ;; Local files
+  (setq
    backup-directory-alist '(("." . "~/.emacs.d/backups"))
    custom-file            "~/.emacs.d/custom.el")
-
   (when (file-exists-p custom-file)
     (load custom-file))
 
@@ -162,7 +156,6 @@ Buffers visiting files no existing/readable will be killed."
     (flycheck-pos-tip-mode 1)))
 
 (use-package ido-completing-read+
-  :ensure t
   :config
   (setq ido-auto-merge-work-directories-length -1
         ido-enable-flex-matching t
@@ -189,10 +182,18 @@ Buffers visiting files no existing/readable will be killed."
               ("C-x C-x C-s" . yas-insert-snippet))
   :config
   (use-package yasnippet-snippets)
-  (add-to-list 'hippie-expand-try-functions-list 'yas-hippie-try-expand))
+  (setq hippie-expand-try-functions-list
+        '(try-expand-dabbrev
+          try-expand-dabbrev-all-buffers
+          try-expand-dabbrev-from-kill
+          yas-hippie-try-expand)))
 
 (use-package iedit
   :custom (iedit-toggle-key-default (kbd "C-:")))
+
+(use-package uniquify
+  :ensure nil
+  :config (setq uniquify-buffer-name-style 'forward))
 
 (use-package exec-path-from-shell
   :if (memq system-type '(gnu gnu/linux darwin))
