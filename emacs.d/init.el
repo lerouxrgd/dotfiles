@@ -54,6 +54,7 @@
   (global-hl-line-mode    1)  ; Highlight current line
   (show-paren-mode        1)  ; Highlight matching parenthesis
   (global-linum-mode      1)  ; Show line numbers
+  (column-number-mode     1)  ; Show column number
   (electric-indent-mode   1)  ; Auto indent on new line
   (set-frame-parameter nil 'undecorated t) ; No window decoration
   (toggle-frame-maximized)                 ; Max size window on startup
@@ -115,7 +116,6 @@ Buffers visiting files no existing/readable will be killed."
    ("C-x C-x C-." . show-file-name)
    ("C-x C-x C-r" . revert-all-file-buffers)
    ("C-x C-b"     . ibuffer)
-   ("M-/"         . hippie-expand)
    ("C-;"         . toggle-comment-on-line)
    ("C-z"         . nil)))
 
@@ -178,8 +178,9 @@ Buffers visiting files no existing/readable will be killed."
 
 (use-package yasnippet
   :hook (prog-mode . yas-minor-mode)
-  :bind (:map yas-minor-mode-map
-              ("C-x C-x C-s" . yas-insert-snippet))
+  :bind (("M-/" . hippie-expand)
+         :map yas-minor-mode-map
+         ("C-x C-x C-s" . yas-insert-snippet))
   :config
   (use-package yasnippet-snippets)
   (setq hippie-expand-try-functions-list
