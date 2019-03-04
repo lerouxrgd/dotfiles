@@ -419,6 +419,10 @@ Buffers visiting files no existing/readable will be killed."
 (use-package dockerfile-mode
   :mode "Dockerfile\\'")
 
+;; https://github.com/chrisbarrett/kubernetes-el
+(use-package kubernetes
+  :commands (kubernetes-overview))
+
 ;; https://github.com/jrblevin/markdown-mode
 ;; https://github.com/mola-T/flymd
 (use-package markdown-mode
