@@ -118,10 +118,12 @@ Buffers visiting files no existing/readable will be killed."
    ("C-;"         . toggle-comment-on-line)
    ("C-z"         . nil)))
 
-(use-package all-the-icons)
+(use-package all-the-icons
+  :config (setq all-the-icons-scale-factor 0.9))
 
 (use-package doom-modeline
-  :hook (after-init . doom-modeline-mode))
+  :hook (after-init . doom-modeline-mode)
+  :config (setq doom-modeline-height 20))
 
 ;;;;;; General packages
 
@@ -199,6 +201,9 @@ Buffers visiting files no existing/readable will be killed."
   :if (memq system-type '(gnu gnu/linux darwin))
   :config (exec-path-from-shell-initialize)
   :custom (exec-path-from-shell-arguments nil))
+
+(use-package bash-completion
+  :config (bash-completion-setup))
 
 (use-package recentf
   :config
