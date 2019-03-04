@@ -113,7 +113,6 @@ Buffers visiting files no existing/readable will be killed."
    ("S-C-<up>"    . enlarge-window)
    ("C-x C-x"     . nil)
    ("C-x C-x C-x" . exchange-point-and-mark)
-   ("C-x C-x C-." . show-file-name)
    ("C-x C-x C-r" . revert-all-file-buffers)
    ("C-x C-b"     . ibuffer)
    ("C-;"         . toggle-comment-on-line)
@@ -265,25 +264,26 @@ Buffers visiting files no existing/readable will be killed."
               ("<left>"  . dired-subtree-remove)))
 
 (use-package helm
-  :bind ("M-X" . 'helm-M-x))
+  :bind (("M-X"         . helm-M-x)
+         ("C-x C-x C-f" . helm-recentf)
+         ("C-c m"       . helm-imenu)
+         ("C-c f"       . helm-find-project))
+  :config
+  (defun helm-find-project ()
+    (interactive)
+    (let ((default-directory (cdr (project-current))))
+      (helm-find nil))))
 
 ;; sudo pacman -Syu ripgrep
 (use-package helm-rg
   :bind (("C-c c" . helm-rg-project)
-         ("C-c C" . helm-rg)
-         ("C-c f" . helm-find-project)
-         ("C-x F" . helm-recentf))
+         ("C-c C" . helm-rg))
 
   :config
   (defun helm-rg-project (pattern)
     (interactive (list (helm-rg--get-thing-at-pt)))
     (let ((default-directory (cdr (project-current))))
       (helm-rg pattern t)))
-  
-  (defun helm-find-project ()
-    (interactive)
-    (let ((default-directory (cdr (project-current))))
-      (helm-find nil)))
 
   (setq helm-always-two-windows t
         helm-split-window-inside-p t
@@ -489,10 +489,6 @@ Buffers visiting files no existing/readable will be killed."
 (use-package lsp-java
   :after lsp
   :config (add-hook 'java-mode-hook 'lsp))
-
-(use-package lsp-java-treemacs
-  :load-path "lsp-java-treemacs.el"
-  :commands lsp-java-treemacs-register)
 
 ;;;;;; Python
 
