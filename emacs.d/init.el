@@ -406,30 +406,27 @@ Buffers visiting files no existing/readable will be killed."
 
 ;;;;;; Simple formatting
 
-;; https://github.com/yoshiki/yaml-mode
 (use-package yaml-mode
   :mode "\\.yaml\\'")
 
-;; https://github.com/dryman/toml-mode.el
 (use-package toml-mode
   :mode "\\.toml\\'")
 
-;; https://github.com/joshwnj/json-mode
 (use-package json-mode
   :mode (("\\.json\\'" . json-mode)
          ("\\.avsc\\'" . json-mode))
   :config (setq js-indent-level 2))
 
-;; https://github.com/spotify/dockerfile-mode
+(use-package cmake-mode
+  :mode (("CMakeLists\\.txt\\'" . cmake-mode)
+         ("\\.cmake\\'" . cmake-mode)))
+
 (use-package dockerfile-mode
   :mode "Dockerfile\\'")
 
-;; https://github.com/chrisbarrett/kubernetes-el
 (use-package kubernetes
   :commands (kubernetes-overview))
 
-;; https://github.com/jrblevin/markdown-mode
-;; https://github.com/mola-T/flymd
 (use-package markdown-mode
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'"       . markdown-mode)
@@ -527,6 +524,39 @@ Buffers visiting files no existing/readable will be killed."
   :hook (js-mode . add-node-modules-path)
   :config
   (flycheck-add-mode 'javascript-eslint 'flow-mode))
+
+;;;;;; C/C++
+
+;; https://github.com/MaskRay/emacs-ccls
+
+;; sudo pacman -Syu clang
+;; yay -Syu ccls
+;; pip install --user compiledb
+
+(use-package ccls
+  :hook (((c-mode c++-mode objc-mode) . (lambda () (require 'ccls) (lsp))))
+  :bind (:map c-mode-base-map
+	      ("C-z h" . ccls-inheritance-hierarchy)
+	      ("C-z H" . ccls-call-hierarchy)
+	      ("C-z L" . ccls-code-lens-mode)
+              ("C-z M" . ccls-member-hierarchy))
+  :init
+  (setq flycheck-disabled-checkers
+        '(c/c++-clang c/c++-cppcheck c/c++-gcc)))
+
+(use-package clang-format
+  :load-path "/usr/share/clang"
+  :hook ((c-mode c++-mode objc-mode)
+         . (lambda ()
+             (local-set-key (kbd "C-c TAB") 'clang-indent-line)
+             (add-hook 'before-save-hook
+                       'clang-format-buffer)))
+  :config
+  (defun clang-indent-line ()
+    (interactive)
+    (clang-format-region
+     (line-beginning-position) (line-end-position))))
+  
 
 ;;;;;; Go
 
