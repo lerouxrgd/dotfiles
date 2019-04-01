@@ -60,9 +60,13 @@
   (toggle-frame-maximized)                 ; Max size window on startup
   (prefer-coding-system 'utf-8)            ; Use UTF-8
   (fset 'yes-or-no-p 'y-or-n-p)            ; Use y/n for questions
-  (set-face-attribute                      ; Setup font size
-   'default nil
-   :height (string-to-number (or (getenv "EMACS_FONT_HEIGHT") "110")))
+
+  ;; Setup font
+  (add-to-list
+   'default-frame-alist
+   `(font . ,(concat "DejaVu Sans Mono"
+                     (let ((size (getenv "EMACS_FONT_SIZE")))
+                       (if size (concat "-" size) "")))))
 
   (setq-default indent-tabs-mode nil)    ; Don't use hard tabs
   (setq
