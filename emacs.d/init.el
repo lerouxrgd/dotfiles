@@ -538,14 +538,17 @@ Buffers visiting files no existing/readable will be killed."
 ;; pip install --user compiledb
 
 (use-package ccls
-  :hook (((c-mode c++-mode objc-mode) . (lambda () (require 'ccls) (lsp))))
+  :hook (((c-mode c++-mode objc-mode)
+          . (lambda ()
+              (require 'ccls)
+              (auto-complete-mode -1)
+              (lsp))))
   :bind (:map c-mode-base-map
 	      ("C-z H" . ccls-inheritance-hierarchy)
 	      ("C-z C" . ccls-call-hierarchy)
               ("C-z M" . ccls-member-hierarchy)
               ("C-z L" . ccls-code-lens-mode))
   :init
-  (auto-complete-mode -1)
   (setq flycheck-disabled-checkers
         '(c/c++-clang c/c++-cppcheck c/c++-gcc)))
 
