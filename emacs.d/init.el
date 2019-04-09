@@ -540,10 +540,10 @@ Buffers visiting files no existing/readable will be killed."
 (use-package ccls
   :hook (((c-mode c++-mode objc-mode) . (lambda () (require 'ccls) (lsp))))
   :bind (:map c-mode-base-map
-	      ("C-z h" . ccls-inheritance-hierarchy)
-	      ("C-z H" . ccls-call-hierarchy)
-	      ("C-z L" . ccls-code-lens-mode)
-              ("C-z M" . ccls-member-hierarchy))
+	      ("C-z H" . ccls-inheritance-hierarchy)
+	      ("C-z C" . ccls-call-hierarchy)
+              ("C-z M" . ccls-member-hierarchy)
+              ("C-z L" . ccls-code-lens-mode))
   :init
   (auto-complete-mode -1)
   (setq flycheck-disabled-checkers
