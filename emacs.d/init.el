@@ -545,6 +545,7 @@ Buffers visiting files no existing/readable will be killed."
 	      ("C-z L" . ccls-code-lens-mode)
               ("C-z M" . ccls-member-hierarchy))
   :init
+  (auto-complete-mode -1)
   (setq flycheck-disabled-checkers
         '(c/c++-clang c/c++-cppcheck c/c++-gcc)))
 
