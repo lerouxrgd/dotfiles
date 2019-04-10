@@ -145,7 +145,10 @@ Buffers visiting files no existing/readable will be killed."
   :bind (("TAB" . company-indent-or-complete-common)
          :map company-active-map
          ("<right>" . company-abort))
-  :config (setq company-tooltip-align-annotations t))
+  :config
+  (add-hook 'buffer-list-update-hook
+            (lambda () (auto-complete-mode -1)))
+  (setq company-tooltip-align-annotations t))
 
 (use-package flycheck
   :hook ((after-init      . global-flycheck-mode)
@@ -538,11 +541,8 @@ Buffers visiting files no existing/readable will be killed."
 ;; pip install --user compiledb
 
 (use-package ccls
-  :hook (((c-mode c++-mode objc-mode)
-          . (lambda ()
-              (require 'ccls)
-              (auto-complete-mode -1)
-              (lsp))))
+  :hook ((c-mode c++-mode objc-mode)
+         . (lambda () (require 'ccls) (lsp)))
   :bind (:map c-mode-base-map
 	      ("C-z H" . ccls-inheritance-hierarchy)
 	      ("C-z C" . ccls-call-hierarchy)
