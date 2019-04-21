@@ -580,16 +580,17 @@ Buffers visiting files no existing/readable will be killed."
 (use-package go-mode
   :mode "\\.go\\'"
   :bind (:map go-mode-map
-	      ("M-."     . godef-jump)
-	      ("M-,"     . pop-tag-mark)
-	      ("C-c C-r" . go-rename))
+	      ("M-."   . godef-jump)
+	      ("M-,"   . pop-tag-mark)
+	      ("C-c r" . go-rename))
   :hook (before-save . gofmt-before-save)
   :config
   (setq gofmt-command "goimports")
-  (use-package go-guru)
+  (use-package go-guru
+    :bind-keymap ("C-c C-c" . go-guru-map))
   (use-package go-rename)
-  (use-package go-autocomplete)
-  (ac-config-default))
+  (use-package company-go
+    :config (add-to-list 'company-backends 'company-go)))
 
 (use-package go-eldoc
   :hook (go-mode . go-eldoc-setup))
