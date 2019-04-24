@@ -431,6 +431,9 @@ Buffers visiting files no existing/readable will be killed."
 (use-package dockerfile-mode
   :mode "Dockerfile\\'")
 
+(use-package terraform-mode
+  :mode "\\.tf\\'")
+
 (use-package kubernetes
   :commands (kubernetes-overview))
 
