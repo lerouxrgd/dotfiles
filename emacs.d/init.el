@@ -432,10 +432,10 @@ Buffers visiting files no existing/readable will be killed."
   :mode "Dockerfile\\'")
 
 (use-package terraform-mode
-  :mode "\\.tf\\'")
-
-(use-package kubernetes
-  :commands (kubernetes-overview))
+  :mode "\\.tf\\'"
+  :config
+  (use-package company-terraform
+    :config (company-terraform-init)))
 
 (use-package markdown-mode
   :mode (("README\\.md\\'" . gfm-mode)
@@ -444,6 +444,9 @@ Buffers visiting files no existing/readable will be killed."
   :config
   (use-package flymd
     :config (setq flymd-close-buffer-delete-temp-files t)))
+
+(use-package kubernetes
+  :commands (kubernetes-overview))
 
 (use-package hi-lock
   :bind (("s-a" . highlight-symbol-at-point)
