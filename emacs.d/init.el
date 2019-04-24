@@ -433,6 +433,7 @@ Buffers visiting files no existing/readable will be killed."
 
 (use-package terraform-mode
   :mode "\\.tf\\'"
+  :hook (terraform-mode . terraform-format-on-save-mode)
   :config
   (use-package company-terraform
     :config (company-terraform-init)))
