@@ -428,23 +428,23 @@ Buffers visiting files no existing/readable will be killed."
   :mode (("CMakeLists\\.txt\\'" . cmake-mode)
          ("\\.cmake\\'" . cmake-mode)))
 
-(use-package dockerfile-mode
-  :mode "Dockerfile\\'")
-
-(use-package terraform-mode
-  :mode "\\.tf\\'"
-  :hook (terraform-mode . terraform-format-on-save-mode)
-  :config
-  (use-package company-terraform
-    :config (company-terraform-init)))
-
+;; sudo pacman -Syu marked
 (use-package markdown-mode
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'"       . markdown-mode)
          ("\\.markdown\\'" . markdown-mode))
   :config
-  (use-package flymd
-    :config (setq flymd-close-buffer-delete-temp-files t)))
+  (setq markdown-command "marked"
+        markdown-live-preview-delete-export 'delete-on-export))
+
+(use-package dockerfile-mode
+  :mode "Dockerfile\\'")
+
+(use-package terraform-mode
+  :hook (terraform-mode . terraform-format-on-save-mode)
+  :config
+  (use-package company-terraform
+    :config (company-terraform-init)))
 
 (use-package kubernetes
   :commands (kubernetes-overview))
