@@ -68,13 +68,16 @@
                      (let ((size (getenv "EMACS_FONT_SIZE")))
                        (if size (concat "-" size) "")))))
 
-  (setq-default indent-tabs-mode nil)    ; Don't use hard tabs
+  (setq-default
+   frame-title-format `("%F - %b (" ,(or (cdr (project-current)) "") ")")
+   indent-tabs-mode nil) ; Don't use hard tabs
+
   (setq
-   inhibit-startup-message      t        ; Go to scratch buffer on startup
-   inhibit-splash-screen        t        ; No splash screen
-   ring-bell-function           'ignore  ; No bell
-   create-lockfiles             nil      ; No need for ~ files when editing
-   auto-save-default            nil)     ; No auto-save of file-visiting buffers
+   inhibit-startup-message t        ; Go to scratch buffer on startup
+   inhibit-splash-screen   t        ; No splash screen
+   ring-bell-function      'ignore  ; No bell
+   create-lockfiles        nil      ; No need for ~ files when editing
+   auto-save-default       nil)     ; No auto-save of file-visiting buffers
 
   ;; Local files
   (setq
@@ -281,10 +284,15 @@ Buffers visiting files no existing/readable will be killed."
          ("C-c m"       . helm-imenu)
          ("C-c f"       . helm-find-project))
   :config
+  (helm-autoresize-mode t)
   (defun helm-find-project ()
     (interactive)
     (let ((default-directory (cdr (project-current))))
       (helm-find nil))))
+
+(use-package swiper-helm
+  :bind (:map isearch-mode-map
+              ("TAB" . swiper-helm-from-isearch)))
 
 ;; sudo pacman -Syu ripgrep
 (use-package helm-rg
@@ -440,6 +448,14 @@ Buffers visiting files no existing/readable will be killed."
 (use-package dockerfile-mode
   :mode "Dockerfile\\'")
 
+(use-package hi-lock
+  :bind (("s-a" . highlight-symbol-at-point)
+         ("s-d" . unhighlight-regexp))
+  :config (setq hi-lock-face-defaults '("hi-pink"))
+  :custom-face (hi-pink ((t (:background "pink4")))))
+
+;;;;;; Ops
+
 (use-package terraform-mode
   :hook (terraform-mode . terraform-format-on-save-mode)
   :config
@@ -448,12 +464,6 @@ Buffers visiting files no existing/readable will be killed."
 
 (use-package kubernetes
   :commands (kubernetes-overview))
-
-(use-package hi-lock
-  :bind (("s-a" . highlight-symbol-at-point)
-         ("s-d" . unhighlight-regexp))
-  :config (setq hi-lock-face-defaults '("hi-pink"))
-  :custom-face (hi-pink ((t (:background "pink4")))))
 
 ;;;;;; Lisp
 
