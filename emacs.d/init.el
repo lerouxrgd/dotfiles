@@ -295,7 +295,14 @@ Buffers visiting files no existing/readable will be killed."
 
 (use-package swiper-helm
   :bind (:map isearch-mode-map
-              ("TAB" . swiper-helm-from-isearch)))
+              ("TAB" . swiper-helm-from-isearch))
+  :config
+  (defun swiper-helm-display-buffer (buf &optional _resume)
+    (split-window-vertically)
+    (other-window 1)
+    (switch-to-buffer buf))
+  (setq swiper-helm-display-function
+        'swiper-helm-display-buffer))
 
 ;; sudo pacman -Syu ripgrep
 (use-package helm-rg
