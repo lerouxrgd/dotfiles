@@ -96,7 +96,7 @@
   "Refresh all open file buffers without confirmation.
 Buffers in modified (not yet saved) state in emacs will not be reverted.
 They will be reverted though if they were modified outside emacs.
-Buffers visiting files no existing/readable will be killed."
+Buffers visiting files not existing/readable will be killed."
   (interactive)
   (dolist (buf (buffer-list))
     (let ((filename (buffer-file-name buf)))
@@ -139,7 +139,7 @@ Buffers visiting files no existing/readable will be killed."
                  (file-truename buffer-file-name)
                  ""))))
       (doom-modeline--buffer-file-name
-       buffer-file-name buffer-file-truename'shrink 'shink 'hide)))
+       buffer-file-name buffer-file-truename 'shrink 'shink 'hide)))
   (setq frame-title-format '((:eval (doom-buffer-name)) " - %F")
         doom-modeline-height 20))
 
@@ -158,7 +158,8 @@ Buffers visiting files no existing/readable will be killed."
   :hook (after-init . global-company-mode)
   :bind (("TAB" . company-indent-or-complete-common)
          :map company-active-map
-         ("<right>" . company-abort))
+         ("<right>" . company-complete-selection)
+	 ("<left>"  . company-abort))
   :config
   (add-hook 'buffer-list-update-hook
             (lambda () (auto-complete-mode -1)))
@@ -417,10 +418,6 @@ Buffers visiting files no existing/readable will be killed."
   :mode (("\\.json\\'" . json-mode)
          ("\\.avsc\\'" . json-mode))
   :config (setq js-indent-level 2))
-
-(use-package cmake-mode
-  :mode (("CMakeLists\\.txt\\'" . cmake-mode)
-         ("\\.cmake\\'"         . cmake-mode)))
 
 (use-package cmake-font-lock
   :hook (cmake-mode . cmake-font-lock-activate))
