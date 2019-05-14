@@ -420,7 +420,10 @@ Buffers visiting files no existing/readable will be killed."
 
 (use-package cmake-mode
   :mode (("CMakeLists\\.txt\\'" . cmake-mode)
-         ("\\.cmake\\'" . cmake-mode)))
+         ("\\.cmake\\'"         . cmake-mode)))
+
+(use-package cmake-font-lock
+  :hook (cmake-mode . cmake-font-lock-activate))
 
 ;; sudo pacman -Syu marked
 (use-package markdown-mode
