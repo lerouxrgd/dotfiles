@@ -559,14 +559,12 @@ Buffers visiting files no existing/readable will be killed."
   :load-path "/usr/share/clang"
   :hook ((c-mode c++-mode objc-mode)
          . (lambda ()
-             (local-set-key (kbd "C-c TAB") 'clang-indent-line)
              (add-hook 'before-save-hook
                        'clang-format-buffer)))
   :config
-  (defun clang-indent-line ()
-    (interactive)
-    (clang-format-region
-     (line-beginning-position) (line-end-position))))
+  (use-package flycheck-clang-tidy
+    :after flycheck
+    :hook (flycheck-mode . flycheck-clang-tidy-setup)))
 
 ;;;;;; Go
 
