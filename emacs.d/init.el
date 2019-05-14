@@ -68,14 +68,11 @@
                      (let ((size (getenv "EMACS_FONT_SIZE")))
                        (if size (concat "-" size) "")))))
 
-  (setq-default
-   frame-title-format `("%F - %b (" ,(cdr (project-current)) ")")
-   indent-tabs-mode nil) ; Don't use hard tabs
-
   (setq
    inhibit-startup-message t        ; Go to scratch buffer on startup
    inhibit-splash-screen   t        ; No splash screen
    ring-bell-function      'ignore  ; No bell
+   indent-tabs-mode        nil      ; Don't use hard tabs
    create-lockfiles        nil      ; No need for ~ files when editing
    auto-save-default       nil)     ; No auto-save of file-visiting buffers
 
@@ -130,7 +127,21 @@ Buffers visiting files no existing/readable will be killed."
 
 (use-package doom-modeline
   :hook (after-init . doom-modeline-mode)
-  :config (setq doom-modeline-height 20))
+  :config
+  (defun doom-buffer-name ()
+    (let* ((buffer-file-name
+            (file-local-name
+             (or (buffer-file-name (buffer-base-buffer))
+                 "")))
+           (buffer-file-truename
+            (file-local-name
+             (or buffer-file-truename
+                 (file-truename buffer-file-name)
+                 ""))))
+      (doom-modeline--buffer-file-name
+       buffer-file-name buffer-file-truename'shrink 'shink 'hide)))
+  (setq frame-title-format '((:eval (doom-buffer-name)) " - %F")
+        doom-modeline-height 20))
 
 ;;;;;; General packages
 
@@ -556,7 +567,6 @@ Buffers visiting files no existing/readable will be killed."
     (interactive)
     (clang-format-region
      (line-beginning-position) (line-end-position))))
-  
 
 ;;;;;; Go
 
