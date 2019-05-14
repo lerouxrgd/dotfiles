@@ -69,7 +69,7 @@
                        (if size (concat "-" size) "")))))
 
   (setq-default
-   frame-title-format `("%F - %b (" ,(or (cdr (project-current)) "") ")")
+   frame-title-format `("%F - %b (" ,(cdr (project-current)) ")")
    indent-tabs-mode nil) ; Don't use hard tabs
 
   (setq
