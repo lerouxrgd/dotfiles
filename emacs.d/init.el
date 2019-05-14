@@ -557,14 +557,11 @@ Buffers visiting files no existing/readable will be killed."
 
 (use-package clang-format
   :load-path "/usr/share/clang"
-  :hook ((c-mode c++-mode objc-mode)
-         . (lambda ()
-             (add-hook 'before-save-hook
-                       'clang-format-buffer)))
-  :config
-  (use-package flycheck-clang-tidy
-    :after flycheck
-    :hook (flycheck-mode . flycheck-clang-tidy-setup)))
+  :hook (before-save
+	 . (lambda ()
+	     (interactive)
+	     (when (derived-mode-p 'c-mode 'c++-mode 'objc-mode)
+	       (clang-format-buffer)))))
 
 ;;;;;; Go
 
