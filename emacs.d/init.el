@@ -279,16 +279,19 @@ Buffers visiting files no existing/readable will be killed."
               ("<left>"  . dired-subtree-remove)))
 
 (use-package helm
-  :bind (("M-X"         . helm-M-x)
-         ("C-x C-x C-f" . helm-recentf)
-         ("C-c m"       . helm-imenu)
-         ("C-c f"       . helm-find-project))
+  :preface
+  (require 'helm-config)
+  :bind (("C-x x" . helm-command-prefix)
+         :map helm-command-map
+         ("." . helm-etags-select)
+         ("m" . helm-imenu)
+         ("x" . helm-find-project))
   :config
-  (helm-autoresize-mode t)
   (defun helm-find-project ()
     (interactive)
     (let ((default-directory (cdr (project-current))))
-      (helm-find nil))))
+      (helm-find nil)))
+  (helm-autoresize-mode t))
 
 (use-package swiper-helm
   :bind (:map isearch-mode-map
@@ -323,41 +326,6 @@ Buffers visiting files no existing/readable will be killed."
      ((t (:weight bold
                   :background ,(doom-color 'blue)
                   :foreground ,(doom-color 'bg)))))))
-
-;; yay -Syu global
-;; sudo pacman -Syu ctags
-;; pip install --user pygments
-(use-package helm-gtags
-  :bind (("C-M-m g" . toggle-helm-gtags-mode)
-         :map helm-gtags-mode-map
-         ("C-c C-t" . helm-gtags-create-tags)
-         ("M-."     . helm-gtags-find-tag-from-here)
-         ("M-,"     . helm-gtags-pop-stack))
-
-  :preface
-  (defvar helm-gtags-on nil)
-  :config
-  (defun toggle-helm-gtags-mode ()
-    (interactive)
-    (cond (helm-gtags-on ; toggle off
-           (setq helm-gtags-on nil)
-           (remove-hook 'prog-mode-hook 'helm-gtags-mode)
-           (dolist (buffer (buffer-list))
-             (with-current-buffer buffer
-               (funcall 'helm-gtags-mode -1))))
-          (t ; toggle on
-           (setq helm-gtags-on t)
-           (add-hook 'prog-mode-hook 'helm-gtags-mode)
-           (dolist (buffer (buffer-list))
-             (with-current-buffer buffer
-               (funcall 'helm-gtags-mode 1))))))
-
-  (setq helm-always-two-windows t
-        helm-split-window-inside-p t)
-
-  :custom
-  (helm-gtags-auto-update t)
-  (helm-gtags-path-style 'relative))
 
 (use-package helm-xref
   :config
