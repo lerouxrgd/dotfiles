@@ -453,11 +453,16 @@ Buffers visiting files not existing/readable will be killed."
 
 ;;;;;; Lisp
 
+(use-package rainbow-delimiters)
+
 (use-package paredit
   :hook ((emacs-lisp-mode . enable-paredit-mode)
          (lisp-mode       . enable-paredit-mode)))
 
-(use-package rainbow-delimiters)
+;; yay -Syu chez-scheme
+(use-package geiser
+  :preface (setq geiser-active-implementations '(chez))
+  :hook (scheme-mode . enable-paredit-mode))
 
 ;;;;;; Clojure
 
@@ -506,20 +511,6 @@ Buffers visiting files not existing/readable will be killed."
   :after lsp
   :config (add-hook 'java-mode-hook 'lsp))
 
-;;;;;; Python
-
-;; https://github.com/jorgenschaefer/elpy
-
-;; sudo pacman -Syu ipython
-;; pip install --user rope flake8 importmagic autopep8 yapf black
-
-(use-package elpy
-  :hook (python-mode . elpy-enable)
-  :config
-  (setq python-shell-interpreter "ipython"
-        python-shell-interpreter-args "--simple-prompt -i")
-  (elpy-mode))
-
 ;;;;;; Javascript
 
 ;; https://github.com/codesuki/add-node-modules-path
@@ -534,6 +525,20 @@ Buffers visiting files not existing/readable will be killed."
   :hook (js-mode . add-node-modules-path)
   :config
   (flycheck-add-mode 'javascript-eslint 'flow-mode))
+
+;;;;;; Python
+
+;; https://github.com/jorgenschaefer/elpy
+
+;; sudo pacman -Syu ipython
+;; pip install --user rope flake8 importmagic autopep8 yapf black
+
+(use-package elpy
+  :hook (python-mode . elpy-enable)
+  :config
+  (setq python-shell-interpreter "ipython"
+        python-shell-interpreter-args "--simple-prompt -i")
+  (elpy-mode))
 
 ;;;;;; C/C++
 
