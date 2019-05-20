@@ -203,7 +203,7 @@ Buffers visiting files not existing/readable will be killed."
   :hook (prog-mode . yas-minor-mode)
   :bind (("M-/" . hippie-expand)
          :map yas-minor-mode-map
-         ("C-x C-x C-s" . yas-insert-snippet))
+         ("C-x C-x C-SPC" . yas-insert-snippet))
   :config
   (use-package yasnippet-snippets)
   (setq hippie-expand-try-functions-list
@@ -211,16 +211,6 @@ Buffers visiting files not existing/readable will be killed."
           try-expand-dabbrev-all-buffers
           try-expand-dabbrev-from-kill
           yas-hippie-try-expand)))
-
-(use-package iedit
-  :custom (iedit-toggle-key-default (kbd "C-:")))
-
-(use-package multiple-cursors
-  :bind
-  (("C-x C-x C-c" . mc/edit-lines)
-   ("C-x C-x C->" . mc/mark-next-like-this)
-   ("C-x C-x C-<" . mc/mark-previous-like-this)
-   ("C-x C-x C-:" . mc/mark-all-like-this)))
 
 (use-package uniquify
   :ensure nil
@@ -240,6 +230,25 @@ Buffers visiting files not existing/readable will be killed."
         recentf-max-menu-items 35
 	recentf-auto-cleanup 'never)
   (recentf-mode 1))
+
+;;;;;; Editing
+
+(use-package iedit
+  :custom (iedit-toggle-key-default (kbd "C-:")))
+
+(use-package multiple-cursors
+  :bind
+  (("C-x C-x C-c" . mc/edit-lines)
+   ("C-x C-x C->" . mc/mark-next-like-this)
+   ("C-x C-x C-<" . mc/mark-previous-like-this)
+   ("C-x C-x C-:" . mc/mark-all-like-this)))
+
+(use-package visual-regexp-steroids
+  :bind
+  (("C-x C-x C-?" . vr/query-replace)
+   ("C-x C-x C-k" . vr/mc-mark)
+   ("C-M-S"       . vr/isearch-forward)
+   ("C-M-R"       . vr/isearch-backward)))
 
 (use-package editorconfig
   :config (editorconfig-mode 1))
