@@ -552,10 +552,11 @@ Buffers visiting files not existing/readable will be killed."
   :hook ((c-mode c++-mode objc-mode)
          . (lambda () (require 'ccls) (lsp)))
   :bind (:map c-mode-base-map
-	      ("C-z H" . ccls-inheritance-hierarchy)
-	      ("C-z C" . ccls-call-hierarchy)
-              ("C-z M" . ccls-member-hierarchy)
-              ("C-z L" . ccls-code-lens-mode))
+	      ("C-c C-c" . ff-find-other-file)
+	      ("C-z H"   . ccls-inheritance-hierarchy)
+	      ("C-z C"   . ccls-call-hierarchy)
+              ("C-z M"   . ccls-member-hierarchy)
+              ("C-z L"   . ccls-code-lens-mode))
   :init
   (setq flycheck-disabled-checkers
         '(c/c++-clang c/c++-cppcheck c/c++-gcc)))
