@@ -575,7 +575,11 @@ Buffers visiting files not existing/readable will be killed."
               ("C-z L"   . ccls-code-lens-mode))
   :init
   (setq flycheck-disabled-checkers
-        '(c/c++-clang c/c++-cppcheck c/c++-gcc)))
+        '(c/c++-clang c/c++-cppcheck c/c++-gcc))
+  :custom
+  (ff-search-directories
+   '("." "/usr/include" "/usr/local/include/*" ; original value
+     "../include" "../../include/" "../src/*/*")))
 
 (use-package clang-format
   :load-path "/usr/share/clang"
