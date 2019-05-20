@@ -215,6 +215,13 @@ Buffers visiting files not existing/readable will be killed."
 (use-package iedit
   :custom (iedit-toggle-key-default (kbd "C-:")))
 
+(use-package multiple-cursors
+  :bind
+  (("C-x C-x C-c" . mc/edit-lines)
+   ("C-x C-x C->" . mc/mark-next-like-this)
+   ("C-x C-x C-<" . mc/mark-previous-like-this)
+   ("C-x C-x C-:" . mc/mark-all-like-this)))
+
 (use-package uniquify
   :ensure nil
   :config (setq uniquify-buffer-name-style 'forward))

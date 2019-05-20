@@ -13,9 +13,10 @@ cider-history
 transient
 
 # workspace local files
-workspace/
+workspace
+eclipse.jdt.ls
 .lsp-session*
-eclipse.jdt.ls/
+.mc-lists.el
 .cache
 
 # Network Security Manager
