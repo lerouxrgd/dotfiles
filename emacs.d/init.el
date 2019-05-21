@@ -88,9 +88,9 @@
     (comment-or-uncomment-region
      (line-beginning-position) (line-end-position)))
 
-  (defun show-file-name ()
-    (interactive)
-    (message (buffer-file-name)))
+  (defun project-or-root ()
+    (or (cdr (project-current))
+	(with-current-buffer "*Messages*" default-directory)))
 
   (defun revert-all-file-buffers ()
   "Refresh all open file buffers without confirmation.
@@ -293,8 +293,8 @@ Buffers visiting files not existing/readable will be killed."
     (unless (treemacs-current-workspace)
       (treemacs--find-workspace))
     (treemacs-do-add-project-to-workspace
-     (cdr (project-current))
-     (car (last (butlast (split-string (cdr (project-current)) "/")))))
+     (project-or-root)
+     (car (last (butlast (split-string (project-or-root) "/")))))
     (treemacs-select-window))
 
   (setq treemacs-persist-file "/dev/null"
@@ -317,7 +317,7 @@ Buffers visiting files not existing/readable will be killed."
   :config
   (defun helm-find-project ()
     (interactive)
-    (let ((default-directory (cdr (project-current))))
+    (let ((default-directory (project-or-root)))
       (helm-find nil)))
   (helm-autoresize-mode t))
 
@@ -340,7 +340,7 @@ Buffers visiting files not existing/readable will be killed."
   :config
   (defun helm-rg-project (pattern)
     (interactive (list (helm-rg--get-thing-at-pt)))
-    (let ((default-directory (cdr (project-current))))
+    (let ((default-directory (project-or-root)))
       (helm-rg pattern t)))
 
   (setq helm-always-two-windows t
