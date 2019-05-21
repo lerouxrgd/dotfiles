@@ -258,19 +258,22 @@ Buffers visiting files not existing/readable will be killed."
 (use-package multiple-cursors
   :after selected
   :bind
-  (("C-x C-x C-SPC" . mc/edit-lines)
-   :map mc/keymap
-   ("<backtab>" . mc/vertical-align-with-space)
-   :map selected-keymap
+  (:map
+   selected-keymap
+   ("SPC" . mc/edit-lines)
    (":"   . mc/mark-all-like-this)
    (">"   . mc/mark-next-like-this)
    ("<"   . mc/mark-previous-like-this)
-   ("C->" . mc/unmark-next-like-this)
-   ("C-<" . mc/unmark-previous-like-this)
-   ("."   . mc/skip-to-next-like-this)
-   (","   . mc/skip-to-previous-like-this)
-   ("]"   . mc/cycle-forward)
-   ("["   . mc/cycle-backward)))
+   ("."   . mc/unmark-next-like-this)
+   (","   . mc/unmark-previous-like-this)
+   ("C->" . mc/skip-to-next-like-this)
+   ("C-<" . mc/skip-to-previous-like-this)
+   :map
+   mc/keymap
+   ("<backtab>" . mc/vertical-align-with-space)
+   ("}"         . mc/cycle-forward)
+   ("{"         . mc/cycle-backward)
+   ("h"         . mc-hide-unmatched-lines-mode)))
 
 (use-package visual-regexp-steroids
   :bind
