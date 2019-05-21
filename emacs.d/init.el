@@ -83,14 +83,19 @@
   (when (file-exists-p custom-file)
     (load custom-file))
 
+  (defun project-or-root ()
+    (or (cdr (project-current))
+	(with-current-buffer "*Messages*" default-directory)))
+
   (defun toggle-comment-on-line ()
     (interactive)
     (comment-or-uncomment-region
      (line-beginning-position) (line-end-position)))
 
-  (defun project-or-root ()
-    (or (cdr (project-current))
-	(with-current-buffer "*Messages*" default-directory)))
+  (defun backward-whitespace (arg)
+    "Move to the beginning of the current sequence of whitespaces"
+    (interactive "^p")
+    (forward-whitespace (- arg)))
 
   (defun revert-all-file-buffers ()
   "Refresh all open file buffers without confirmation.
@@ -119,6 +124,8 @@ Buffers visiting files not existing/readable will be killed."
    ("C-x C-x C-x" . exchange-point-and-mark)
    ("C-x C-x C-r" . revert-all-file-buffers)
    ("C-x C-b"     . ibuffer)
+   ("M-F"         . forward-whitespace)
+   ("M-B"         . backward-whitespace)
    ("C-;"         . toggle-comment-on-line)
    ("C-z"         . nil)))
 
@@ -203,7 +210,7 @@ Buffers visiting files not existing/readable will be killed."
   :hook (prog-mode . yas-minor-mode)
   :bind (("M-/" . hippie-expand)
          :map yas-minor-mode-map
-         ("C-x C-x C-SPC" . yas-insert-snippet))
+         ("C-x C-x C-s" . yas-insert-snippet))
   :config
   (use-package yasnippet-snippets)
   (setq hippie-expand-try-functions-list
@@ -231,6 +238,9 @@ Buffers visiting files not existing/readable will be killed."
 	recentf-auto-cleanup 'never)
   (recentf-mode 1))
 
+(use-package editorconfig
+  :config (editorconfig-mode 1))
+
 ;;;;;; Editing
 
 (use-package iedit
@@ -238,10 +248,12 @@ Buffers visiting files not existing/readable will be killed."
 
 (use-package multiple-cursors
   :bind
-  (("C-x C-x C-c" . mc/edit-lines)
-   ("C-x C-x C->" . mc/mark-next-like-this)
-   ("C-x C-x C-<" . mc/mark-previous-like-this)
-   ("C-x C-x C-:" . mc/mark-all-like-this)))
+  (("C-x C-x C-SPC" . mc/edit-lines)
+   ("C-x C-x C-:"   . mc/mark-all-like-this)
+   ("C->"           . mc/mark-next-like-this)
+   ("C-<"           . mc/mark-previous-like-this)
+   :map mc/keymap
+   ("<backtab>" . mc/vertical-align-with-space)))
 
 (use-package visual-regexp-steroids
   :bind
@@ -250,8 +262,17 @@ Buffers visiting files not existing/readable will be killed."
    ("C-M-S"       . vr/isearch-forward)
    ("C-M-R"       . vr/isearch-backward)))
 
-(use-package editorconfig
-  :config (editorconfig-mode 1))
+(use-package selected
+  :bind (:map selected-keymap
+              ("q" . selected-off)
+              ("u" . upcase-region)
+              ("l" . downcase-region)
+              ("w" . count-words-region)
+              ("m" . apply-macro-to-region-lines))
+  :init (selected-global-mode))
+
+(use-package expand-region
+  :bind ("C-=" . er/expand-region))
 
 ;;;;;; Navigation
 
@@ -654,3 +675,5 @@ Buffers visiting files not existing/readable will be killed."
   :hook (rust-mode . cargo-minor-mode))
 
 ;;; init.el ends here
+(put 'upcase-region 'disabled nil)
+(put 'downcase-region 'disabled nil)
