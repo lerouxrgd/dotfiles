@@ -246,22 +246,6 @@ Buffers visiting files not existing/readable will be killed."
 (use-package iedit
   :custom (iedit-toggle-key-default (kbd "C-:")))
 
-(use-package multiple-cursors
-  :bind
-  (("C-x C-x C-SPC" . mc/edit-lines)
-   ("C-x C-x C-:"   . mc/mark-all-like-this)
-   ("C->"           . mc/mark-next-like-this)
-   ("C-<"           . mc/mark-previous-like-this)
-   :map mc/keymap
-   ("<backtab>" . mc/vertical-align-with-space)))
-
-(use-package visual-regexp-steroids
-  :bind
-  (("C-x C-x C-?" . vr/query-replace)
-   ("C-x C-x C-k" . vr/mc-mark)
-   ("C-M-S"       . vr/isearch-forward)
-   ("C-M-R"       . vr/isearch-backward)))
-
 (use-package selected
   :bind (:map selected-keymap
               ("q" . selected-off)
@@ -270,6 +254,30 @@ Buffers visiting files not existing/readable will be killed."
               ("w" . count-words-region)
               ("m" . apply-macro-to-region-lines))
   :init (selected-global-mode))
+
+(use-package multiple-cursors
+  :after selected
+  :bind
+  (("C-x C-x C-SPC" . mc/edit-lines)
+   :map mc/keymap
+   ("<backtab>" . mc/vertical-align-with-space)
+   :map selected-keymap
+   (":"   . mc/mark-all-like-this)
+   (">"   . mc/mark-next-like-this)
+   ("<"   . mc/mark-previous-like-this)
+   ("C->" . mc/unmark-next-like-this)
+   ("C-<" . mc/unmark-previous-like-this)
+   ("."   . mc/skip-to-next-like-this)
+   (","   . mc/skip-to-previous-like-this)
+   ("]"   . mc/cycle-forward)
+   ("["   . mc/cycle-backward)))
+
+(use-package visual-regexp-steroids
+  :bind
+  (("C-x C-x C-?" . vr/query-replace)
+   ("C-x C-x C-k" . vr/mc-mark)
+   ("C-M-S"       . vr/isearch-forward)
+   ("C-M-R"       . vr/isearch-backward)))
 
 (use-package expand-region
   :bind ("C-=" . er/expand-region))
