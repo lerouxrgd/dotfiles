@@ -244,11 +244,10 @@ Buffers visiting files not existing/readable will be killed."
 ;;;;;; Editing
 
 (use-package iedit
-  :bind
-  (("C-:" . iedit-mode)
-   :map iedit-mode-keymap
-   ("C-h"   . iedit-show/hide-unmatched-lines)
-   ("C-M-:" . iedit-switch-to-mc-mode)))
+  :bind (("C-:" . iedit-mode)
+	 :map iedit-mode-keymap
+	 ("C-h"   . iedit-show/hide-unmatched-lines)
+	 ("C-M-:" . iedit-switch-to-mc-mode)))
 
 (use-package selected
   :bind (:map selected-keymap
@@ -280,11 +279,10 @@ Buffers visiting files not existing/readable will be killed."
    ("h"         . mc-hide-unmatched-lines-mode)))
 
 (use-package visual-regexp-steroids
-  :bind
-  (("C-x C-x C-?" . vr/query-replace)
-   ("C-x C-x C-k" . vr/mc-mark)
-   ("C-M-S"       . vr/isearch-forward)
-   ("C-M-R"       . vr/isearch-backward)))
+  :bind (("C-x C-x C-?" . vr/query-replace)
+	 ("C-x C-x C-k" . vr/mc-mark)
+	 ("C-M-S"       . vr/isearch-forward)
+	 ("C-M-R"       . vr/isearch-backward)))
 
 (use-package expand-region
   :bind ("C-=" . er/expand-region))
