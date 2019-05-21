@@ -244,7 +244,11 @@ Buffers visiting files not existing/readable will be killed."
 ;;;;;; Editing
 
 (use-package iedit
-  :custom (iedit-toggle-key-default (kbd "C-:")))
+  :bind
+  (("C-:" . iedit-mode)
+   :map iedit-mode-keymap
+   ("C-h"   . iedit-show/hide-unmatched-lines)
+   ("C-M-:" . iedit-switch-to-mc-mode)))
 
 (use-package selected
   :bind (:map selected-keymap
