@@ -68,6 +68,9 @@
                      (let ((size (getenv "EMACS_FONT_SIZE")))
                        (if size (concat "-" size) "")))))
 
+  (put 'upcase-region   'disabled nil)
+  (put 'downcase-region 'disabled nil)
+
   (setq
    inhibit-startup-message t        ; Go to scratch buffer on startup
    inhibit-splash-screen   t        ; No splash screen
@@ -271,12 +274,19 @@ Buffers visiting files not existing/readable will be killed."
    (","   . mc/unmark-previous-like-this)
    ("C->" . mc/skip-to-next-like-this)
    ("C-<" . mc/skip-to-previous-like-this)
+   ("h"   . mc-hide-unmatched-lines-mode)
    :map
    mc/keymap
-   ("<backtab>" . mc/vertical-align-with-space)
-   ("}"         . mc/cycle-forward)
-   ("{"         . mc/cycle-backward)
-   ("h"         . mc-hide-unmatched-lines-mode)))
+   ("<backtab>" . mc/vertical-align-with-space))
+
+  :hook (multiple-cursors-mode . mc-selected-keys)
+  :config
+  (defun mc-selected-keys ()
+    (if (bound-and-true-p multiple-cursors-mode)
+	(progn (define-key selected-keymap (kbd "}") 'mc/cycle-forward)
+	       (define-key selected-keymap (kbd "{") 'mc/cycle-backward))
+      (progn (define-key selected-keymap (kbd "}") nil)
+	     (define-key selected-keymap (kbd "{") nil)))))
 
 (use-package visual-regexp-steroids
   :bind (("C-x C-x C-?" . vr/query-replace)
@@ -620,7 +630,7 @@ Buffers visiting files not existing/readable will be killed."
         '(c/c++-clang c/c++-cppcheck c/c++-gcc))
   :custom
   (ff-search-directories
-   '("." "/usr/include" "/usr/local/include/*" ; original value
+   '("." "/usr/include" "/usr/local/include/*" ; original values
      "../include" "../../include/" "../src/*/*")))
 
 (use-package clang-format
@@ -696,5 +706,3 @@ Buffers visiting files not existing/readable will be killed."
   :hook (rust-mode . cargo-minor-mode))
 
 ;;; init.el ends here
-(put 'upcase-region 'disabled nil)
-(put 'downcase-region 'disabled nil)
