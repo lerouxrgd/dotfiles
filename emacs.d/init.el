@@ -148,7 +148,7 @@ Buffers visiting files not existing/readable will be killed."
       (doom-modeline--buffer-file-name
        buffer-file-name buffer-file-truename 'shrink 'shink 'hide)))
   (setq frame-title-format '((:eval (doom-buffer-name)) " - %F")
-        doom-modeline-height 20))
+        doom-modeline-height 18))
 
 ;;;;;; General packages
 
@@ -331,8 +331,11 @@ Buffers visiting files not existing/readable will be killed."
      (car (last (butlast (split-string (project-or-root) "/")))))
     (treemacs-select-window))
 
+  (treemacs-resize-icons 18)
   (setq treemacs-persist-file "/dev/null"
-        treemacs-collapse-dirs 7))
+        treemacs-collapse-dirs 7
+	treemacs-file-follow-delay 0
+	treemacs-width 30))
 
 (use-package dired-subtree
   :defer 1
@@ -388,9 +391,9 @@ Buffers visiting files not existing/readable will be killed."
    `(helm-rg-error-message
      ((t (:foreground ,(doom-color 'yellow)))))
    `(helm-rg-line-number-match-face
-     ((t (:foreground ,(doom-color 'teal) :underline t))))
+     ((t (:foreground ,(doom-color 'teal)))))
    `(helm-rg-file-match-face
-     ((t (:foreground ,(doom-color 'teal) :underline t))))
+     ((t (:foreground ,(doom-color 'teal)))))
    `(helm-rg-preview-line-highlight
      ((t (:weight bold
                   :background ,(doom-color 'blue)
@@ -512,7 +515,8 @@ Buffers visiting files not existing/readable will be killed."
 ;; yay -Syu chez-scheme
 (use-package geiser
   :preface (setq geiser-active-implementations '(chez))
-  :hook (scheme-mode . enable-paredit-mode))
+  :hook ((scheme-mode      . enable-paredit-mode)
+	 (geiser-repl-mode . enable-paredit-mode)))
 
 ;;;;;; Clojure
 
@@ -528,15 +532,20 @@ Buffers visiting files not existing/readable will be killed."
   :hook ((clojure-mode . enable-paredit-mode)
 	 (clojure-mode . subword-mode)
 	 (clojure-mode . rainbow-delimiters-mode))
+  :bind (:map clojure-mode-map
+	      ("C-:"   . iedit-mode)
+	      ("C-c :" . clojure-toggle-keyword-string))
   :config
   (use-package clojure-mode-extra-font-locking))
 
 (use-package cider
   :after clojure-mode
   :bind (("C-c C-M-b" . cider-browse-ns-all)
-         ("C-c M-b"   . browse-current-ns))
-  :hook ((cider-mode      . eldoc-mode)
-         (cider-repl-mode . paredit-mode))
+         ("C-c M-b"   . browse-current-ns)
+	 :map cider-repl-mode-map
+	 ("C-c C-o" . cider-repl-clear-buffer))
+  :hook ((cider-repl-mode . paredit-mode)
+	 (cider-mode      . eldoc-mode))
   :init
   (defun browse-current-ns ()
     (interactive)
@@ -547,11 +556,10 @@ Buffers visiting files not existing/readable will be killed."
         cider-repl-history-file "~/.emacs.d/cider-history"))
 
 (use-package clj-refactor
-  :after clojure-mode
   :hook (clojure-mode . clj-refactor-mode)
   :config
-  (clj-refactor-mode 1)
-  (cljr-add-keybindings-with-prefix "C-c r"))
+  (cljr-add-keybindings-with-prefix "C-c TAB")
+  (setq cljr-warn-on-eval nil))
 
 ;;;;;; Java
 
