@@ -60,6 +60,8 @@
   (toggle-frame-maximized)                 ; Max size window on startup
   (prefer-coding-system 'utf-8)            ; Use UTF-8
   (fset 'yes-or-no-p 'y-or-n-p)            ; Use y/n for questions
+  (put 'upcase-region   'disabled nil)     ; Allow upcase selection
+  (put 'downcase-region 'disabled nil)     ; Allow downcase selection
 
   ;; Setup font
   (add-to-list
@@ -67,9 +69,6 @@
    `(font . ,(concat "DejaVu Sans Mono"
                      (let ((size (getenv "EMACS_FONT_SIZE")))
                        (if size (concat "-" size) "")))))
-
-  (put 'upcase-region   'disabled nil)
-  (put 'downcase-region 'disabled nil)
 
   (setq
    inhibit-startup-message t        ; Go to scratch buffer on startup
