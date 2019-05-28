@@ -46,16 +46,16 @@
 
 (use-package doom-themes
   :init
-  (load-theme 'doom-opera t)  ; Define theme
-  (menu-bar-mode         -1)  ; Turn off menu bars
-  (tool-bar-mode         -1)  ; Turn off tool bar
-  (scroll-bar-mode       -1)  ; Turn off native OS scroll bars
-  (blink-cursor-mode     -1)  ; Turn off blinking cursor
-  (global-hl-line-mode    1)  ; Highlight current line
-  (show-paren-mode        1)  ; Highlight matching parenthesis
-  (global-linum-mode      1)  ; Show line numbers
-  (column-number-mode     1)  ; Show column number
-  (electric-indent-mode   1)  ; Auto indent on new line
+  (load-theme 'doom-opera               t) ; Define theme
+  (menu-bar-mode                       -1) ; Turn off menu bars
+  (tool-bar-mode                       -1) ; Turn off tool bar
+  (scroll-bar-mode                     -1) ; Turn off native OS scroll bars
+  (blink-cursor-mode                   -1) ; Turn off blinking cursor
+  (global-hl-line-mode                  1) ; Highlight current line
+  (show-paren-mode                      1) ; Highlight matching parenthesis
+  (global-display-line-numbers-mode     1) ; Show line numbers
+  (column-number-mode                   1) ; Show column number
+  (electric-indent-mode                 1) ; Auto indent on new line
   (set-frame-parameter nil 'undecorated t) ; No window decoration
   (toggle-frame-maximized)                 ; Max size window on startup
   (prefer-coding-system 'utf-8)            ; Use UTF-8
