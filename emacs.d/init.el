@@ -182,6 +182,13 @@ Buffers visiting files not existing/readable will be killed."
   (defun flycheck-on-save ()
     (setq flycheck-check-syntax-automatically '(mode-enabled save)))
   :config
+  (add-to-list 'display-buffer-alist
+	       `(,(rx bos "*Flycheck errors*" eos)
+		 (display-buffer-reuse-window
+		  display-buffer-in-side-window)
+		 (side            . bottom)
+		 (reusable-frames . visible)
+		 (window-height   . 0.33)))
   (use-package flycheck-pos-tip
     :config
     (setq flycheck-pos-tip-timeout 7
