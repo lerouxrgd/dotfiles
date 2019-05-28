@@ -432,6 +432,8 @@ Buffers visiting files not existing/readable will be killed."
 (use-package lsp-mode
   :hook (prog-mode . lsp-mode)
   :config
+  (setq lsp-prefer-flymake nil
+	lsp-enable-symbol-highlighting nil)
   (lsp-register-client
    (make-lsp-client
     :new-connection (lsp-stdio-connection '("flow" "lsp"))
@@ -441,7 +443,8 @@ Buffers visiting files not existing/readable will be killed."
 (use-package lsp-ui
   :hook (lsp-mode . lsp-ui-mode)
   :bind (:map lsp-ui-mode-map
-              ("C-z !" . flymake-show-diagnostics-buffer)
+              ("C-z !" . lsp-ui-flycheck-list)
+	      ("C-z z" . lsp-document-highlight)
               ("C-z d" . lsp-describe-thing-at-point)
               ("C-z m" . lsp-ui-imenu)
               ("C-z r" . lsp-rename)
