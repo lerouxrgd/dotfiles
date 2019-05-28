@@ -82,7 +82,7 @@
   ;; Local files
   (setq
    backup-directory-alist '(("." . "~/.emacs.d/backups"))
-   custom-file            "~/.emacs.d/custom.el")
+   custom-file "~/.emacs.d/custom.el")
   (when (file-exists-p custom-file)
     (load custom-file))
 
@@ -182,18 +182,15 @@ Buffers visiting files not existing/readable will be killed."
   (defun flycheck-on-save ()
     (setq flycheck-check-syntax-automatically '(mode-enabled save)))
   :config
+  (setq flycheck-display-errors-function
+	'flycheck-display-error-messages-unless-error-list)
   (add-to-list 'display-buffer-alist
 	       `(,(rx bos "*Flycheck errors*" eos)
 		 (display-buffer-reuse-window
 		  display-buffer-in-side-window)
 		 (side            . bottom)
 		 (reusable-frames . visible)
-		 (window-height   . 0.33)))
-  (use-package flycheck-pos-tip
-    :config
-    (setq flycheck-pos-tip-timeout 7
-	  flycheck-display-errors-delay 0.5)
-    (flycheck-pos-tip-mode 1)))
+		 (window-height   . 0.20))))
 
 (use-package ido-completing-read+
   :config
