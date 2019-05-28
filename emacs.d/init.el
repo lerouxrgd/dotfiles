@@ -442,6 +442,7 @@ Buffers visiting files not existing/readable will be killed."
   :hook (prog-mode . lsp-mode)
   :config
   (setq lsp-prefer-flymake nil
+	lsp-document-highlight-delay 0.1
 	lsp-enable-symbol-highlighting nil)
   (lsp-register-client
    (make-lsp-client
@@ -453,7 +454,7 @@ Buffers visiting files not existing/readable will be killed."
   :hook (lsp-mode . lsp-ui-mode)
   :bind (:map lsp-ui-mode-map
               ("C-z !" . lsp-ui-flycheck-list)
-	      ("C-z z" . lsp-document-highlight)
+	      ("C-z z" . lsp-toggle-highlighting)
               ("C-z d" . lsp-describe-thing-at-point)
               ("C-z m" . lsp-ui-imenu)
               ("C-z r" . lsp-rename)
@@ -463,16 +464,20 @@ Buffers visiting files not existing/readable will be killed."
               ("C-z D" . lsp-find-declaration)
               ("C-z T" . lsp-find-type-definition)
               ("C-z A" . xref-apropos-at-point))
+
   :config
-  (remove-hook 'flymake-diagnostic-functions
-               'flymake-proc-legacy-flymake)
+  (setq lsp-ui-sideline-enable nil
+        lsp-ui-doc-enable nil)
+
+  (defun lsp-toggle-highlighting ()
+    (interactive)
+    (if lsp-enable-symbol-highlighting
+	(setq lsp-enable-symbol-highlighting nil)
+      (setq lsp-enable-symbol-highlighting t)))
 
   (defun xref-apropos-at-point (x)
     (interactive (list (xref--read-identifier "Find apropos of: ")))
-    (xref-find-apropos x))
-
-  (setq lsp-ui-sideline-enable nil
-        lsp-ui-doc-enable nil))
+    (xref-find-apropos x)))
 
 (use-package company-lsp
   :after (company lsp-mode)
