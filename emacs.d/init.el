@@ -366,12 +366,14 @@ Buffers visiting files not existing/readable will be killed."
          :map helm-command-map
          ("." . helm-etags-select)
          ("m" . helm-imenu)
-         ("x" . helm-find-project))
+         ("/" . helm-find-project))
   :config
-  (defun helm-find-project ()
-    (interactive)
-    (let ((default-directory (project-or-root)))
-      (helm-find nil)))
+  (defun helm-find-project (arg)
+    (interactive "P")
+    (if arg
+	(helm-find arg)
+      (let ((default-directory (project-or-root)))
+	(helm-find nil))))
   (helm-autoresize-mode t))
 
 (use-package swiper-helm
