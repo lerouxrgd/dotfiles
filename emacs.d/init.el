@@ -241,6 +241,9 @@ Buffers visiting files not existing/readable will be killed."
 	recentf-auto-cleanup 'never)
   (recentf-mode 1))
 
+(use-package vlf
+  :config (require 'vlf-setup))
+
 (use-package editorconfig
   :config (editorconfig-mode 1))
 
@@ -345,8 +348,7 @@ Buffers visiting files not existing/readable will be killed."
   (treemacs-resize-icons 18)
   (setq treemacs-persist-file "/dev/null"
         treemacs-collapse-dirs 7
-	treemacs-file-follow-delay 0
-	treemacs-width 30))
+	treemacs-file-follow-delay 0))
 
 (use-package dired-subtree
   :defer 1
