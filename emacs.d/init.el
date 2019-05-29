@@ -360,20 +360,32 @@ Buffers visiting files not existing/readable will be killed."
               ("<left>"  . dired-subtree-remove)))
 
 (use-package helm
-  :preface
-  (require 'helm-config)
+  :preface (require 'helm-config)
   :bind (("C-x x" . helm-command-prefix)
          :map helm-command-map
          ("." . helm-etags-select)
          ("m" . helm-imenu)
          ("/" . helm-find-project))
+
   :config
+  (require 'helm-find)
+  (defun find-with-gitignore (orig-fun &rest args)
+    (let ((find-command (apply orig-fun args)))
+      (concat
+       find-command
+       "-and -exec sh -c "
+       "'for f;do git check-ignore -q \"$f\" || printf \"$f\n\"; done' "
+       "find-sh {} + "
+       "2> /dev/null")))
+  (advice-add 'helm-find--build-cmd-line :around 'find-with-gitignore)
+
   (defun helm-find-project (arg)
     (interactive "P")
     (if arg
 	(helm-find arg)
       (let ((default-directory (project-or-root)))
 	(helm-find nil))))
+
   (helm-autoresize-mode t))
 
 (use-package swiper-helm
