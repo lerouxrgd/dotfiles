@@ -258,6 +258,9 @@ Buffers visiting files not existing/readable will be killed."
 	 ("C-h"   . iedit-show/hide-unmatched-lines)
 	 ("C-M-:" . iedit-switch-to-mc-mode)))
 
+(use-package expand-region
+  :bind ("C-=" . er/expand-region))
+
 (use-package selected
   :bind (:map selected-keymap
               ("q" . selected-off)
@@ -301,8 +304,12 @@ Buffers visiting files not existing/readable will be killed."
 	 ("C-M-R"       . vr/isearch-backward))
   :config (use-package visual-regexp-steroids))
 
-(use-package expand-region
-  :bind ("C-=" . er/expand-region))
+(use-package string-inflection
+  :bind (("C-x M-i c" . string-inflection-lower-camelcase)
+	 ("C-x M-i C" . string-inflection-camelcase)
+	 ("C-x M-i k" . string-inflection-kebab-case)
+	 ("C-x M-i u" . string-inflection-underscore)
+	 ("C-x M-i U" . string-inflection-upcase)))
 
 ;;;;;; Navigation
 
