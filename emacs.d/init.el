@@ -150,6 +150,7 @@ Buffers visiting files not existing/readable will be killed."
       (doom-modeline--buffer-file-name
        buffer-file-name buffer-file-truename 'shrink 'shink 'hide)))
   (setq frame-title-format '((:eval (doom-buffer-name)) " - %F")
+	doom-modeline-major-mode-icon nil
         doom-modeline-height 18))
 
 ;;;;;; General packages
