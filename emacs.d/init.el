@@ -51,8 +51,8 @@
   (tool-bar-mode                       -1) ; Turn off tool bar
   (scroll-bar-mode                     -1) ; Turn off native OS scroll bars
   (blink-cursor-mode                   -1) ; Turn off blinking cursor
-  (global-hl-line-mode                  1) ; Highlight current line
   (show-paren-mode                      1) ; Highlight matching parenthesis
+  (global-hl-line-mode                  1) ; Highlight current line
   (global-display-line-numbers-mode     1) ; Show line numbers
   (column-number-mode                   1) ; Show column number
   (electric-indent-mode                 1) ; Auto indent on new line
@@ -341,6 +341,7 @@ Buffers visiting files not existing/readable will be killed."
      ((t (:foreground ,(doom-color 'yellow)))))))
 
 (use-package treemacs
+  :hook (treemacs-mode . (lambda () (display-line-numbers-mode -1)))
   :bind (("C-x t" . treemacs-project)
          :map treemacs-mode-map
          ("C-<tab>"         . (lambda () (interactive)))
