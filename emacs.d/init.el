@@ -46,16 +46,17 @@
 
 (use-package doom-themes
   :init
-  (load-theme 'doom-opera               t) ; Define theme
-  (menu-bar-mode                       -1) ; Turn off menu bars
-  (tool-bar-mode                       -1) ; Turn off tool bar
-  (scroll-bar-mode                     -1) ; Turn off native OS scroll bars
-  (blink-cursor-mode                   -1) ; Turn off blinking cursor
-  (show-paren-mode                      1) ; Highlight matching parenthesis
-  (global-hl-line-mode                  1) ; Highlight current line
-  (global-display-line-numbers-mode     1) ; Show line numbers
-  (column-number-mode                   1) ; Show column number
-  (electric-indent-mode                 1) ; Auto indent on new line
+  (load-theme 'doom-opera t) ; Define theme
+
+  (menu-bar-mode       -1) ; Turn off menu bars
+  (tool-bar-mode       -1) ; Turn off tool bar
+  (scroll-bar-mode     -1) ; Turn off native OS scroll bars
+  (blink-cursor-mode   -1) ; Turn off blinking cursor
+  (show-paren-mode      1) ; Highlight matching parenthesis
+  (global-hl-line-mode  1) ; Highlight current line
+  (column-number-mode   1) ; Show column number
+  (electric-indent-mode 1) ; Auto indent on new line
+
   (set-frame-parameter nil 'undecorated t) ; No window decoration
   (toggle-frame-maximized)                 ; Max size window on startup
   (prefer-coding-system 'utf-8)            ; Use UTF-8
@@ -116,6 +117,10 @@ Buffers visiting files not existing/readable will be killed."
             (kill-buffer buf)
             (message "Killed unreadable file buffer: %s" filename))))))
   (message "Finished reverting buffers containing unmodified files."))
+
+  :hook
+  ((prog-mode . display-line-numbers-mode)
+   (text-mode . display-line-numbers-mode))
 
   :bind
   (("S-C-<left>"  . shrink-window-horizontally)
@@ -341,7 +346,6 @@ Buffers visiting files not existing/readable will be killed."
      ((t (:foreground ,(doom-color 'yellow)))))))
 
 (use-package treemacs
-  :hook (treemacs-mode . (lambda () (display-line-numbers-mode -1)))
   :bind (("C-x t" . treemacs-project)
          :map treemacs-mode-map
          ("C-<tab>"         . (lambda () (interactive)))
@@ -500,11 +504,7 @@ Buffers visiting files not existing/readable will be killed."
 
 (use-package company-lsp
   :after (company lsp-mode)
-  :config
-  (add-to-list 'company-backends 'company-lsp)
-  :custom
-  (company-lsp-async t)
-  (company-lsp-enable-snippet t))
+  :config (add-to-list 'company-backends 'company-lsp))
 
 ;;;;;; Simple formatting
 
