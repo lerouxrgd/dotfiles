@@ -137,26 +137,17 @@ Buffers visiting files not existing/readable will be killed."
    ("C-z"         . nil)))
 
 (use-package all-the-icons
-  :config (setq all-the-icons-scale-factor 0.9))
+  :config (setq all-the-icons-scale-factor 1.0))
 
 (use-package doom-modeline
   :hook (after-init . doom-modeline-mode)
   :config
   (defun doom-buffer-name ()
-    (let* ((buffer-file-name
-            (file-local-name
-             (or (buffer-file-name (buffer-base-buffer))
-                 "")))
-           (buffer-file-truename
-            (file-local-name
-             (or buffer-file-truename
-                 (file-truename buffer-file-name)
-                 ""))))
-      (doom-modeline--buffer-file-name
-       buffer-file-name buffer-file-truename 'shrink 'shink 'hide)))
+    (let ((doom-modeline-buffer-file-name-style 'truncate-with-project))
+      (doom-modeline-buffer-file-name)))
   (setq frame-title-format '((:eval (doom-buffer-name)) " - %F")
-	doom-modeline-major-mode-icon nil
-        doom-modeline-height 18))
+	doom-modeline-buffer-file-name-style 'relative-from-project
+	doom-modeline-major-mode-icon nil))
 
 ;;;;;; General packages
 
@@ -346,6 +337,7 @@ Buffers visiting files not existing/readable will be killed."
      ((t (:foreground ,(doom-color 'yellow)))))))
 
 (use-package treemacs
+  :after doom-themes
   :bind (("C-x t" . treemacs-project)
          :map treemacs-mode-map
          ("C-<tab>"         . (lambda () (interactive)))
@@ -361,7 +353,7 @@ Buffers visiting files not existing/readable will be killed."
      (car (last (butlast (split-string (project-or-root) "/")))))
     (treemacs-select-window))
 
-  (treemacs-resize-icons 18)
+  (doom-themes-treemacs-config)
   (setq treemacs-persist-file "/dev/null"
         treemacs-collapse-dirs 7
 	treemacs-file-follow-delay 0))
