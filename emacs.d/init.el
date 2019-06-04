@@ -332,7 +332,7 @@ Buffers visiting files not existing/readable will be killed."
                   :background ,(doom-color 'blue)
                   :foreground ,(doom-color 'bg)))))
    `(nswbuff-separator-face
-     ((t (:foreground ,(doom-color 'magenta)))))
+     ((t (:foreground ,(doom-color 'dark-blue)))))
    `(nswbuff-special-buffers-face
      ((t (:foreground ,(doom-color 'yellow)))))))
 
@@ -426,9 +426,9 @@ Buffers visiting files not existing/readable will be killed."
    `(helm-rg-error-message
      ((t (:foreground ,(doom-color 'yellow)))))
    `(helm-rg-line-number-match-face
-     ((t (:foreground ,(doom-color 'teal)))))
+     ((t (:foreground ,(doom-color 'base6)))))
    `(helm-rg-file-match-face
-     ((t (:foreground ,(doom-color 'teal)))))
+     ((t (:foreground ,(doom-color 'blue)))))
    `(helm-rg-preview-line-highlight
      ((t (:weight bold
                   :background ,(doom-color 'blue)
