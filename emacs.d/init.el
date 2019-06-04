@@ -118,10 +118,6 @@ Buffers visiting files not existing/readable will be killed."
             (message "Killed unreadable file buffer: %s" filename))))))
   (message "Finished reverting buffers containing unmodified files."))
 
-  :hook
-  ((prog-mode . display-line-numbers-mode)
-   (text-mode . display-line-numbers-mode))
-
   :bind
   (("S-C-<left>"  . shrink-window-horizontally)
    ("S-C-<right>" . enlarge-window-horizontally)
