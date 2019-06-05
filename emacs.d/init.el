@@ -507,6 +507,8 @@ Buffers visiting files not existing/readable will be killed."
          ("\\.avsc\\'" . json-mode))
   :config (setq js-indent-level 2))
 
+(use-package mustache-mode)
+
 (use-package cmake-font-lock
   :hook (cmake-mode . cmake-font-lock-activate))
 
