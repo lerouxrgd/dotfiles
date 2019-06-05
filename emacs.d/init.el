@@ -132,8 +132,7 @@ Buffers visiting files not existing/readable will be killed."
    ("C-;"         . toggle-comment-on-line)
    ("C-z"         . nil)))
 
-(use-package all-the-icons
-  :config (setq all-the-icons-scale-factor 1.0))
+(use-package all-the-icons)
 
 (use-package doom-modeline
   :hook (after-init . doom-modeline-mode)
