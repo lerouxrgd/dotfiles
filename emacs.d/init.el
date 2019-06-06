@@ -565,29 +565,32 @@ Buffers visiting files not existing/readable will be killed."
          ("\\.edn\\'"  . clojure-mode)
 	 ("\\.cljc\\'" . clojurec-mode)
 	 ("\\.cljs\\'" . clojurescript-mode))
-  :hook ((clojure-mode . enable-paredit-mode)
-	 (clojure-mode . subword-mode)
-	 (clojure-mode . rainbow-delimiters-mode))
   :bind (:map clojure-mode-map
 	      ("C-:"   . iedit-mode)
 	      ("C-c :" . clojure-toggle-keyword-string))
+  :hook ((clojure-mode . enable-paredit-mode)
+	 (clojure-mode . subword-mode)
+	 (clojure-mode . rainbow-delimiters-mode))
   :config
   (use-package clojure-mode-extra-font-locking))
 
 (use-package cider
   :after clojure-mode
-  :bind (("C-c C-M-b" . cider-browse-ns-all)
-         ("C-c M-b"   . browse-current-ns)
+  :bind (("C-c M-B" . cider-browse-ns-all)
+         ("C-c M-b" . browse-current-ns)
+	 ("C-c M-f" . cider-format-buffer)
 	 :map cider-repl-mode-map
 	 ("C-c C-o" . cider-repl-clear-buffer))
   :hook ((cider-repl-mode . paredit-mode)
 	 (cider-mode      . eldoc-mode))
-  :init
+
+  :config
   (defun browse-current-ns ()
     (interactive)
     (cider-browse-ns
      (with-current-buffer (current-buffer)
        (cider-current-ns))))
+
   (setq cider-repl-display-help-banner nil
         cider-repl-history-file "~/.emacs.d/cider-history"))
 
