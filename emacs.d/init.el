@@ -472,8 +472,7 @@ Buffers visiting files not existing/readable will be killed."
 	      ("C-z ?" . lsp-find-references)
               ("C-z I" . lsp-find-implementation)
               ("C-z D" . lsp-find-declaration)
-              ("C-z T" . lsp-find-type-definition)
-              ("C-z A" . xref-apropos-at-point))
+              ("C-z T" . lsp-find-type-definition))
 
   :config
   (setq lsp-ui-sideline-enable nil
@@ -485,9 +484,16 @@ Buffers visiting files not existing/readable will be killed."
 	(setq lsp-enable-symbol-highlighting nil)
       (setq lsp-enable-symbol-highlighting t)))
 
-  (defun xref-apropos-at-point (x)
-    (interactive (list (xref--read-identifier "Find apropos of: ")))
-    (xref-find-apropos x)))
+  (use-package helm-lsp
+    :bind (:map lsp-ui-mode-map
+		("C-z a"
+		 . (lambda ()
+		     (interactive)
+		     (helm-lsp-workspace-symbol t)))
+		("C-z A"
+		 . (lambda ()
+		     (interactive)
+		     (helm-lsp-global-workspace-symbol t))))))
 
 (use-package company-lsp
   :after (company lsp-mode)
