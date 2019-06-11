@@ -692,13 +692,17 @@ Buffers visiting files not existing/readable will be killed."
 ;;;;;; Go
 
 ;; https://github.com/dominikh/go-mode.el
+;; https://github.com/dominikh/go-errcheck.el
+;; https://github.com/golang/lint
 ;; https://github.com/rogpeppe/godef
 ;; https://github.com/nsf/gocode#emacs-setup
 ;; https://github.com/syohex/emacs-go-eldoc
 
 ;; go get -u golang.org/x/tools/cmd/...
+;; go get -u golang.org/x/lint/golint
 ;; go get -u github.com/rogpeppe/godef/...
 ;; go get -u github.com/nsf/gocode
+;; go get -u github.com/kisielk/errcheck
 
 (use-package go-mode
   :mode "\\.go\\'"
@@ -712,6 +716,8 @@ Buffers visiting files not existing/readable will be killed."
   (use-package go-guru
     :bind-keymap ("C-c C-c" . go-guru-map))
   (use-package go-rename)
+  (use-package go-errcheck)
+  (use-package golint)
   (use-package company-go
     :config (add-to-list 'company-backends 'company-go)))
 
