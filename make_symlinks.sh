@@ -1,4 +1,5 @@
 #!/bin/bash
+
 ############################
 # This script creates symlinks from the home directory to any desired dotfiles in ~/dotfiles
 ############################
@@ -8,8 +9,11 @@
 dir=~/dotfiles         # dotfiles directory
 olddir=~/dotfiles_old  # old dotfiles backup directory
 
-# list of files/folders to symlink in homedir
+# list of files/folders to symlink in ~
 files="lein emacs.d bash_custom"
+
+# list of files/folders to symlink in ~/.config
+configs="flake8"
 
 ##########
 
@@ -17,6 +21,7 @@ echo "Using $olddir for dotfiles backup"
 mkdir -p $olddir
 
 cd ~
+
 for file in $files; do
     if [ -h ".$file" ]; then
         echo "~/.$file is already symlink to `readlink -f $file`"
@@ -25,8 +30,21 @@ for file in $files; do
             echo "Moving ~/.$file to $olddir for backup"
             mv ~/.$file $olddir
         fi
-        echo "Creating symlink to $dir/$file in home directory."
+        echo "Creating symlink to $dir/$file in ~"
         ln -s $dir/$file ~/.$file
+    fi
+done
+
+for file in $configs; do
+    if [ -h ".config/$file" ]; then
+        echo "~/.config/$file is already symlink to `readlink -f .config/$file`"
+    else
+        if [ -e ".config/$file" ]; then
+            echo "Moving ~/.config/$file to $olddir for backup"
+            mv ~/.$file $olddir
+        fi
+        echo "Creating symlink to $dir/$file in ~/.config"
+        ln -s $dir/$file ~/.config/$file
     fi
 done
 

@@ -634,14 +634,17 @@ Buffers visiting files not existing/readable will be killed."
 ;; https://github.com/jorgenschaefer/elpy
 
 ;; sudo pacman -Syu ipython
-;; pip install --user rope flake8 importmagic autopep8 yapf black
+;; pip install --user rope flake8 importmagic black
 
 (use-package elpy
-  :hook (python-mode . elpy-enable)
+  :init
+  (advice-add 'python-mode :before 'elpy-enable)
+  :hook
+  (elpy-mode . (lambda () (add-hook 'before-save-hook 'elpy-format-code)))
   :config
   (setq python-shell-interpreter "ipython"
-        python-shell-interpreter-args "--simple-prompt -i")
-  (elpy-mode))
+        python-shell-interpreter-args "--simple-prompt -i"
+	elpy-modules (delq 'elpy-module-flymake elpy-modules)))
 
 ;;;;;; C/C++
 
@@ -670,11 +673,12 @@ Buffers visiting files not existing/readable will be killed."
 
 (use-package clang-format
   :load-path "/usr/share/clang"
-  :hook (before-save
-	 . (lambda ()
-	     (interactive)
-	     (when (derived-mode-p 'c-mode 'c++-mode 'objc-mode)
-	       (clang-format-buffer)))))
+  :hook (before-save . clang-format-code)
+  :config
+  (defun clang-format-code ()
+    (interactive)
+    (when (derived-mode-p 'c-mode 'c++-mode 'objc-mode)
+      (clang-format-buffer))))
 
 ;;;;;; Go
 
