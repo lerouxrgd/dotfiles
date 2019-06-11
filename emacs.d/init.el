@@ -546,6 +546,10 @@ Buffers visiting files not existing/readable will be killed."
 (use-package kubernetes
   :commands (kubernetes-overview))
 
+(use-package restclient
+  :after helm
+  :config (use-package restclient-helm))
+
 ;;;;;; Lisp
 
 (use-package rainbow-delimiters)
