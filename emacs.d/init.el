@@ -547,8 +547,13 @@ Buffers visiting files not existing/readable will be killed."
   :commands (kubernetes-overview))
 
 (use-package restclient
-  :after helm
-  :config (use-package restclient-helm))
+  :after (helm company)
+  :config
+  (use-package restclient-helm)
+  (use-package company-restclient
+    :bind (:map restclient-mode-map
+		("C-c TAB" . company-complete))
+    :init (add-to-list 'company-backends 'company-restclient)))
 
 ;;;;;; Lisp
 
