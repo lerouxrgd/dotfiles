@@ -303,6 +303,16 @@ Buffers visiting files not existing/readable will be killed."
 	 ("C-x M-i u" . string-inflection-underscore)
 	 ("C-x M-i U" . string-inflection-upcase)))
 
+(use-package undo-tree
+  :bind ("C-M-/" . undo-tree-visualize)
+  :config (global-undo-tree-mode))
+
+;; yay -Syu wordnet-cli
+(use-package synosaurus
+  :bind (("C-x M-s l" . synosaurus-lookup)
+	 ("C-x M-s s" . synosaurus-choose-and-replace))
+  :config (synosaurus-mode))
+
 ;;;;;; Navigation
 
 (use-package windmove
