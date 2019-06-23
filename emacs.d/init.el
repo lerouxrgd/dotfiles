@@ -46,7 +46,7 @@
 
 (use-package doom-themes
   :init
-  (load-theme 'doom-solarized-light t) ; Define theme
+  (load-theme 'doom-nova t) ; Define theme
 
   (menu-bar-mode       -1) ; Turn off menu bars
   (tool-bar-mode       -1) ; Turn off tool bar
