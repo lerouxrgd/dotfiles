@@ -46,7 +46,7 @@
 
 (use-package doom-themes
   :init
-  (load-theme 'doom-opera t) ; Define theme
+  (load-theme 'doom-solarized-light t) ; Define theme
 
   (menu-bar-mode       -1) ; Turn off menu bars
   (tool-bar-mode       -1) ; Turn off tool bar
@@ -127,6 +127,7 @@ Buffers visiting files not existing/readable will be killed."
    ("C-x C-x C-x" . exchange-point-and-mark)
    ("C-x C-x C-r" . revert-all-file-buffers)
    ("C-x C-b"     . ibuffer)
+   ("C-x C-z"     . repeat)
    ("M-F"         . forward-whitespace)
    ("M-B"         . backward-whitespace)
    ("C-;"         . toggle-comment-on-line)

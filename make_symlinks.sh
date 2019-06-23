@@ -24,7 +24,7 @@ cd ~
 
 for file in $files; do
     if [ -h ".$file" ]; then
-        echo "~/.$file is already symlink to `readlink -f $file`"
+        echo "~/.$file is already symlink to `readlink -f .$file`"
     else
         if [ -e ".$file" ]; then
             echo "Moving ~/.$file to $olddir for backup"
