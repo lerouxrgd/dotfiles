@@ -465,6 +465,8 @@ Buffers visiting files not existing/readable will be killed."
   (setq lsp-prefer-flymake nil
 	lsp-document-highlight-delay 0.1
 	lsp-enable-symbol-highlighting nil)
+
+  (add-to-list 'lsp-language-id-configuration '(flow-mode . "flow"))
   (lsp-register-client
    (make-lsp-client
     :new-connection (lsp-stdio-connection '("flow" "lsp"))
