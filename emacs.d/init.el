@@ -525,10 +525,10 @@ Buffers visiting files not existing/readable will be killed."
          ("\\.avsc\\'" . json-mode))
   :config (setq js-indent-level 2))
 
-(use-package mustache-mode)
+(use-package dockerfile-mode
+  :mode "Dockerfile\\'")
 
-(use-package cmake-font-lock
-  :hook (cmake-mode . cmake-font-lock-activate))
+(use-package mustache-mode)
 
 ;; sudo pacman -Syu marked
 (use-package markdown-mode
@@ -539,8 +539,10 @@ Buffers visiting files not existing/readable will be killed."
   (setq markdown-command "marked"
         markdown-live-preview-delete-export 'delete-on-export))
 
-(use-package dockerfile-mode
-  :mode "Dockerfile\\'")
+(use-package latex-preview-pane)
+
+(use-package cmake-font-lock
+  :hook (cmake-mode . cmake-font-lock-activate))
 
 (use-package hi-lock
   :bind (("s-a" . highlight-symbol-at-point)
