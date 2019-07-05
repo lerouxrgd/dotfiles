@@ -539,6 +539,7 @@ Buffers visiting files not existing/readable will be killed."
   (setq markdown-command "marked"
         markdown-live-preview-delete-export 'delete-on-export))
 
+;; sudo pacman -Syu texlive-formatsextra
 (use-package latex-preview-pane)
 
 (use-package cmake-font-lock
