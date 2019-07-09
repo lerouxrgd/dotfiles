@@ -539,10 +539,6 @@ Buffers visiting files not existing/readable will be killed."
   (setq markdown-command "marked"
         markdown-live-preview-delete-export 'delete-on-export))
 
-;; sudo pacman -Syu texlive-core
-(use-package latex-preview-pane
-  :config (setq pdf-latex-command "xelatex"))
-
 (use-package cmake-font-lock
   :hook (cmake-mode . cmake-font-lock-activate))
 
@@ -551,6 +547,15 @@ Buffers visiting files not existing/readable will be killed."
          ("s-d" . unhighlight-regexp))
   :config (setq hi-lock-face-defaults '("hi-pink"))
   :custom-face (hi-pink ((t (:background "pink4")))))
+
+;;;;;; Scientific
+
+;; sudo pacman -Syu texlive-core
+(use-package latex-preview-pane
+  :config (setq pdf-latex-command "xelatex"))
+
+(use-package ess
+  :init (require 'ess-site))
 
 ;;;;;; Ops
 
