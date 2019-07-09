@@ -471,7 +471,7 @@ Buffers visiting files not existing/readable will be killed."
    (make-lsp-client
     :new-connection (lsp-stdio-connection '("flow" "lsp"))
     :major-modes '(flow-mode)
-    :server-id 'flow-mode)))
+    :server-id 'lsp-flow)))
 
 (use-package lsp-ui
   :hook (lsp-mode . lsp-ui-mode)
@@ -554,8 +554,17 @@ Buffers visiting files not existing/readable will be killed."
 (use-package latex-preview-pane
   :config (setq pdf-latex-command "xelatex"))
 
+;; sudo pacman -Syu tk gcc-fortran
+;; install.packages("lintr")
 (use-package ess
-  :init (require 'ess-site))
+  :mode (("\\.[rR]\\'" . ess-r-mode)
+         ("\\.jl\\'"   . julia-mode))
+  :hook (ess-mode
+         . (lambda ()
+             (local-set-key
+	      (kbd "TAB")'company-indent-or-complete-common)))
+  :config
+  (setq ess-use-flymake nil))
 
 ;;;;;; Ops
 
