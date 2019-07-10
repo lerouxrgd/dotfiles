@@ -530,14 +530,15 @@ Buffers visiting files not existing/readable will be killed."
 
   (use-package helm-lsp
     :bind (:map lsp-ui-mode-map
-		("C-z a"
-		 . (lambda ()
-		     (interactive)
-		     (helm-lsp-workspace-symbol t)))
-		("C-z A"
-		 . (lambda ()
-		     (interactive)
-		     (helm-lsp-global-workspace-symbol t))))))
+		("C-z a" . lsp-workspace-symbol)
+		("C-z A" . lsp-global-workspace-symbol))
+    :config
+    (defun lsp-workspace-symbol ()
+      (interactive)
+      (helm-lsp-workspace-symbol t))
+    (defun lsp-global-workspace-symbol ()
+      (interactive)
+      (helm-lsp-global-workspace-symbol t))))
 
 (use-package company-lsp
   :after (company lsp-mode)
@@ -547,11 +548,6 @@ Buffers visiting files not existing/readable will be killed."
 
 (use-package yaml-mode
   :mode "\\.yaml\\'")
-
-;; npm install -g yaml-language-server
-(use-package lsp-yaml
-  :quelpa (lsp-yaml :fetcher github :repo "iquiw/lsp-yaml")
-  :after lsp)
 
 (use-package toml-mode
   :mode "\\.toml\\'")
@@ -595,6 +591,15 @@ Buffers visiting files not existing/readable will be killed."
 (use-package kubernetes
   :commands (kubernetes-overview))
 
+;; npm install -g yaml-language-server
+(use-package lsp-yaml
+  :quelpa (lsp-yaml :fetcher github :repo "iquiw/lsp-yaml")
+  :hook (yaml-mode
+         . (lambda ()
+             (local-set-key
+	      (kbd "<backtab>") 'company-complete)))
+  :config (setq lsp-yaml-schemas '(:kubernetes "*-k8s.yml")))
+
 (use-package restclient
   :after (helm company)
   :config
@@ -618,7 +623,7 @@ Buffers visiting files not existing/readable will be killed."
   :hook (ess-mode
          . (lambda ()
              (local-set-key
-	      (kbd "TAB")'company-indent-or-complete-common)))
+	      (kbd "TAB") 'company-indent-or-complete-common)))
   :config
   (setq ess-use-flymake nil))
 
