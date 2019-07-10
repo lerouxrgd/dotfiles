@@ -1,4 +1,4 @@
-;;; init.el --- Main Emacs initialization
+;;; init.el --- Main Emacs initialization -*- lexical-binding: t -*-
 
 ;;; Commentary:
 
@@ -17,18 +17,16 @@
 ;;;;;;;;;;;;;;;;;;; Package management ;;;;;;;;;;;;;;;;;;;
 
 (require 'package)
-(add-to-list 'package-archives
-             '("gnu"          . "https://elpa.gnu.org/packages/") t)
-(add-to-list 'package-archives
-	     '("melpa"        . "https://melpa.org/packages/") t)
-(add-to-list 'package-archives
-	     '("melpa-stable" . "https://stable.melpa.org/packages/") t)
-(add-to-list 'package-archives
-	     '("tromey"       . "https://tromey.com/elpa/") t)
+(setq package-archives
+      '(("gnu"          . "https://elpa.gnu.org/packages/")
+	("melpa"        . "https://melpa.org/packages/")
+	("melpa-stable" . "https://stable.melpa.org/packages/")
+	("tromey"       . "https://tromey.com/elpa/")))
 
 ;; No auto package loading, that's handled via use-package
-(setq package-enable-at-startup nil)
-(package-initialize)
+(unless (bound-and-true-p package--initialized)
+  (setq package-enable-at-startup nil)
+  (package-initialize))
 
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
@@ -40,6 +38,8 @@
   (use-package cl))
 
 (setq use-package-always-ensure t)
+
+(use-package gnu-elpa-keyring-update)
 
 ;;;;;; Interface
 
@@ -71,6 +71,7 @@
                        (if size (concat "-" size) "")))))
 
   (setq
+   frame-resize-pixelwise  t        ; Ensure fullscreen
    inhibit-startup-message t        ; Go to scratch buffer on startup
    inhibit-splash-screen   t        ; No splash screen
    ring-bell-function      'ignore  ; No bell
@@ -101,8 +102,8 @@
 	(progn
 	  (delete-other-windows)
 	  (switch-to-buffer (current-buffer)))
-      (let ((buffer (current-buffer))
-	    (window (split-window-right)))
+      (let ((buffer (current-buffer)))
+	(split-window-right)
 	(switch-to-buffer buffer)
 	(balance-windows)))
     (setq server-visit-files-custom-find:buffer-count
@@ -111,10 +112,12 @@
   (add-hook 'server-visit-hook 'server-visit-hook-custom-find)
 
   (defun project-or-root ()
+    "If git project, find root, otherwise find where emacs was started"
     (or (cdr (project-current))
 	(with-current-buffer "*Messages*" default-directory)))
 
   (defun toggle-comment-on-line ()
+    "Toggle comment on line and keep cursor on the toggled line"
     (interactive)
     (comment-or-uncomment-region
      (line-beginning-position) (line-end-position)))
@@ -275,6 +278,9 @@ Buffers visiting files not existing/readable will be killed."
   :config (editorconfig-mode 1))
 
 ;;;;;; Editing
+
+(use-package popup-kill-ring
+  :bind ("M-Y" . popup-kill-ring))
 
 (use-package iedit
   :bind (("C-:" . iedit-mode)
