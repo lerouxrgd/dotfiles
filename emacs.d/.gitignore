@@ -13,6 +13,7 @@ cider-history
 transient
 
 # workspace local files
+quelpa
 workspace
 eclipse.jdt.ls
 .lsp-session*

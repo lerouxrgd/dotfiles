@@ -36,11 +36,10 @@
 
 (eval-when-compile
   (require 'use-package)
+  (require 'bind-key)
   (use-package cl))
 
 (setq use-package-always-ensure t)
-
-(require 'bind-key)
 
 ;;;;;; Interface
 
@@ -86,6 +85,31 @@
   (when (file-exists-p custom-file)
     (load custom-file))
 
+  :preface
+  (defvar server-visit-files-custom-find:buffer-count)
+
+  (defadvice server-visit-files
+      (around server-visit-files-custom-find
+	      activate compile)
+    "Maintain a counter of visited files from a single client call."
+    (let ((server-visit-files-custom-find:buffer-count 0))
+      ad-do-it))
+
+  (defun server-visit-hook-custom-find ()
+    "Arrange to visit the files from a client call in separate windows."
+    (if (zerop server-visit-files-custom-find:buffer-count)
+	(progn
+	  (delete-other-windows)
+	  (switch-to-buffer (current-buffer)))
+      (let ((buffer (current-buffer))
+	    (window (split-window-right)))
+	(switch-to-buffer buffer)
+	(balance-windows)))
+    (setq server-visit-files-custom-find:buffer-count
+	  (1+ server-visit-files-custom-find:buffer-count)))
+
+  (add-hook 'server-visit-hook 'server-visit-hook-custom-find)
+
   (defun project-or-root ()
     (or (cdr (project-current))
 	(with-current-buffer "*Messages*" default-directory)))
@@ -101,22 +125,22 @@
     (forward-whitespace (- arg)))
 
   (defun revert-all-file-buffers ()
-  "Refresh all open file buffers without confirmation.
+    "Refresh all open file buffers without confirmation.
 Buffers in modified (not yet saved) state in emacs will not be reverted.
 They will be reverted though if they were modified outside emacs.
 Buffers visiting files not existing/readable will be killed."
-  (interactive)
-  (dolist (buf (buffer-list))
-    (let ((filename (buffer-file-name buf)))
-      (when (and filename (not (buffer-modified-p buf)))
-        (if (file-readable-p filename)
-            (with-demoted-errors "Error: %S"
-              (with-current-buffer buf
-                (revert-buffer :ignore-auto :noconfirm)))
-          (let (kill-buffer-query-functions)
-            (kill-buffer buf)
-            (message "Killed unreadable file buffer: %s" filename))))))
-  (message "Finished reverting buffers containing unmodified files."))
+    (interactive)
+    (dolist (buf (buffer-list))
+      (let ((filename (buffer-file-name buf)))
+	(when (and filename (not (buffer-modified-p buf)))
+	  (if (file-readable-p filename)
+	      (with-demoted-errors "Error: %S"
+		(with-current-buffer buf
+		  (revert-buffer :ignore-auto :noconfirm)))
+	    (let (kill-buffer-query-functions)
+	      (kill-buffer buf)
+	      (message "Killed unreadable file buffer: %s" filename))))))
+    (message "Finished reverting buffers containing unmodified files."))
 
   :bind
   (("S-C-<left>"  . shrink-window-horizontally)
@@ -141,11 +165,18 @@ Buffers visiting files not existing/readable will be killed."
   (defun doom-buffer-name ()
     (let ((doom-modeline-buffer-file-name-style 'truncate-with-project))
       (doom-modeline-buffer-file-name)))
+
   (setq frame-title-format '((:eval (doom-buffer-name)) " - %F")
+	doom-modeline-icon t
 	doom-modeline-buffer-file-name-style 'relative-from-project
 	doom-modeline-major-mode-icon nil))
 
 ;;;;;; General packages
+
+(use-package quelpa-use-package
+  :config
+  (setq quelpa-update-melpa-p nil
+	quelpa-checkout-melpa-p nil))
 
 (use-package which-key
   :hook (after-init . which-key-mode))
@@ -517,6 +548,11 @@ Buffers visiting files not existing/readable will be killed."
 (use-package yaml-mode
   :mode "\\.yaml\\'")
 
+;; npm install -g yaml-language-server
+(use-package lsp-yaml
+  :quelpa (lsp-yaml :fetcher github :repo "iquiw/lsp-yaml")
+  :after lsp)
+
 (use-package toml-mode
   :mode "\\.toml\\'")
 
@@ -548,24 +584,6 @@ Buffers visiting files not existing/readable will be killed."
   :config (setq hi-lock-face-defaults '("hi-pink"))
   :custom-face (hi-pink ((t (:background "pink4")))))
 
-;;;;;; Scientific
-
-;; sudo pacman -Syu texlive-core
-(use-package latex-preview-pane
-  :config (setq pdf-latex-command "xelatex"))
-
-;; sudo pacman -Syu tk gcc-fortran
-;; install.packages("lintr")
-(use-package ess
-  :mode (("\\.[rR]\\'" . ess-r-mode)
-         ("\\.jl\\'"   . julia-mode))
-  :hook (ess-mode
-         . (lambda ()
-             (local-set-key
-	      (kbd "TAB")'company-indent-or-complete-common)))
-  :config
-  (setq ess-use-flymake nil))
-
 ;;;;;; Ops
 
 (use-package terraform-mode
@@ -585,6 +603,24 @@ Buffers visiting files not existing/readable will be killed."
     :bind (:map restclient-mode-map
 		("C-c TAB" . company-complete))
     :init (add-to-list 'company-backends 'company-restclient)))
+
+;;;;;; Scientific
+
+;; sudo pacman -Syu texlive-core
+(use-package latex-preview-pane
+  :config (setq pdf-latex-command "xelatex"))
+
+;; sudo pacman -Syu tk gcc-fortran
+;; install.packages("lintr")
+(use-package ess
+  :mode (("\\.[rR]\\'" . ess-r-mode)
+         ("\\.jl\\'"   . julia-mode))
+  :hook (ess-mode
+         . (lambda ()
+             (local-set-key
+	      (kbd "TAB")'company-indent-or-complete-common)))
+  :config
+  (setq ess-use-flymake nil))
 
 ;;;;;; Lisp
 
