@@ -602,9 +602,12 @@ Buffers visiting files not existing/readable will be killed."
   :quelpa (lsp-yaml :fetcher github :repo "iquiw/lsp-yaml")
   :hook (yaml-mode
          . (lambda ()
+	     (setq-local lsp-eldoc-render-all t)
+	     (eldoc-mode)
              (local-set-key
-	      (kbd "<backtab>") 'company-complete)))
-  :config (setq lsp-yaml-schemas '(:kubernetes "*-k8s.yml")))
+  	      (kbd "<backtab>") 'company-complete)))
+  :config
+  (setq lsp-yaml-schemas '(:kubernetes "*.yml")))
 
 (use-package restclient
   :after (helm company)
