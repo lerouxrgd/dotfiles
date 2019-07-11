@@ -41,7 +41,12 @@
 
 (use-package gnu-elpa-keyring-update)
 
-;;;;;; Interface
+(use-package quelpa-use-package
+  :config
+  (setq quelpa-update-melpa-p nil
+	quelpa-checkout-melpa-p nil))
+
+;;;;;;;;;;;;;;;;;;;;;;;; Interface ;;;;;;;;;;;;;;;;;;;;;;;
 
 (use-package doom-themes
   :init
@@ -174,12 +179,7 @@ Buffers visiting files not existing/readable will be killed."
 	doom-modeline-buffer-file-name-style 'relative-from-project
 	doom-modeline-major-mode-icon nil))
 
-;;;;;; General packages
-
-(use-package quelpa-use-package
-  :config
-  (setq quelpa-update-melpa-p nil
-	quelpa-checkout-melpa-p nil))
+;;;;;;;;;;;;;;;;;;;; General packages ;;;;;;;;;;;;;;;;;;;;
 
 (use-package which-key
   :hook (after-init . which-key-mode))
@@ -277,7 +277,7 @@ Buffers visiting files not existing/readable will be killed."
 (use-package editorconfig
   :config (editorconfig-mode 1))
 
-;;;;;; Editing
+;;;;;;;;;;;;;;;;;;;;;;;;; Editing ;;;;;;;;;;;;;;;;;;;;;;;;
 
 (use-package popup-kill-ring
   :bind ("M-Y" . popup-kill-ring))
@@ -351,7 +351,7 @@ Buffers visiting files not existing/readable will be killed."
 	 ("C-x M-s s" . synosaurus-choose-and-replace))
   :config (synosaurus-mode))
 
-;;;;;; Navigation
+;;;;;;;;;;;;;;;;;;;;;;;;;; Navigation ;;;;;;;;;;;;;;;;;;;;
 
 (use-package windmove
   :config (windmove-default-keybindings))
@@ -494,7 +494,7 @@ Buffers visiting files not existing/readable will be killed."
   :config
   (setq dumb-jump-selector 'helm))
 
-;;;;;; LSP
+;;;;;;;;;;;;;;;;;;;;;;;;;;; LSP ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (use-package lsp-mode
   :hook (prog-mode . lsp-mode)
@@ -550,7 +550,7 @@ Buffers visiting files not existing/readable will be killed."
   :after (company lsp-mode)
   :config (add-to-list 'company-backends 'company-lsp))
 
-;;;;;; Simple formatting
+;;;;;;;;;;;;;;;;;;;;;;; Simple formatting ;;;;;;;;;;;;;;;;
 
 (use-package yaml-mode
   :mode "\\.yaml\\'")
@@ -586,7 +586,7 @@ Buffers visiting files not existing/readable will be killed."
   :config (setq hi-lock-face-defaults '("hi-pink"))
   :custom-face (hi-pink ((t (:background "pink4")))))
 
-;;;;;; Ops
+;;;;;;;;;;;;;;;;;;;;;;;;;;; Ops ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (use-package terraform-mode
   :hook (terraform-mode . terraform-format-on-save-mode)
@@ -615,7 +615,7 @@ Buffers visiting files not existing/readable will be killed."
 		("C-c TAB" . company-complete))
     :init (add-to-list 'company-backends 'company-restclient)))
 
-;;;;;; Scientific
+;;;;;;;;;;;;;;;;;;;;;;; Scientific ;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; sudo pacman -Syu texlive-core
 (use-package latex-preview-pane
@@ -633,7 +633,7 @@ Buffers visiting files not existing/readable will be killed."
   :config
   (setq ess-use-flymake nil))
 
-;;;;;; Lisp
+;;;;;;;;;;;;;;;;;;;;;;;;;; Lisp ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (use-package rainbow-delimiters)
 
@@ -647,7 +647,7 @@ Buffers visiting files not existing/readable will be killed."
   :hook ((scheme-mode      . enable-paredit-mode)
 	 (geiser-repl-mode . enable-paredit-mode)))
 
-;;;;;; Clojure
+;;;;;;;;;;;;;;;;;;;;;;;;; Clojure ;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; https://github.com/clojure-emacs/clojure-mode
 ;; https://github.com/clojure-emacs/cider
@@ -693,7 +693,7 @@ Buffers visiting files not existing/readable will be killed."
   (cljr-add-keybindings-with-prefix "C-c TAB")
   (setq cljr-warn-on-eval nil))
 
-;;;;;; Java
+;;;;;;;;;;;;;;;;;;;;;;;;;; Java ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; https://github.com/emacs-lsp/lsp-java
 
@@ -701,7 +701,7 @@ Buffers visiting files not existing/readable will be killed."
   :after lsp
   :config (add-hook 'java-mode-hook 'lsp))
 
-;;;;;; Javascript
+;;;;;;;;;;;;;;;;;;;;;;; Javascript ;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; https://github.com/codesuki/add-node-modules-path
 
@@ -716,7 +716,7 @@ Buffers visiting files not existing/readable will be killed."
   :config
   (flycheck-add-mode 'javascript-eslint 'flow-mode))
 
-;;;;;; Python
+;;;;;;;;;;;;;;;;;;;;;;;;; Python ;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; https://github.com/jorgenschaefer/elpy
 
@@ -733,7 +733,7 @@ Buffers visiting files not existing/readable will be killed."
         python-shell-interpreter-args "--simple-prompt -i"
 	elpy-modules (delq 'elpy-module-flymake elpy-modules)))
 
-;;;;;; C/C++
+;;;;;;;;;;;;;;;;;;;;;;;;;; C/C++ ;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; https://github.com/MaskRay/emacs-ccls
 
@@ -767,7 +767,7 @@ Buffers visiting files not existing/readable will be killed."
     (when (derived-mode-p 'c-mode 'c++-mode 'objc-mode)
       (clang-format-buffer))))
 
-;;;;;; Go
+;;;;;;;;;;;;;;;;;;;;;;;;;;; Go ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; https://github.com/dominikh/go-mode.el
 ;; https://github.com/dominikh/go-errcheck.el
@@ -802,7 +802,7 @@ Buffers visiting files not existing/readable will be killed."
 (use-package go-eldoc
   :hook (go-mode . go-eldoc-setup))
 
-;;;;;; Rust
+;;;;;;;;;;;;;;;;;;;;;;;;;; Rust ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; https://github.com/rust-lang/rust-mode
 ;; https://github.com/flycheck/flycheck-rust
