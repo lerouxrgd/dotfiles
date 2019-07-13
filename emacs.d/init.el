@@ -150,6 +150,9 @@ Buffers visiting files not existing/readable will be killed."
 	      (message "Killed unreadable file buffer: %s" filename))))))
     (message "Finished reverting buffers containing unmodified files."))
 
+  :hook
+  (before-save . (lambda() (delete-trailing-whitespace)))
+
   :bind
   (("S-C-<left>"  . shrink-window-horizontally)
    ("S-C-<right>" . enlarge-window-horizontally)
