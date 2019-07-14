@@ -14,6 +14,14 @@
 (add-hook 'emacs-startup-hook
           (lambda () (setq gc-cons-threshold (* 16 1024 1024))))
 
+;; Main frame setup
+(setq frame-resize-pixelwise t)
+(set-frame-parameter nil 'fullscreen 'maximized)
+(set-frame-parameter nil 'undecorated t)
+(scroll-bar-mode -1) ; Turn off native OS scroll bars
+(tool-bar-mode   -1) ; Turn off tool bar
+(menu-bar-mode   -1) ; Turn off menu bars
+
 ;;;;;;;;;;;;;;;;;;; Package management ;;;;;;;;;;;;;;;;;;;
 
 (require 'package)
@@ -52,21 +60,16 @@
   :init
   (load-theme 'doom-nord t) ; Define theme
 
-  (menu-bar-mode       -1) ; Turn off menu bars
-  (tool-bar-mode       -1) ; Turn off tool bar
-  (scroll-bar-mode     -1) ; Turn off native OS scroll bars
   (blink-cursor-mode   -1) ; Turn off blinking cursor
   (show-paren-mode      1) ; Highlight matching parenthesis
   (global-hl-line-mode  1) ; Highlight current line
   (column-number-mode   1) ; Show column number
   (electric-indent-mode 1) ; Auto indent on new line
 
-  (set-frame-parameter nil 'undecorated t) ; No window decoration
-  (toggle-frame-maximized)                 ; Max size window on startup
-  (prefer-coding-system 'utf-8)            ; Use UTF-8
-  (fset 'yes-or-no-p 'y-or-n-p)            ; Use y/n for questions
-  (put 'upcase-region   'disabled nil)     ; Allow upcase selection
-  (put 'downcase-region 'disabled nil)     ; Allow downcase selection
+  (prefer-coding-system 'utf-8)         ; Use UTF-8
+  (fset 'yes-or-no-p 'y-or-n-p)         ; Use y/n for questions
+  (put 'upcase-region   'disabled nil)  ; Allow upcase selection
+  (put 'downcase-region 'disabled nil)  ; Allow downcase selection
 
   ;; Setup font
   (add-to-list
@@ -76,7 +79,6 @@
                        (if size (concat "-" size) "")))))
 
   (setq
-   frame-resize-pixelwise  t        ; Ensure fullscreen
    inhibit-startup-message t        ; Go to scratch buffer on startup
    inhibit-splash-screen   t        ; No splash screen
    ring-bell-function      'ignore  ; No bell
