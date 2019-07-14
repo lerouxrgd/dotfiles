@@ -27,9 +27,9 @@
 (require 'package)
 (setq package-archives
       '(("gnu"          . "https://elpa.gnu.org/packages/")
-	("melpa"        . "https://melpa.org/packages/")
-	("melpa-stable" . "https://stable.melpa.org/packages/")
-	("tromey"       . "https://tromey.com/elpa/")))
+        ("melpa"        . "https://melpa.org/packages/")
+        ("melpa-stable" . "https://stable.melpa.org/packages/")
+        ("tromey"       . "https://tromey.com/elpa/")))
 
 ;; No auto package loading, that's handled via use-package
 (unless (bound-and-true-p package--initialized)
@@ -52,7 +52,7 @@
 (use-package quelpa-use-package
   :config
   (setq quelpa-update-melpa-p nil
-	quelpa-checkout-melpa-p nil))
+        quelpa-checkout-melpa-p nil))
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Interface ;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -101,7 +101,7 @@
 
   (defadvice server-visit-files
       (around server-visit-files-custom-find
-	      activate compile)
+              activate compile)
     "Maintain a counter of visited files from a single client call."
     (let ((server-visit-files-custom-find:buffer-count 0))
       ad-do-it))
@@ -109,22 +109,22 @@
   (defun server-visit-hook-custom-find ()
     "Arrange to visit the files from a client call in separate windows."
     (if (zerop server-visit-files-custom-find:buffer-count)
-	(progn
-	  (delete-other-windows)
-	  (switch-to-buffer (current-buffer)))
+        (progn
+          (delete-other-windows)
+          (switch-to-buffer (current-buffer)))
       (let ((buffer (current-buffer)))
-	(split-window-right)
-	(switch-to-buffer buffer)
-	(balance-windows)))
+        (split-window-right)
+        (switch-to-buffer buffer)
+        (balance-windows)))
     (setq server-visit-files-custom-find:buffer-count
-	  (1+ server-visit-files-custom-find:buffer-count)))
+          (1+ server-visit-files-custom-find:buffer-count)))
 
   (add-hook 'server-visit-hook 'server-visit-hook-custom-find)
 
   (defun project-or-root ()
     "If git project, find root, otherwise find where emacs was started"
     (or (cdr (project-current))
-	(with-current-buffer "*Messages*" default-directory)))
+        (with-current-buffer "*Messages*" default-directory)))
 
   (defun toggle-comment-on-line ()
     "Toggle comment on line and keep cursor on the toggled line"
@@ -145,14 +145,14 @@ Buffers visiting files not existing/readable will be killed."
     (interactive)
     (dolist (buf (buffer-list))
       (let ((filename (buffer-file-name buf)))
-	(when (and filename (not (buffer-modified-p buf)))
-	  (if (file-readable-p filename)
-	      (with-demoted-errors "Error: %S"
-		(with-current-buffer buf
-		  (revert-buffer :ignore-auto :noconfirm)))
-	    (let (kill-buffer-query-functions)
-	      (kill-buffer buf)
-	      (message "Killed unreadable file buffer: %s" filename))))))
+        (when (and filename (not (buffer-modified-p buf)))
+          (if (file-readable-p filename)
+              (with-demoted-errors "Error: %S"
+                (with-current-buffer buf
+                  (revert-buffer :ignore-auto :noconfirm)))
+            (let (kill-buffer-query-functions)
+              (kill-buffer buf)
+              (message "Killed unreadable file buffer: %s" filename))))))
     (message "Finished reverting buffers containing unmodified files."))
 
   :hook
@@ -183,9 +183,9 @@ Buffers visiting files not existing/readable will be killed."
       (doom-modeline-buffer-file-name)))
 
   (setq frame-title-format '((:eval (doom-buffer-name)) " - %F")
-	doom-modeline-icon t
-	doom-modeline-buffer-file-name-style 'relative-from-project
-	doom-modeline-major-mode-icon nil))
+        doom-modeline-icon t
+        doom-modeline-buffer-file-name-style 'relative-from-project
+        doom-modeline-major-mode-icon nil))
 
 ;;;;;;;;;;;;;;;;;;;; General packages ;;;;;;;;;;;;;;;;;;;;
 
@@ -203,7 +203,7 @@ Buffers visiting files not existing/readable will be killed."
   :bind (("TAB" . company-indent-or-complete-common)
          :map company-active-map
          ("<right>" . company-complete-selection)
-	 ("<left>"  . company-abort))
+         ("<left>"  . company-abort))
   :config
   (add-hook 'buffer-list-update-hook
             (lambda () (auto-complete-mode -1)))
@@ -217,14 +217,14 @@ Buffers visiting files not existing/readable will be killed."
     (setq flycheck-check-syntax-automatically '(mode-enabled save)))
   :config
   (setq flycheck-display-errors-function
-	'flycheck-display-error-messages-unless-error-list)
+        'flycheck-display-error-messages-unless-error-list)
   (add-to-list 'display-buffer-alist
-	       `(,(rx bos "*Flycheck errors*" eos)
-		 (display-buffer-reuse-window
-		  display-buffer-in-side-window)
-		 (side            . bottom)
-		 (reusable-frames . visible)
-		 (window-height   . 0.20))))
+               `(,(rx bos "*Flycheck errors*" eos)
+                 (display-buffer-reuse-window
+                  display-buffer-in-side-window)
+                 (side            . bottom)
+                 (reusable-frames . visible)
+                 (window-height   . 0.20))))
 
 (use-package ido-completing-read+
   :config
@@ -276,7 +276,7 @@ Buffers visiting files not existing/readable will be killed."
   :config
   (setq recentf-max-saved-items 50
         recentf-max-menu-items 35
-	recentf-auto-cleanup 'never)
+        recentf-auto-cleanup 'never)
   (recentf-mode 1))
 
 (use-package vlf
@@ -292,9 +292,9 @@ Buffers visiting files not existing/readable will be killed."
 
 (use-package iedit
   :bind (("C-:" . iedit-mode)
-	 :map iedit-mode-keymap
-	 ("C-h"   . iedit-show/hide-unmatched-lines)
-	 ("C-M-:" . iedit-switch-to-mc-mode)))
+         :map iedit-mode-keymap
+         ("C-h"   . iedit-show/hide-unmatched-lines)
+         ("C-M-:" . iedit-switch-to-mc-mode)))
 
 (use-package expand-region
   :bind ("C-=" . er/expand-region))
@@ -330,24 +330,24 @@ Buffers visiting files not existing/readable will be killed."
   :config
   (defun mc-selected-keys ()
     (if (bound-and-true-p multiple-cursors-mode)
-	(progn (define-key selected-keymap (kbd "}") 'mc/cycle-forward)
-	       (define-key selected-keymap (kbd "{") 'mc/cycle-backward))
+        (progn (define-key selected-keymap (kbd "}") 'mc/cycle-forward)
+               (define-key selected-keymap (kbd "{") 'mc/cycle-backward))
       (progn (define-key selected-keymap (kbd "}") nil)
-	     (define-key selected-keymap (kbd "{") nil)))))
+             (define-key selected-keymap (kbd "{") nil)))))
 
 (use-package visual-regexp
   :bind (("C-x C-x C-?" . vr/query-replace)
-	 ("C-x C-x C-k" . vr/mc-mark)
-	 ("C-M-S"       . vr/isearch-forward)
-	 ("C-M-R"       . vr/isearch-backward))
+         ("C-x C-x C-k" . vr/mc-mark)
+         ("C-M-S"       . vr/isearch-forward)
+         ("C-M-R"       . vr/isearch-backward))
   :config (use-package visual-regexp-steroids))
 
 (use-package string-inflection
   :bind (("C-x M-i c" . string-inflection-lower-camelcase)
-	 ("C-x M-i C" . string-inflection-camelcase)
-	 ("C-x M-i k" . string-inflection-kebab-case)
-	 ("C-x M-i u" . string-inflection-underscore)
-	 ("C-x M-i U" . string-inflection-upcase)))
+         ("C-x M-i C" . string-inflection-camelcase)
+         ("C-x M-i k" . string-inflection-kebab-case)
+         ("C-x M-i u" . string-inflection-underscore)
+         ("C-x M-i U" . string-inflection-upcase)))
 
 (use-package undo-tree
   :bind ("C-M-/" . undo-tree-visualize)
@@ -356,7 +356,7 @@ Buffers visiting files not existing/readable will be killed."
 ;; yay -Syu wordnet-cli
 (use-package synosaurus
   :bind (("C-x M-s l" . synosaurus-lookup)
-	 ("C-x M-s s" . synosaurus-choose-and-replace))
+         ("C-x M-s s" . synosaurus-choose-and-replace))
   :config (synosaurus-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;; Navigation ;;;;;;;;;;;;;;;;;;;;
@@ -407,7 +407,7 @@ Buffers visiting files not existing/readable will be killed."
   (doom-themes-treemacs-config)
   (setq treemacs-persist-file "/dev/null"
         treemacs-collapse-dirs 7
-	treemacs-file-follow-delay 0))
+        treemacs-file-follow-delay 0))
 
 (use-package dired-subtree
   :defer 1
@@ -438,9 +438,9 @@ Buffers visiting files not existing/readable will be killed."
   (defun helm-find-project (arg)
     (interactive "P")
     (if arg
-	(helm-find arg)
+        (helm-find arg)
       (let ((default-directory (project-or-root)))
-	(helm-find nil))))
+        (helm-find nil))))
 
   (helm-autoresize-mode t))
 
@@ -508,8 +508,8 @@ Buffers visiting files not existing/readable will be killed."
   :hook (prog-mode . lsp-mode)
   :config
   (setq lsp-prefer-flymake nil
-	lsp-document-highlight-delay 0.1
-	lsp-enable-symbol-highlighting nil)
+        lsp-document-highlight-delay 0.1
+        lsp-enable-symbol-highlighting nil)
 
   (add-to-list 'lsp-language-id-configuration '(flow-mode . "flow"))
   (lsp-register-client
@@ -522,12 +522,12 @@ Buffers visiting files not existing/readable will be killed."
   :hook (lsp-mode . lsp-ui-mode)
   :bind (:map lsp-ui-mode-map
               ("C-z !" . lsp-ui-flycheck-list)
-	      ("C-z z" . lsp-toggle-highlighting)
+              ("C-z z" . lsp-toggle-highlighting)
               ("C-z d" . lsp-describe-thing-at-point)
               ("C-z m" . lsp-ui-imenu)
               ("C-z r" . lsp-rename)
               ("C-z ." . lsp-find-definition)
-	      ("C-z ?" . lsp-find-references)
+              ("C-z ?" . lsp-find-references)
               ("C-z I" . lsp-find-implementation)
               ("C-z D" . lsp-find-declaration)
               ("C-z T" . lsp-find-type-definition))
@@ -539,13 +539,13 @@ Buffers visiting files not existing/readable will be killed."
   (defun lsp-toggle-highlighting ()
     (interactive)
     (if lsp-enable-symbol-highlighting
-	(setq lsp-enable-symbol-highlighting nil)
+        (setq lsp-enable-symbol-highlighting nil)
       (setq lsp-enable-symbol-highlighting t)))
 
   (use-package helm-lsp
     :bind (:map lsp-ui-mode-map
-		("C-z a" . lsp-workspace-symbol)
-		("C-z A" . lsp-global-workspace-symbol))
+                ("C-z a" . lsp-workspace-symbol)
+                ("C-z A" . lsp-global-workspace-symbol))
     :config
     (defun lsp-workspace-symbol ()
       (interactive)
@@ -610,10 +610,10 @@ Buffers visiting files not existing/readable will be killed."
   :quelpa (lsp-yaml :fetcher github :repo "iquiw/lsp-yaml")
   :hook (yaml-mode
          . (lambda ()
-	     (setq-local lsp-eldoc-render-all t)
-	     (eldoc-mode)
+             (setq-local lsp-eldoc-render-all t)
+             (eldoc-mode)
              (local-set-key
-  	      (kbd "<backtab>") 'company-complete)))
+              (kbd "<backtab>") 'company-complete)))
   :config
   (setq lsp-yaml-schemas '(:kubernetes "*.yml")))
 
@@ -623,7 +623,7 @@ Buffers visiting files not existing/readable will be killed."
   (use-package restclient-helm)
   (use-package company-restclient
     :bind (:map restclient-mode-map
-		("C-c TAB" . company-complete))
+                ("C-c TAB" . company-complete))
     :init (add-to-list 'company-backends 'company-restclient)))
 
 ;;;;;;;;;;;;;;;;;;;;;;; Scientific ;;;;;;;;;;;;;;;;;;;;;;;
@@ -640,7 +640,7 @@ Buffers visiting files not existing/readable will be killed."
   :hook (ess-mode
          . (lambda ()
              (local-set-key
-	      (kbd "TAB") 'company-indent-or-complete-common)))
+              (kbd "TAB") 'company-indent-or-complete-common)))
   :config
   (setq ess-use-flymake nil))
 
@@ -656,7 +656,7 @@ Buffers visiting files not existing/readable will be killed."
 (use-package geiser
   :preface (setq geiser-active-implementations '(chez))
   :hook ((scheme-mode      . enable-paredit-mode)
-	 (geiser-repl-mode . enable-paredit-mode)))
+         (geiser-repl-mode . enable-paredit-mode)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;; Clojure ;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -667,14 +667,14 @@ Buffers visiting files not existing/readable will be killed."
 (use-package clojure-mode
   :mode (("\\.clj\\'"  . clojure-mode)
          ("\\.edn\\'"  . clojure-mode)
-	 ("\\.cljc\\'" . clojurec-mode)
-	 ("\\.cljs\\'" . clojurescript-mode))
+         ("\\.cljc\\'" . clojurec-mode)
+         ("\\.cljs\\'" . clojurescript-mode))
   :bind (:map clojure-mode-map
-	      ("C-:"   . iedit-mode)
-	      ("C-c :" . clojure-toggle-keyword-string))
+              ("C-:"   . iedit-mode)
+              ("C-c :" . clojure-toggle-keyword-string))
   :hook ((clojure-mode . enable-paredit-mode)
-	 (clojure-mode . subword-mode)
-	 (clojure-mode . rainbow-delimiters-mode))
+         (clojure-mode . subword-mode)
+         (clojure-mode . rainbow-delimiters-mode))
   :config
   (use-package clojure-mode-extra-font-locking))
 
@@ -682,11 +682,11 @@ Buffers visiting files not existing/readable will be killed."
   :after clojure-mode
   :bind (("C-c M-B" . cider-browse-ns-all)
          ("C-c M-b" . browse-current-ns)
-	 ("C-c M-f" . cider-format-buffer)
-	 :map cider-repl-mode-map
-	 ("C-c C-o" . cider-repl-clear-buffer))
+         ("C-c M-f" . cider-format-buffer)
+         :map cider-repl-mode-map
+         ("C-c C-o" . cider-repl-clear-buffer))
   :hook ((cider-repl-mode . paredit-mode)
-	 (cider-mode      . eldoc-mode))
+         (cider-mode      . eldoc-mode))
 
   :config
   (defun browse-current-ns ()
@@ -742,7 +742,7 @@ Buffers visiting files not existing/readable will be killed."
   :config
   (setq python-shell-interpreter "ipython"
         python-shell-interpreter-args "--simple-prompt -i"
-	elpy-modules (delq 'elpy-module-flymake elpy-modules)))
+        elpy-modules (delq 'elpy-module-flymake elpy-modules)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;; C/C++ ;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -756,9 +756,9 @@ Buffers visiting files not existing/readable will be killed."
   :hook ((c-mode c++-mode objc-mode)
          . (lambda () (require 'ccls) (lsp)))
   :bind (:map c-mode-base-map
-	      ("C-c C-c" . ff-find-other-file)
-	      ("C-z H"   . ccls-inheritance-hierarchy)
-	      ("C-z C"   . ccls-call-hierarchy)
+              ("C-c C-c" . ff-find-other-file)
+              ("C-z H"   . ccls-inheritance-hierarchy)
+              ("C-z C"   . ccls-call-hierarchy)
               ("C-z M"   . ccls-member-hierarchy)
               ("C-z L"   . ccls-code-lens-mode))
   :init
@@ -796,9 +796,9 @@ Buffers visiting files not existing/readable will be killed."
 (use-package go-mode
   :mode "\\.go\\'"
   :bind (:map go-mode-map
-	      ("M-."   . godef-jump)
-	      ("M-,"   . pop-tag-mark)
-	      ("C-c r" . go-rename))
+              ("M-."   . godef-jump)
+              ("M-,"   . pop-tag-mark)
+              ("C-c r" . go-rename))
   :hook (before-save . gofmt-before-save)
   :config
   (setq gofmt-command "goimports")
@@ -838,7 +838,7 @@ Buffers visiting files not existing/readable will be killed."
   ((rust-mode . racer-mode)
    (rust-mode . eldoc-mode))
   :bind (:map rust-mode-map
-	      ("M-." . racer-find-definition))
+              ("M-." . racer-find-definition))
   :config
   (use-package company-racer
     :config
