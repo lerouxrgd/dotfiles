@@ -82,9 +82,12 @@
    inhibit-startup-message t        ; Go to scratch buffer on startup
    inhibit-splash-screen   t        ; No splash screen
    ring-bell-function      'ignore  ; No bell
-   indent-tabs-mode        nil      ; Don't use hard tabs
    create-lockfiles        nil      ; No need for ~ files when editing
    auto-save-default       nil)     ; No auto-save of file-visiting buffers
+
+  (setq-default
+   indent-tabs-mode nil ; Don't use hard tabs
+   tab-width        4)  ; Sane tab-width
 
   ;; Local files
   (setq
