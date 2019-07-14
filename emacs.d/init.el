@@ -346,8 +346,8 @@ Buffers visiting files not existing/readable will be killed."
   :bind (("C-x M-i c" . string-inflection-lower-camelcase)
          ("C-x M-i C" . string-inflection-camelcase)
          ("C-x M-i k" . string-inflection-kebab-case)
-         ("C-x M-i u" . string-inflection-underscore)
-         ("C-x M-i U" . string-inflection-upcase)))
+         ("C-x M-i s" . string-inflection-underscore)
+         ("C-x M-i u" . string-inflection-upcase)))
 
 (use-package undo-tree
   :bind ("C-M-/" . undo-tree-visualize)
