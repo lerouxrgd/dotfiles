@@ -121,10 +121,19 @@
 
   (add-hook 'server-visit-hook 'server-visit-hook-custom-find)
 
+  (defun unkillable-scratch-buffer ()
+    "Disallow killing of scratch and delete its content instead"
+	(if (equal (buffer-name (current-buffer)) "*scratch*")
+	    (progn (delete-region (point-min) (point-max))
+               nil)
+	  t))
+
+  (add-hook 'kill-buffer-query-functions 'unkillable-scratch-buffer)
+
   (defun project-or-root ()
     "If git project, find root, otherwise find where emacs was started"
     (or (cdr (project-current))
-        (with-current-buffer "*Messages*" default-directory)))
+        (with-current-buffer "*scratch*" default-directory)))
 
   (defun toggle-comment-on-line ()
     "Toggle comment on line and keep cursor on the toggled line"
