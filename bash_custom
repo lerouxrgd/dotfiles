@@ -20,10 +20,12 @@ reverse_array() {
 }
 
 emx() { setsid emacs $(reverse_array "$@") ;}
-emc() { setsid emacsclient -c -F "((undecorated . t) (fullscreen . maximized))" $@ > /dev/null 2>&1 ;}
-emk() { emacsclient --eval "(progn (setq kill-emacs-hook nil) (kill-emacs))" ;}
-em() { TERM=konsole-direct emacs -nw -Q $(reverse_array "$@") ;}
 
-dul() { root=${1-./}; ls $root | xargs -I DIR du -sh ${root%/}/DIR ;}
+# -e "(select-frame-set-input-focus (selected-frame))"
+emc() { setsid emacsclient -c -F "((undecorated . t) (fullscreen . maximized))" $@ > /dev/null 2>&1 ;}
+
+emk() { emacsclient --eval "(progn (setq kill-emacs-hook nil) (kill-emacs))" ;}
+
+em() { TERM=konsole-direct emacs -nw -Q $(reverse_array "$@") ;}
 
 alias ll='ls -alF'
