@@ -54,6 +54,76 @@
   (setq quelpa-update-melpa-p nil
         quelpa-checkout-melpa-p nil))
 
+;;;;;;;;;;;;;;;;;;;;; Custom functions ;;;;;;;;;;;;;;;;;;;
+
+(defvar server-visit-files-custom-find:buffer-count)
+
+(defadvice server-visit-files
+    (around server-visit-files-custom-find
+            activate compile)
+  "Maintain a counter of visited files from a single client call."
+  (let ((server-visit-files-custom-find:buffer-count 0))
+    ad-do-it))
+
+(defun server-visit-hook-custom-find ()
+  "Arrange to visit the files from a client call in separate windows."
+  (if (zerop server-visit-files-custom-find:buffer-count)
+      (progn
+        (delete-other-windows)
+        (switch-to-buffer (current-buffer)))
+    (let ((buffer (current-buffer)))
+      (split-window-right)
+      (switch-to-buffer buffer)
+      (balance-windows)))
+  (setq server-visit-files-custom-find:buffer-count
+        (1+ server-visit-files-custom-find:buffer-count)))
+
+(add-hook 'server-visit-hook 'server-visit-hook-custom-find)
+
+(defun unkillable-scratch-buffer ()
+  "Disallow killing of scratch and delete its content instead."
+  (if (equal (buffer-name (current-buffer)) "*scratch*")
+      (progn (delete-region (point-min) (point-max))
+             nil)
+    t))
+
+(add-hook 'kill-buffer-query-functions 'unkillable-scratch-buffer)
+
+(defun project-or-root ()
+  "If git project, find root, otherwise find where Emacs was started."
+  (or (cdr (project-current))
+      (with-current-buffer "*scratch*" default-directory)))
+
+(defun toggle-comment-on-line ()
+  "Toggle comment on line and keep cursor on the toggled line."
+  (interactive)
+  (comment-or-uncomment-region
+   (line-beginning-position) (line-end-position)))
+
+(defun backward-whitespace (arg)
+  "Move to the beginning of the current sequence of whitespaces.
+Delegate call to 'forward-whitespace with negative ARG."
+  (interactive "^p")
+  (forward-whitespace (- arg)))
+
+(defun revert-all-file-buffers ()
+  "Refresh all open file buffers without confirmation.
+Buffers in modified (not yet saved) state in Emacs will not be reverted.
+They will be reverted though if they were modified outside Emacs.
+Buffers visiting files not existing/readable will be killed."
+  (interactive)
+  (dolist (buf (buffer-list))
+    (let ((filename (buffer-file-name buf)))
+      (when (and filename (not (buffer-modified-p buf)))
+        (if (file-readable-p filename)
+            (with-demoted-errors "Error: %S"
+              (with-current-buffer buf
+                (revert-buffer :ignore-auto :noconfirm)))
+          (let (kill-buffer-query-functions)
+            (kill-buffer buf)
+            (message "Killed unreadable file buffer: %s" filename))))))
+  (message "Finished reverting buffers containing unmodified files."))
+
 ;;;;;;;;;;;;;;;;;;;;;;;; Interface ;;;;;;;;;;;;;;;;;;;;;;;
 
 (use-package doom-themes
@@ -71,13 +141,6 @@
   (put 'upcase-region   'disabled nil)  ; Allow upcase selection
   (put 'downcase-region 'disabled nil)  ; Allow downcase selection
 
-  ;; Setup font
-  (add-to-list
-   'default-frame-alist
-   `(font . ,(concat "DejaVu Sans Mono"
-                     (let ((size (getenv "EMACS_FONT_SIZE")))
-                       (if size (concat "-" size) "")))))
-
   (setq
    inhibit-startup-message t        ; Go to scratch buffer on startup
    inhibit-splash-screen   t        ; No splash screen
@@ -89,80 +152,19 @@
    indent-tabs-mode nil ; Don't use hard tabs
    tab-width        4)  ; Sane tab-width
 
+  ;; Setup font
+  (add-to-list
+   'default-frame-alist
+   `(font . ,(concat "DejaVu Sans Mono"
+                     (let ((size (getenv "EMACS_FONT_SIZE")))
+                       (if size (concat "-" size) "")))))
+
   ;; Local files
   (setq
    backup-directory-alist '(("." . "~/.emacs.d/backups"))
    custom-file "~/.emacs.d/custom.el")
   (when (file-exists-p custom-file)
     (load custom-file))
-
-  :preface
-  (defvar server-visit-files-custom-find:buffer-count)
-
-  (defadvice server-visit-files
-      (around server-visit-files-custom-find
-              activate compile)
-    "Maintain a counter of visited files from a single client call."
-    (let ((server-visit-files-custom-find:buffer-count 0))
-      ad-do-it))
-
-  (defun server-visit-hook-custom-find ()
-    "Arrange to visit the files from a client call in separate windows."
-    (if (zerop server-visit-files-custom-find:buffer-count)
-        (progn
-          (delete-other-windows)
-          (switch-to-buffer (current-buffer)))
-      (let ((buffer (current-buffer)))
-        (split-window-right)
-        (switch-to-buffer buffer)
-        (balance-windows)))
-    (setq server-visit-files-custom-find:buffer-count
-          (1+ server-visit-files-custom-find:buffer-count)))
-
-  (add-hook 'server-visit-hook 'server-visit-hook-custom-find)
-
-  (defun unkillable-scratch-buffer ()
-    "Disallow killing of scratch and delete its content instead"
-	(if (equal (buffer-name (current-buffer)) "*scratch*")
-	    (progn (delete-region (point-min) (point-max))
-               nil)
-	  t))
-
-  (add-hook 'kill-buffer-query-functions 'unkillable-scratch-buffer)
-
-  (defun project-or-root ()
-    "If git project, find root, otherwise find where emacs was started"
-    (or (cdr (project-current))
-        (with-current-buffer "*scratch*" default-directory)))
-
-  (defun toggle-comment-on-line ()
-    "Toggle comment on line and keep cursor on the toggled line"
-    (interactive)
-    (comment-or-uncomment-region
-     (line-beginning-position) (line-end-position)))
-
-  (defun backward-whitespace (arg)
-    "Move to the beginning of the current sequence of whitespaces"
-    (interactive "^p")
-    (forward-whitespace (- arg)))
-
-  (defun revert-all-file-buffers ()
-    "Refresh all open file buffers without confirmation.
-Buffers in modified (not yet saved) state in emacs will not be reverted.
-They will be reverted though if they were modified outside emacs.
-Buffers visiting files not existing/readable will be killed."
-    (interactive)
-    (dolist (buf (buffer-list))
-      (let ((filename (buffer-file-name buf)))
-        (when (and filename (not (buffer-modified-p buf)))
-          (if (file-readable-p filename)
-              (with-demoted-errors "Error: %S"
-                (with-current-buffer buf
-                  (revert-buffer :ignore-auto :noconfirm)))
-            (let (kill-buffer-query-functions)
-              (kill-buffer buf)
-              (message "Killed unreadable file buffer: %s" filename))))))
-    (message "Finished reverting buffers containing unmodified files."))
 
   :hook
   (before-save . (lambda() (delete-trailing-whitespace)))
