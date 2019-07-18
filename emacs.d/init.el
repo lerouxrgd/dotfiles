@@ -251,12 +251,14 @@ Buffers visiting files not existing/readable will be killed."
   (setq magit-diff-refine-hunk t)
   (use-package magit-ediff
     :ensure nil
-    :init
-    (setq ediff-force-faces t)
     :config
-    (setq magit-ediff-dwim-show-on-hunks t
-          ediff-split-window-function 'split-window-horizontally
-          ediff-window-setup-function 'ediff-setup-windows-plain)))
+    (setq magit-ediff-dwim-show-on-hunks t)))
+
+(use-package ediff
+  :config
+  (setq ediff-split-window-function 'split-window-horizontally
+        ediff-window-setup-function 'ediff-setup-windows-plain
+        ediff-force-faces t))
 
 (use-package yasnippet
   :hook (prog-mode . yas-minor-mode)
