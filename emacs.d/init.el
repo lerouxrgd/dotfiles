@@ -396,7 +396,7 @@ Buffers visiting files not existing/readable will be killed."
                   :background ,(doom-color 'blue)
                   :foreground ,(doom-color 'bg)))))
    `(nswbuff-separator-face
-     ((t (:foreground ,(doom-color 'dark-blue)))))
+     ((t (:foreground ,(doom-color 'orange)))))
    `(nswbuff-special-buffers-face
      ((t (:foreground ,(doom-color 'yellow)))))))
 
