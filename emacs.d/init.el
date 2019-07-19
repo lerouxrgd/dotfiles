@@ -128,7 +128,7 @@ Buffers visiting files not existing/readable will be killed."
 
 (use-package doom-themes
   :init
-  (load-theme 'doom-nord t) ; Define theme
+  (load-theme 'doom-spacegrey t) ; Define theme
 
   (blink-cursor-mode   -1) ; Turn off blinking cursor
   (show-paren-mode      1) ; Highlight matching parenthesis
@@ -482,7 +482,7 @@ Buffers visiting files not existing/readable will be killed."
   (setq helm-always-two-windows t
         helm-split-window-inside-p t
         helm-rg--color-format-argument-alist
-        '((red :cmd-line magenta :text-property magenta)))
+        '((red :cmd-line green :text-property green)))
 
   (custom-set-faces
    `(helm-rg-active-arg-face
@@ -492,11 +492,12 @@ Buffers visiting files not existing/readable will be killed."
    `(helm-rg-line-number-match-face
      ((t (:foreground ,(doom-color 'base6)))))
    `(helm-rg-file-match-face
-     ((t (:foreground ,(doom-color 'blue)))))
+     ((t (:foreground ,(doom-color 'teal)))))
    `(helm-rg-preview-line-highlight
-     ((t (:weight bold
-                  :background ,(doom-color 'blue)
-                  :foreground ,(doom-color 'bg)))))))
+     ((t (:foreground
+          ,(doom-color 'bg)
+          :background
+          ,(doom-color 'highlight)))))))
 
 (use-package helm-xref
   :config
