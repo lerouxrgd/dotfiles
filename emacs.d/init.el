@@ -599,9 +599,6 @@ Buffers visiting files not existing/readable will be killed."
   (setq markdown-command "marked"
         markdown-live-preview-delete-export 'delete-on-export))
 
-(use-package cmake-font-lock
-  :hook (cmake-mode . cmake-font-lock-activate))
-
 (use-package hi-lock
   :bind (("s-a" . highlight-symbol-at-point)
          ("s-d" . unhighlight-regexp))
@@ -791,6 +788,15 @@ Buffers visiting files not existing/readable will be killed."
     (interactive)
     (when (derived-mode-p 'c-mode 'c++-mode 'objc-mode)
       (clang-format-buffer))))
+
+(use-package modern-cpp-font-lock
+  :hook (c++-mode . modern-c++-font-lock-mode))
+
+(use-package cmake-font-lock
+  :hook (cmake-mode . cmake-font-lock-activate))
+
+(use-package eldoc-cmake
+  :hook (cmake-mode . eldoc-cmake-enable))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;; Go ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
