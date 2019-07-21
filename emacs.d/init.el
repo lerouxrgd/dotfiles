@@ -128,7 +128,7 @@ Buffers visiting files not existing/readable will be killed."
 
 (use-package doom-themes
   :init
-  (load-theme 'doom-spacegrey t) ; Define theme
+  (load-theme 'doom-nova t) ; Define theme
 
   (blink-cursor-mode   -1) ; Turn off blinking cursor
   (show-paren-mode      1) ; Highlight matching parenthesis
@@ -158,6 +158,11 @@ Buffers visiting files not existing/readable will be killed."
    `(font . ,(concat "DejaVu Sans Mono"
                      (let ((size (getenv "EMACS_FONT_SIZE")))
                        (if size (concat "-" size) "")))))
+
+  ;; Customize theme
+  (custom-theme-set-faces
+   'doom-nova
+   `(hl-line ((t (:background ,(doom-color 'bg-alt))))))
 
   ;; Local files
   (setq
