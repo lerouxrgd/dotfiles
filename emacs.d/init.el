@@ -248,9 +248,9 @@ Buffers visiting files not existing/readable will be killed."
 (use-package ido-completing-read+
   :config
   (setq ido-auto-merge-work-directories-length -1
-        ido-enable-flex-matching t
-        ido-use-filename-at-point nil)
+        ido-enable-flex-matching t)
   (ido-mode 1)
+  (ido-everywhere 1)
   (ido-ubiquitous-mode 1))
 
 (use-package magit
