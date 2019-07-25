@@ -416,6 +416,8 @@ Buffers visiting files not existing/readable will be killed."
          ("<C-iso-lefttab>" . (lambda () (interactive))))
 
   :config
+  (defun treemacs--restore ())
+  (defun treemacs--persist ())
   (defun treemacs-project ()
     (interactive)
     (unless (treemacs-current-workspace)
@@ -426,9 +428,9 @@ Buffers visiting files not existing/readable will be killed."
     (treemacs-select-window))
 
   (doom-themes-treemacs-config)
-  (setq treemacs-persist-file "/dev/null"
-        treemacs-collapse-dirs 7
-        treemacs-file-follow-delay 0))
+  (setq treemacs-collapse-dirs 7
+        treemacs-file-follow-delay 0
+        treemacs--workspaces (list (make-treemacs-workspace))))
 
 (use-package dired-subtree
   :defer 1
