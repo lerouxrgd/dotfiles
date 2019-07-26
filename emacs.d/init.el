@@ -56,38 +56,12 @@
 
 ;;;;;;;;;;;;;;;;;;;;; Custom functions ;;;;;;;;;;;;;;;;;;;
 
-(defvar server-visit-files-custom-find:buffer-count)
-
-(defadvice server-visit-files
-    (around server-visit-files-custom-find
-            activate compile)
-  "Maintain a counter of visited files from a single client call."
-  (let ((server-visit-files-custom-find:buffer-count 0))
-    ad-do-it))
-
-(defun server-visit-hook-custom-find ()
-  "Arrange to visit the files from a client call in separate windows."
-  (if (zerop server-visit-files-custom-find:buffer-count)
-      (progn
-        (delete-other-windows)
-        (switch-to-buffer (current-buffer)))
-    (let ((buffer (current-buffer)))
-      (split-window-right)
-      (switch-to-buffer buffer)
-      (balance-windows)))
-  (setq server-visit-files-custom-find:buffer-count
-        (1+ server-visit-files-custom-find:buffer-count)))
-
-(add-hook 'server-visit-hook 'server-visit-hook-custom-find)
-
 (defun unkillable-scratch-buffer ()
   "Disallow killing of scratch and delete its content instead."
   (if (equal (buffer-name (current-buffer)) "*scratch*")
       (progn (delete-region (point-min) (point-max))
              nil)
     t))
-
-(add-hook 'kill-buffer-query-functions 'unkillable-scratch-buffer)
 
 (defun project-or-root ()
   "If git project, find root, otherwise find where Emacs was started."
@@ -123,6 +97,9 @@ Buffers visiting files not existing/readable will be killed."
             (kill-buffer buf)
             (message "Killed unreadable file buffer: %s" filename))))))
   (message "Finished reverting buffers containing unmodified files."))
+
+(add-hook 'kill-buffer-query-functions 'unkillable-scratch-buffer)
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Interface ;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -170,9 +147,6 @@ Buffers visiting files not existing/readable will be killed."
    custom-file "~/.emacs.d/custom.el")
   (when (file-exists-p custom-file)
     (load custom-file))
-
-  :hook
-  (before-save . (lambda() (delete-trailing-whitespace)))
 
   :bind
   (("S-C-<left>"  . shrink-window-horizontally)
