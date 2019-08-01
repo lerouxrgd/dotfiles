@@ -236,6 +236,9 @@ Buffers visiting files not existing/readable will be killed."
     :config
     (setq magit-ediff-dwim-show-on-hunks t)))
 
+(use-package git-timemachine
+  :bind ("C-x G" . git-timemachine))
+
 (use-package ediff
   :config
   (setq ediff-split-window-function 'split-window-horizontally
@@ -348,11 +351,8 @@ Buffers visiting files not existing/readable will be killed."
   :bind ("C-M-/" . undo-tree-visualize)
   :config (global-undo-tree-mode))
 
-;; yay -Syu wordnet-cli
-(use-package synosaurus
-  :bind (("C-x M-s l" . synosaurus-lookup)
-         ("C-x M-s s" . synosaurus-choose-and-replace))
-  :config (synosaurus-mode))
+(use-package powerthesaurus
+  :bind ("C-x M-s" . powerthesaurus-lookup-word-dwim))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;; Navigation ;;;;;;;;;;;;;;;;;;;;
 

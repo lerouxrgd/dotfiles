@@ -11,6 +11,7 @@ smex-items
 ac-comphist.dat
 cider-history
 transient
+request
 
 # workspace local files
 quelpa
