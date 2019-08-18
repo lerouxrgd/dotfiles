@@ -205,9 +205,16 @@ Buffers visiting files not existing/readable will be killed."
 (use-package flycheck
   :hook ((after-init      . global-flycheck-mode)
          (emacs-lisp-mode . flycheck-on-save))
+  :bind ("C-x !" . flycheck-errors-buffer)
   :init
   (defun flycheck-on-save ()
     (setq flycheck-check-syntax-automatically '(mode-enabled save)))
+
+  (defun flycheck-errors-buffer ()
+    (interactive)
+    (flycheck-list-errors)
+    (select-window (get-buffer-window "*Flycheck errors*")))
+
   :config
   (setq flycheck-display-errors-function
         'flycheck-display-error-messages-unless-error-list)
@@ -575,11 +582,15 @@ Buffers visiting files not existing/readable will be killed."
 (use-package mustache-mode)
 
 ;; sudo pacman -Syu marked
+;; pip install --user grip
 (use-package markdown-mode
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'"       . markdown-mode)
          ("\\.markdown\\'" . markdown-mode))
   :config
+  (use-package grip-mode
+    :bind (:map markdown-mode-command-map
+                ("g" . grip-mode)))
   (setq markdown-command "marked"
         markdown-live-preview-delete-export 'delete-on-export))
 

@@ -12,6 +12,7 @@ ac-comphist.dat
 cider-history
 transient
 request
+url
 
 # workspace local files
 quelpa
