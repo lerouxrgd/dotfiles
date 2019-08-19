@@ -836,7 +836,7 @@ Buffers visiting files not existing/readable will be killed."
 ;; https://github.com/kwrooijen/cargo.el
 
 ;; rustup component add rust-src rust-analysis
-;; rustup component add rustfmt rls
+;; rustup component add rustfmt rls clippy
 ;; rustup toolchain add nightly
 ;; cargo +nightly install racer
 
