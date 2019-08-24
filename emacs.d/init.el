@@ -594,11 +594,12 @@ Buffers visiting files not existing/readable will be killed."
   (setq markdown-command "marked"
         markdown-live-preview-delete-export 'delete-on-export))
 
-(use-package hi-lock
-  :bind (("s-a" . highlight-symbol-at-point)
-         ("s-d" . unhighlight-regexp))
-  :config (setq hi-lock-face-defaults '("hi-pink"))
-  :custom-face (hi-pink ((t (:background "pink4")))))
+
+(use-package symbol-overlay
+  :bind (("C-x C-x C-a" . symbol-overlay-put)
+         ("C-x C-x M-a" . symbol-overlay-remove-all)
+         ("C-z C-z"     . symbol-overlay-mode))
+  :config (setq symbol-overlay-idle-time 0.2))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;; Ops ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
