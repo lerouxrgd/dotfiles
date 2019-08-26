@@ -195,8 +195,7 @@ Buffers visiting files not existing/readable will be killed."
   :hook (after-init . global-company-mode)
   :bind (("TAB" . company-indent-or-complete-common)
          :map company-active-map
-         ("<right>" . company-complete-selection)
-         ("<left>"  . company-abort))
+         ("<right>" . company-abort))
   :config
   (add-hook 'buffer-list-update-hook
             (lambda () (auto-complete-mode -1)))
@@ -593,7 +592,6 @@ Buffers visiting files not existing/readable will be killed."
                 ("g" . grip-mode)))
   (setq markdown-command "marked"
         markdown-live-preview-delete-export 'delete-on-export))
-
 
 (use-package symbol-overlay
   :bind (("C-x C-x C-a" . symbol-overlay-put)
