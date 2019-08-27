@@ -796,21 +796,30 @@ Buffers visiting files not existing/readable will be killed."
     (when (eq major-mode 'cmake-mode)
       (let ((line (save-excursion (beginning-of-line) (1+ (count-lines 1 (point)))))
             (col  (save-excursion (goto-char (point)) (current-column)))
+            (conf (current-window-configuration))
             (buf  (current-buffer)))
+
+        (when-let (buf (get-buffer "*cmake-format*"))
+          (kill-buffer buf))
 
         (with-current-buffer (get-buffer-create "*cmake-format*")
           (insert-buffer-substring buf)
           (let ((ret (shell-command-on-region
                       (point-min) (point-max)
                       "cmake-format - "
-                      (current-buffer) t
+                      (current-buffer) nil
                       "*cmake-format*" t)))
-            (when (zerop ret)
+            (cond
+             ((zerop ret)
               (copy-to-buffer buf (point-min) (point-max))
-              (kill-buffer))))
-
-        (with-no-warnings (goto-line line))
-        (move-to-column col t)))))
+              (kill-buffer)
+              (set-window-configuration conf)
+              (with-no-warnings (goto-line line))
+              (move-to-column col t)
+              (recenter-top-bottom))
+             (t
+              (special-mode)
+              (select-window (get-buffer-window "*cmake-format*"))))))))))
 
 (use-package eldoc-cmake
   :hook (cmake-mode . eldoc-cmake-enable))
