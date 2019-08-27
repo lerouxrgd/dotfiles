@@ -787,9 +787,8 @@ Buffers visiting files not existing/readable will be killed."
   :hook (c++-mode . modern-c++-font-lock-mode))
 
 ;; pip install --user cmake_format
-(use-package cmake-font-lock
-  :hook ((cmake-mode  . cmake-font-lock-activate)
-         (before-save . cmake-format-code))
+(use-package cmake-mode
+  :hook (before-save . cmake-format-code)
   :config
   (defun cmake-format-code ()
     (interactive)
@@ -820,6 +819,9 @@ Buffers visiting files not existing/readable will be killed."
              (t
               (special-mode)
               (select-window (get-buffer-window "*cmake-format*"))))))))))
+
+(use-package cmake-font-lock
+  :hook (cmake-mode  . cmake-font-lock-activate))
 
 (use-package eldoc-cmake
   :hook (cmake-mode . eldoc-cmake-enable))
