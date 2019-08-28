@@ -755,7 +755,7 @@ Buffers visiting files not existing/readable will be killed."
 
 ;; sudo pacman -Syu clang
 ;; yay -Syu ccls
-;; pip install --user compiledb
+;; pip install --user compiledb cmake_format
 
 (use-package ccls
   :hook ((c-mode c++-mode objc-mode)
@@ -786,42 +786,41 @@ Buffers visiting files not existing/readable will be killed."
 (use-package modern-cpp-font-lock
   :hook (c++-mode . modern-c++-font-lock-mode))
 
-;; pip install --user cmake_format
 (use-package cmake-mode
-  :hook (before-save . cmake-format-code)
+  :bind (:map cmake-mode-map
+              ("C-c C-f" . cmake-format-buffer))
   :config
-  (defun cmake-format-code ()
+  (defun cmake-format-buffer ()
     (interactive)
-    (when (eq major-mode 'cmake-mode)
-      (let ((line (save-excursion (beginning-of-line) (1+ (count-lines 1 (point)))))
-            (col  (save-excursion (goto-char (point)) (current-column)))
-            (conf (current-window-configuration))
-            (buf  (current-buffer)))
+    (let ((line (save-excursion (beginning-of-line) (1+ (count-lines 1 (point)))))
+          (col  (save-excursion (goto-char (point)) (current-column)))
+          (conf (current-window-configuration))
+          (buf  (current-buffer)))
 
-        (when-let (buf (get-buffer "*cmake-format*"))
-          (kill-buffer buf))
+      (when-let (buf (get-buffer "*cmake-format*"))
+        (kill-buffer buf))
 
-        (with-current-buffer (get-buffer-create "*cmake-format*")
-          (insert-buffer-substring buf)
-          (let ((ret (shell-command-on-region
-                      (point-min) (point-max)
-                      "cmake-format - "
-                      (current-buffer) nil
-                      "*cmake-format*" t)))
-            (cond
-             ((zerop ret)
-              (copy-to-buffer buf (point-min) (point-max))
-              (kill-buffer)
-              (set-window-configuration conf)
-              (with-no-warnings (goto-line line))
-              (move-to-column col t)
-              (recenter-top-bottom))
-             (t
-              (special-mode)
-              (select-window (get-buffer-window "*cmake-format*"))))))))))
+      (with-current-buffer (get-buffer-create "*cmake-format*")
+        (insert-buffer-substring buf)
+        (let ((ret (shell-command-on-region
+                    (point-min) (point-max)
+                    "cmake-format - "
+                    (current-buffer) nil
+                    "*cmake-format*" t)))
+          (cond
+           ((zerop ret)
+            (copy-to-buffer buf (point-min) (point-max))
+            (kill-buffer)
+            (set-window-configuration conf)
+            (with-no-warnings (goto-line line))
+            (move-to-column col t)
+            (recenter-top-bottom))
+           (t
+            (special-mode)
+            (select-window (get-buffer-window "*cmake-format*")))))))))
 
 (use-package cmake-font-lock
-  :hook (cmake-mode  . cmake-font-lock-activate))
+  :hook (cmake-mode . cmake-font-lock-activate))
 
 (use-package eldoc-cmake
   :hook (cmake-mode . eldoc-cmake-enable))
