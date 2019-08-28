@@ -315,8 +315,8 @@ Buffers visiting files not existing/readable will be killed."
 (use-package multiple-cursors
   :after selected
   :bind
-  (:map
-   selected-keymap
+  (("C-S-<mouse-1>" . mc/add-cursor-on-click)
+   :map selected-keymap
    ("SPC" . mc/edit-lines)
    (":"   . mc/mark-all-like-this)
    (">"   . mc/mark-next-like-this)
