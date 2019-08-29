@@ -475,6 +475,8 @@ Buffers visiting files not existing/readable will be killed."
         '((red :cmd-line green :text-property green)))
 
   (custom-set-faces
+   `(helm-rg-title-face
+     ((t (:foreground ,(doom-color 'black) :background ,(doom-color 'base6)))))
    `(helm-rg-active-arg-face
      ((t (:foreground ,(doom-color 'green)))))
    `(helm-rg-error-message
@@ -484,10 +486,9 @@ Buffers visiting files not existing/readable will be killed."
    `(helm-rg-file-match-face
      ((t (:foreground ,(doom-color 'teal)))))
    `(helm-rg-preview-line-highlight
-     ((t (:foreground
-          ,(doom-color 'bg)
-          :background
-          ,(doom-color 'highlight)))))))
+     ((t (:foreground ,(doom-color 'bg) :background ,(doom-color 'highlight)))))
+   `(helm-rg-directory-header-face
+     ((t (:foreground ,(doom-color 'black) :background ,(doom-color 'base6)))))))
 
 (use-package helm-xref
   :config
