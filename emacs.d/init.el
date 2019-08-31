@@ -291,9 +291,6 @@ Buffers visiting files not existing/readable will be killed."
 
 ;;;;;;;;;;;;;;;;;;;;;;;;; Editing ;;;;;;;;;;;;;;;;;;;;;;;;
 
-(use-package popup-kill-ring
-  :bind ("M-Y" . popup-kill-ring))
-
 (use-package iedit
   :bind (("C-:" . iedit-mode)
          :map iedit-mode-keymap
@@ -308,7 +305,7 @@ Buffers visiting files not existing/readable will be killed."
               ("q" . selected-off)
               ("u" . upcase-region)
               ("l" . downcase-region)
-              ("w" . count-words-region)
+              ("w" . copy-to-register)
               ("m" . apply-macro-to-region-lines))
   :init (selected-global-mode))
 
@@ -422,12 +419,15 @@ Buffers visiting files not existing/readable will be killed."
   :preface (require 'helm-config)
   :bind (("C-x x" . helm-command-prefix)
          :map helm-command-map
-         ("." . helm-etags-select)
-         ("m" . helm-imenu)
-         ("/" . helm-find-project))
+         ("SPC" . helm-all-mark-rings)
+         ("x"   . helm-register)
+         ("m"   . helm-imenu)
+         ("."   . helm-etags-select)
+         ("/"   . helm-find-project))
 
   :config
-  (require 'helm-find)
+  (require 'helm-ring)
+
   (defun find-with-gitignore (orig-fun &rest args)
     (let ((find-command (apply orig-fun args)))
       (concat
@@ -436,6 +436,7 @@ Buffers visiting files not existing/readable will be killed."
        "'for f;do git check-ignore -q \"$f\" || printf \"$f\n\"; done' "
        "find-sh {} + "
        "2> /dev/null")))
+  (require 'helm-find)
   (advice-add 'helm-find--build-cmd-line :around 'find-with-gitignore)
 
   (defun helm-find-project (arg)
