@@ -349,7 +349,8 @@ Buffers visiting files not existing/readable will be killed."
   :hook (prog-mode . yas-minor-mode)
   :bind (("M-/" . hippie-expand)
          :map yas-minor-mode-map
-         ("<tab>" . nil))
+         ("<tab>" . nil)
+         ("TAB"   . nil))
   :config
   (use-package yasnippet-snippets)
   (setq hippie-expand-try-functions-list
@@ -438,8 +439,17 @@ Buffers visiting files not existing/readable will be killed."
          ("/"   . helm-find-project))
 
   :config
-  (require 'helm-ring)
+  (helm-autoresize-mode t)
 
+  (require 'helm-ring)
+  (defun multi-pop-to-mark (orig-fun &rest args)
+    (let ((p (point)))
+      (dotimes (_ 10)
+        (when (= p (point))
+          (apply orig-fun args)))))
+  (advice-add 'pop-to-mark-command :around #'multi-pop-to-mark)
+
+  (require 'helm-find)
   (defun find-with-gitignore (orig-fun &rest args)
     (let ((find-command (apply orig-fun args)))
       (concat
@@ -448,7 +458,6 @@ Buffers visiting files not existing/readable will be killed."
        "'for f;do git check-ignore -q \"$f\" || printf \"$f\n\"; done' "
        "find-sh {} + "
        "2> /dev/null")))
-  (require 'helm-find)
   (advice-add 'helm-find--build-cmd-line :around 'find-with-gitignore)
 
   (defun helm-find-project (arg)
@@ -456,9 +465,7 @@ Buffers visiting files not existing/readable will be killed."
     (if arg
         (helm-find arg)
       (let ((default-directory (project-or-root)))
-        (helm-find nil))))
-
-  (helm-autoresize-mode t))
+        (helm-find nil)))))
 
 (use-package helm-c-yasnippet
   :after yasnippet
