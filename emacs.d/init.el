@@ -204,7 +204,10 @@ Buffers visiting files not existing/readable will be killed."
 (use-package flycheck
   :hook ((after-init      . global-flycheck-mode)
          (emacs-lisp-mode . flycheck-on-save))
-  :bind ("C-x !" . flycheck-errors-buffer)
+  :bind (("C-x !" . flycheck-errors-buffer)
+         :map flycheck-error-list-mode-map
+         ("<C-return>" . flycheck-goto-error-kill-buffer))
+
   :init
   (defun flycheck-on-save ()
     (setq flycheck-check-syntax-automatically '(mode-enabled save)))
@@ -213,6 +216,11 @@ Buffers visiting files not existing/readable will be killed."
     (interactive)
     (flycheck-list-errors)
     (select-window (get-buffer-window "*Flycheck errors*")))
+
+  (defun flycheck-goto-error-kill-buffer ()
+    (interactive)
+    (flycheck-error-list-goto-error)
+    (kill-buffer "*Flycheck errors*"))
 
   :config
   (setq flycheck-display-errors-function
@@ -250,19 +258,6 @@ Buffers visiting files not existing/readable will be killed."
   (setq ediff-split-window-function 'split-window-horizontally
         ediff-window-setup-function 'ediff-setup-windows-plain
         ediff-force-faces t))
-
-(use-package yasnippet
-  :hook (prog-mode . yas-minor-mode)
-  :bind (("M-/" . hippie-expand)
-         :map yas-minor-mode-map
-         ("C-x C-x C-s" . yas-insert-snippet))
-  :config
-  (use-package yasnippet-snippets)
-  (setq hippie-expand-try-functions-list
-        '(try-expand-dabbrev
-          try-expand-dabbrev-all-buffers
-          try-expand-dabbrev-from-kill
-          yas-hippie-try-expand)))
 
 (use-package uniquify
   :ensure nil
@@ -349,6 +344,23 @@ Buffers visiting files not existing/readable will be killed."
          ("C-x M-i k" . string-inflection-kebab-case)
          ("C-x M-i s" . string-inflection-underscore)
          ("C-x M-i u" . string-inflection-upcase)))
+
+(use-package yasnippet
+  :hook (prog-mode . yas-minor-mode)
+  :bind (("M-/" . hippie-expand)
+         :map yas-minor-mode-map
+         ("<tab>" . nil))
+  :config
+  (use-package yasnippet-snippets)
+  (setq hippie-expand-try-functions-list
+        '(try-expand-dabbrev
+          try-expand-dabbrev-all-buffers
+          try-expand-dabbrev-from-kill
+          yas-hippie-try-expand)))
+
+(use-package auto-yasnippet
+  :bind (("C-x C-x C-s" . aya-create)
+         ("M-Y"         . aya-expand)))
 
 (use-package undo-tree
   :bind ("C-M-/" . undo-tree-visualize)
@@ -448,16 +460,16 @@ Buffers visiting files not existing/readable will be killed."
 
   (helm-autoresize-mode t))
 
+(use-package helm-c-yasnippet
+  :after yasnippet
+  :bind (:map helm-command-map
+              ("s" . helm-yas-complete)))
+
 (use-package swiper-helm
   :bind (:map isearch-mode-map
               ("TAB" . swiper-helm-from-isearch))
   :config
-  (defun swiper-helm-display-buffer (buf &optional _resume)
-    (split-window-vertically)
-    (other-window 1)
-    (switch-to-buffer buf))
-  (setq swiper-helm-display-function
-        'swiper-helm-display-buffer))
+  (setq swiper-helm-display-function 'helm-default-display-buffer))
 
 ;; sudo pacman -Syu ripgrep
 (use-package helm-rg
