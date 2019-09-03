@@ -233,6 +233,8 @@ Buffers visiting files not existing/readable will be killed."
                  (reusable-frames . visible)
                  (window-height   . 0.20))))
 
+(use-package flycheck-package)
+
 (use-package ido-completing-read+
   :config
   (setq ido-auto-merge-work-directories-length -1
