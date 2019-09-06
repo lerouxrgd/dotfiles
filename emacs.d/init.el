@@ -130,6 +130,7 @@ Buffers visiting files not existing/readable will be killed."
   ;; Setup scrolling
   (global-set-key (kbd "M-n") (kbd "C-u 1 C-v"))
   (global-set-key (kbd "M-p") (kbd "C-u 1 M-v"))
+  (global-set-key (kbd "M-L") (kbd "C-l"))
   (setq scroll-step 1
         scroll-margin 0
         scroll-conservatively 100000
@@ -639,7 +640,10 @@ Buffers visiting files not existing/readable will be killed."
 (use-package symbol-overlay
   :bind (("C-x C-x C-a" . symbol-overlay-put)
          ("C-x C-x M-a" . symbol-overlay-remove-all)
-         ("C-z C-z"     . symbol-overlay-mode))
+         ("C-z C-z"     . symbol-overlay-mode)
+         :map symbol-overlay-mode-map
+         ("C-M-n" . symbol-overlay-jump-next)
+         ("C-M-p" . symbol-overlay-jump-last))
   :config (setq symbol-overlay-idle-time 0.2))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;; Ops ;;;;;;;;;;;;;;;;;;;;;;;;;;
