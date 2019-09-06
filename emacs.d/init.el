@@ -119,15 +119,19 @@ Buffers visiting files not existing/readable will be killed."
   (put 'downcase-region 'disabled nil)  ; Allow downcase selection
 
   (setq
-   inhibit-startup-message t        ; Go to scratch buffer on startup
-   inhibit-splash-screen   t        ; No splash screen
-   ring-bell-function      'ignore  ; No bell
-   create-lockfiles        nil      ; No need for ~ files when editing
-   auto-save-default       nil)     ; No auto-save of file-visiting buffers
+   inhibit-startup-message t         ; Go to scratch buffer on startup
+   inhibit-splash-screen   t         ; No splash screen
+   ring-bell-function      'ignore)  ; No bell
 
   (setq-default
    indent-tabs-mode nil ; Don't use hard tabs
    tab-width        4)  ; Sane tab-width
+
+  ;; Setup scrolling
+  (setq scroll-step 1
+        scroll-margin 0
+        scroll-conservatively 100000
+        mouse-wheel-scroll-amount '(1 ((shift) . 1)))
 
   ;; Setup font
   (add-to-list
@@ -136,17 +140,19 @@ Buffers visiting files not existing/readable will be killed."
                      (let ((size (getenv "EMACS_FONT_SIZE")))
                        (if size (concat "-" size) "")))))
 
+  ;; Setup local files
+  (setq
+   backup-directory-alist '(("." . "~/.emacs.d/backups"))
+   custom-file            "~/.emacs.d/custom.el"
+   create-lockfiles       nil   ; No need for ~ files when editing
+   auto-save-default      nil)  ; No auto-save of file-visiting buffers
+  (when (file-exists-p custom-file)
+    (load custom-file))
+
   ;; Customize theme
   (custom-theme-set-faces
    'doom-nova
    `(hl-line ((t (:background ,(doom-color 'bg-alt))))))
-
-  ;; Local files
-  (setq
-   backup-directory-alist '(("." . "~/.emacs.d/backups"))
-   custom-file "~/.emacs.d/custom.el")
-  (when (file-exists-p custom-file)
-    (load custom-file))
 
   :bind
   (("S-C-<left>"  . shrink-window-horizontally)
@@ -249,8 +255,7 @@ Buffers visiting files not existing/readable will be killed."
   (setq magit-diff-refine-hunk t)
   (use-package magit-ediff
     :ensure nil
-    :config
-    (setq magit-ediff-dwim-show-on-hunks t)))
+    :config (setq magit-ediff-dwim-show-on-hunks t)))
 
 (use-package git-timemachine
   :bind ("C-x G" . git-timemachine))
@@ -400,6 +405,14 @@ Buffers visiting files not existing/readable will be killed."
    `(nswbuff-special-buffers-face
      ((t (:foreground ,(doom-color 'yellow)))))))
 
+(use-package eyebrowse
+  :config
+  (define-key eyebrowse-mode-map (kbd "M-1") 'eyebrowse-switch-to-window-config-1)
+  (define-key eyebrowse-mode-map (kbd "M-2") 'eyebrowse-switch-to-window-config-2)
+  (define-key eyebrowse-mode-map (kbd "M-3") 'eyebrowse-switch-to-window-config-3)
+  (define-key eyebrowse-mode-map (kbd "M-4") 'eyebrowse-switch-to-window-config-4)
+  (eyebrowse-mode t))
+
 (use-package treemacs
   :after doom-themes
   :bind (("C-x t" . treemacs-project)
@@ -468,6 +481,11 @@ Buffers visiting files not existing/readable will be killed."
         (helm-find arg)
       (let ((default-directory (project-or-root)))
         (helm-find nil)))))
+
+(use-package helm-fd
+  :quelpa (helm-fd :fetcher github :repo "lerouxrgd/helm-fd")
+  :bind (:map helm-command-map
+              ("/" . helm-fd-project)))
 
 (use-package helm-c-yasnippet
   :after yasnippet
