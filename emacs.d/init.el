@@ -128,6 +128,8 @@ Buffers visiting files not existing/readable will be killed."
    tab-width        4)  ; Sane tab-width
 
   ;; Setup scrolling
+  (global-set-key (kbd "M-n") (kbd "C-u 1 C-v"))
+  (global-set-key (kbd "M-p") (kbd "C-u 1 M-v"))
   (setq scroll-step 1
         scroll-margin 0
         scroll-conservatively 100000
