@@ -184,10 +184,14 @@ Buffers visiting files not existing/readable will be killed."
   (setq frame-title-format '((:eval (doom-buffer-name)) " - %F")
         doom-modeline-icon t
         doom-modeline-buffer-file-name-style 'relative-from-project
-        doom-modeline-major-mode-icon nil)
+        doom-modeline-major-mode-icon nil
+        doom-modeline-buffer-encoding nil)
 
   (custom-set-faces
    `(mode-line-inactive ((t (:background ,(doom-color 'bg-alt)))))))
+
+(use-package minions
+  :config (minions-mode 1))
 
 ;;;;;;;;;;;;;;;;;;;; General packages ;;;;;;;;;;;;;;;;;;;;
 
