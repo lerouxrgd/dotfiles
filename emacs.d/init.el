@@ -99,7 +99,21 @@ Buffers visiting files not existing/readable will be killed."
   (message "Finished reverting buffers containing unmodified files."))
 
 (add-hook 'kill-buffer-query-functions 'unkillable-scratch-buffer)
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
+(add-hook 'before-save-hook            'delete-trailing-whitespace)
+
+(global-set-key (kbd "S-C-<left>")  'shrink-window-horizontally)
+(global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally)
+(global-set-key (kbd "S-C-<down>")  'shrink-window)
+(global-set-key (kbd "S-C-<up>")    'enlarge-window)
+(global-set-key (kbd "C-x C-x")     nil)
+(global-set-key (kbd "C-x C-x C-x") 'exchange-point-and-mark)
+(global-set-key (kbd "C-x C-x C-r") 'revert-all-file-buffers)
+(global-set-key (kbd "C-x C-b")     'ibuffer)
+(global-set-key (kbd "C-x C-z")     'repeat)
+(global-set-key (kbd "M-F")         'forward-whitespace)
+(global-set-key (kbd "M-B")         'backward-whitespace)
+(global-set-key (kbd "C-;")         'toggle-comment-on-line)
+(global-set-key (kbd "C-z")         nil)
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Interface ;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -155,22 +169,7 @@ Buffers visiting files not existing/readable will be killed."
   ;; Customize theme
   (custom-theme-set-faces
    'doom-nova
-   `(hl-line ((t (:background ,(doom-color 'bg-alt))))))
-
-  :bind
-  (("S-C-<left>"  . shrink-window-horizontally)
-   ("S-C-<right>" . enlarge-window-horizontally)
-   ("S-C-<down>"  . shrink-window)
-   ("S-C-<up>"    . enlarge-window)
-   ("C-x C-x"     . nil)
-   ("C-x C-x C-x" . exchange-point-and-mark)
-   ("C-x C-x C-r" . revert-all-file-buffers)
-   ("C-x C-b"     . ibuffer)
-   ("C-x C-z"     . repeat)
-   ("M-F"         . forward-whitespace)
-   ("M-B"         . backward-whitespace)
-   ("C-;"         . toggle-comment-on-line)
-   ("C-z"         . nil)))
+   `(hl-line ((t (:background ,(doom-color 'bg-alt)))))))
 
 (use-package all-the-icons)
 
@@ -457,12 +456,9 @@ Buffers visiting files not existing/readable will be killed."
          ("SPC" . helm-all-mark-rings)
          ("x"   . helm-register)
          ("m"   . helm-imenu)
-         ("."   . helm-etags-select)
-         ("/"   . helm-find-project))
+         ("."   . helm-etags-select))
 
   :config
-  (helm-autoresize-mode t)
-
   (require 'helm-ring)
   (defun multi-pop-to-mark (orig-fun &rest args)
     (let ((p (point)))
@@ -471,23 +467,7 @@ Buffers visiting files not existing/readable will be killed."
           (apply orig-fun args)))))
   (advice-add 'pop-to-mark-command :around #'multi-pop-to-mark)
 
-  (require 'helm-find)
-  (defun find-with-gitignore (orig-fun &rest args)
-    (let ((find-command (apply orig-fun args)))
-      (concat
-       find-command
-       "-and -exec sh -c "
-       "'for f;do git check-ignore -q \"$f\" || printf \"$f\n\"; done' "
-       "find-sh {} + "
-       "2> /dev/null")))
-  (advice-add 'helm-find--build-cmd-line :around 'find-with-gitignore)
-
-  (defun helm-find-project (arg)
-    (interactive "P")
-    (if arg
-        (helm-find arg)
-      (let ((default-directory (project-or-root)))
-        (helm-find nil)))))
+  (helm-autoresize-mode t))
 
 (use-package helm-fd
   :quelpa (helm-fd :fetcher github :repo "lerouxrgd/helm-fd")
