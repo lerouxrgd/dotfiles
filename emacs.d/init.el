@@ -470,7 +470,6 @@ Buffers visiting files not existing/readable will be killed."
   (helm-autoresize-mode t))
 
 (use-package helm-fd
-  :quelpa (helm-fd :fetcher github :repo "lerouxrgd/helm-fd")
   :bind (:map helm-command-map
               ("/" . helm-fd-project)))
 
