@@ -18,6 +18,7 @@ url
 quelpa
 workspace
 eclipse.jdt.ls
+elpy
 .lsp-session*
 .mc-lists.el
 .cache
