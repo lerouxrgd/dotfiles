@@ -125,7 +125,6 @@ Buffers visiting files not existing/readable will be killed."
   (show-paren-mode      1) ; Highlight matching parenthesis
   (global-hl-line-mode  1) ; Highlight current line
   (column-number-mode   1) ; Show column number
-  (electric-indent-mode 1) ; Auto indent on new line
 
   (prefer-coding-system 'utf-8)         ; Use UTF-8
   (fset 'yes-or-no-p 'y-or-n-p)         ; Use y/n for questions
@@ -138,6 +137,7 @@ Buffers visiting files not existing/readable will be killed."
    ring-bell-function      'ignore)  ; No bell
 
   (setq-default
+   fill-column      80  ; Right margin when filling paragraphs
    indent-tabs-mode nil ; Don't use hard tabs
    tab-width        4)  ; Sane tab-width
 
@@ -148,6 +148,7 @@ Buffers visiting files not existing/readable will be killed."
   (setq scroll-step 1
         scroll-margin 0
         scroll-conservatively 100000
+        scroll-preserve-screen-position t
         mouse-wheel-scroll-amount '(1 ((shift) . 1)))
 
   ;; Setup font
@@ -244,8 +245,6 @@ Buffers visiting files not existing/readable will be killed."
                  (side            . bottom)
                  (reusable-frames . visible)
                  (window-height   . 0.20))))
-
-(use-package flycheck-package)
 
 (use-package ido-completing-read+
   :config
@@ -593,6 +592,11 @@ Buffers visiting files not existing/readable will be killed."
 
 ;;;;;;;;;;;;;;;;;;;;;;; Simple formatting ;;;;;;;;;;;;;;;;
 
+(use-package electric
+  :config
+  (electric-indent-mode 1)
+  (electric-pair-mode 1))
+
 (use-package yaml-mode
   :mode "\\.yaml\\'")
 
@@ -683,8 +687,6 @@ Buffers visiting files not existing/readable will be killed."
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;; Lisp ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(use-package rainbow-delimiters)
-
 (use-package paredit
   :hook ((emacs-lisp-mode . enable-paredit-mode)
          (lisp-mode       . enable-paredit-mode)))
@@ -694,6 +696,11 @@ Buffers visiting files not existing/readable will be killed."
   :preface (setq geiser-active-implementations '(chez))
   :hook ((scheme-mode      . enable-paredit-mode)
          (geiser-repl-mode . enable-paredit-mode)))
+
+(use-package flycheck-package
+  :no-require t)
+
+(use-package rainbow-delimiters)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;; Clojure ;;;;;;;;;;;;;;;;;;;;;;;;
 
