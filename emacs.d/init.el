@@ -733,7 +733,13 @@ Buffers visiting files not existing/readable will be killed."
 (use-package helm-cider
   :hook (clojure-mode . helm-cider-mode)
   :bind (("C-c M-b" . helm-cider-cheatsheet)
-         ("C-c M-B" . helm-cider-spec)))
+         ("C-c M-B" . helm-cider-spec))
+  :config
+  (setq helm-cider--doc-actions
+        (helm-make-actions
+         "Clojuredocs"     (wrap-helm-cider-action cider-clojuredocs-lookup)
+         "CiderDoc"        (wrap-helm-cider-action cider-doc-lookup)
+         "Find definition" (wrap-helm-cider-action helm-cider--find-var))))
 
 (use-package clj-refactor
   :hook (clojure-mode . clj-refactor-mode)
