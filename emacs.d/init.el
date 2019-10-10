@@ -105,7 +105,7 @@ Buffers visiting files not existing/readable will be killed."
 (global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally)
 (global-set-key (kbd "S-C-<down>")  'shrink-window)
 (global-set-key (kbd "S-C-<up>")    'enlarge-window)
-(global-set-key (kbd "C-x C-x")     nil)
+(global-set-key (kbd "C-x C-x")      nil)
 (global-set-key (kbd "C-x C-x C-x") 'exchange-point-and-mark)
 (global-set-key (kbd "C-x C-x C-r") 'revert-all-file-buffers)
 (global-set-key (kbd "C-x C-b")     'ibuffer)
@@ -113,7 +113,7 @@ Buffers visiting files not existing/readable will be killed."
 (global-set-key (kbd "M-F")         'forward-whitespace)
 (global-set-key (kbd "M-B")         'backward-whitespace)
 (global-set-key (kbd "C-;")         'toggle-comment-on-line)
-(global-set-key (kbd "C-z")         nil)
+(global-set-key (kbd "C-z")          nil)
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Interface ;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -724,23 +724,19 @@ Buffers visiting files not existing/readable will be killed."
 
 (use-package cider
   :after clojure-mode
-  :bind (("C-c M-B" . cider-browse-ns-all)
-         ("C-c M-b" . browse-current-ns)
-         ("C-c M-f" . cider-format-buffer)
+  :bind (("C-c M-f" . cider-format-buffer)
          :map cider-repl-mode-map
          ("C-c C-o" . cider-repl-clear-buffer))
   :hook ((cider-repl-mode . paredit-mode)
          (cider-mode      . eldoc-mode))
-
   :config
-  (defun browse-current-ns ()
-    (interactive)
-    (cider-browse-ns
-     (with-current-buffer (current-buffer)
-       (cider-current-ns))))
-
   (setq cider-repl-display-help-banner nil
         cider-repl-history-file "~/.emacs.d/cider-history"))
+
+(use-package helm-cider
+  :hook (clojure-mode . helm-cider-mode)
+  :bind (("C-c M-b" . helm-cider-cheatsheet)
+         ("C-c M-B" . helm-cider-spec)))
 
 (use-package clj-refactor
   :hook (clojure-mode . clj-refactor-mode)
