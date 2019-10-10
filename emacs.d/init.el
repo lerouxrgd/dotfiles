@@ -458,15 +458,16 @@ Buffers visiting files not existing/readable will be killed."
 
   :config
   (require 'helm-ring)
-  (defun multi-pop-to-mark (orig-fun &rest args)
+  (defun dedup-pop-to-mark (orig-fun &rest args)
     (let ((p (point)))
       (dotimes (_ 10)
         (when (= p (point))
           (apply orig-fun args)))))
-  (advice-add 'pop-to-mark-command :around #'multi-pop-to-mark)
+  (advice-add 'pop-to-mark-command :around #'dedup-pop-to-mark)
 
   (helm-autoresize-mode t))
 
+;; sudo pacman -Syu fd
 (use-package helm-fd
   :bind (:map helm-command-map
               ("/" . helm-fd-project)))
