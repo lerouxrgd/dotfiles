@@ -54,6 +54,85 @@
   (setq quelpa-update-melpa-p nil
         quelpa-checkout-melpa-p nil))
 
+;;;;;;;;;;;;;;;;;;;;;;;; Interface ;;;;;;;;;;;;;;;;;;;;;;;
+
+(use-package doom-themes
+  :init
+  (load-theme 'doom-nova t) ; Define theme
+  (custom-theme-set-faces
+   'doom-nova
+   `(hl-line ((t (:background ,(doom-color 'bg-alt)))))))
+
+(use-package all-the-icons)
+
+(use-package doom-modeline
+  :hook (after-init . doom-modeline-mode)
+  :config
+  (defun doom-buffer-name ()
+    (let ((doom-modeline-buffer-file-name-style 'truncate-with-project))
+      (doom-modeline-buffer-file-name)))
+
+  (setq frame-title-format '((:eval (doom-buffer-name)) " - %F")
+        doom-modeline-icon t
+        doom-modeline-buffer-file-name-style 'relative-from-project
+        doom-modeline-major-mode-icon nil
+        doom-modeline-buffer-encoding nil)
+
+  (custom-set-faces
+   `(mode-line-inactive ((t (:background ,(doom-color 'bg-alt)))))))
+
+(use-package minions
+  :config (minions-mode 1))
+
+;;;;;;;;;;;;;;;;;;;;; Custom settings ;;;;;;;;;;;;;;;;;;;;
+
+(blink-cursor-mode   -1) ; Turn off blinking cursor
+(show-paren-mode      1) ; Highlight matching parenthesis
+(global-hl-line-mode  1) ; Highlight current line
+(column-number-mode   1) ; Show column number
+
+(prefer-coding-system 'utf-8)         ; Use UTF-8
+(fset 'yes-or-no-p 'y-or-n-p)         ; Use y/n for questions
+(put 'upcase-region   'disabled nil)  ; Allow upcase selection
+(put 'downcase-region 'disabled nil)  ; Allow downcase selection
+
+(setq
+ inhibit-startup-message t  ; Go to scratch buffer on startup
+ inhibit-splash-screen   t  ; No splash screen
+ uniquify-buffer-name-style 'forward
+ ring-bell-function         'ignore)
+
+(setq-default
+ fill-column      80  ; Right margin when filling paragraphs
+ indent-tabs-mode nil ; Don't use hard tabs
+ tab-width        4)  ; Sane tab-width
+
+;; Setup scrolling
+(global-set-key (kbd "M-n") (kbd "C-u 1 C-v"))
+(global-set-key (kbd "M-p") (kbd "C-u 1 M-v"))
+(global-set-key (kbd "M-L") (kbd "C-l"))
+(setq scroll-step 1
+      scroll-margin 0
+      scroll-conservatively 100000
+      scroll-preserve-screen-position t
+      mouse-wheel-scroll-amount '(1 ((shift) . 1)))
+
+;; Setup font
+(add-to-list
+ 'default-frame-alist
+ `(font . ,(concat "DejaVu Sans Mono"
+                   (let ((size (getenv "EMACS_FONT_SIZE")))
+                     (if size (concat "-" size) "")))))
+
+;; Setup local files
+(setq
+ backup-directory-alist '(("." . "~/.emacs.d/backups"))
+ custom-file            "~/.emacs.d/custom.el"
+ create-lockfiles       nil   ; No need for ~ files when editing
+ auto-save-default      nil)  ; No auto-save of file-visiting buffers
+(when (file-exists-p custom-file)
+  (load custom-file))
+
 ;;;;;;;;;;;;;;;;;;;;; Custom functions ;;;;;;;;;;;;;;;;;;;
 
 (defun unkillable-scratch-buffer ()
@@ -114,84 +193,6 @@ Buffers visiting files not existing/readable will be killed."
 (global-set-key (kbd "M-B")         'backward-whitespace)
 (global-set-key (kbd "C-;")         'toggle-comment-on-line)
 (global-set-key (kbd "C-z")          nil)
-
-;;;;;;;;;;;;;;;;;;;;;;;; Interface ;;;;;;;;;;;;;;;;;;;;;;;
-
-(use-package doom-themes
-  :init
-  (load-theme 'doom-nova t) ; Define theme
-
-  (blink-cursor-mode   -1) ; Turn off blinking cursor
-  (show-paren-mode      1) ; Highlight matching parenthesis
-  (global-hl-line-mode  1) ; Highlight current line
-  (column-number-mode   1) ; Show column number
-
-  (prefer-coding-system 'utf-8)         ; Use UTF-8
-  (fset 'yes-or-no-p 'y-or-n-p)         ; Use y/n for questions
-  (put 'upcase-region   'disabled nil)  ; Allow upcase selection
-  (put 'downcase-region 'disabled nil)  ; Allow downcase selection
-
-  (setq
-   inhibit-startup-message t         ; Go to scratch buffer on startup
-   inhibit-splash-screen   t         ; No splash screen
-   ring-bell-function      'ignore)  ; No bell
-
-  (setq-default
-   fill-column      80  ; Right margin when filling paragraphs
-   indent-tabs-mode nil ; Don't use hard tabs
-   tab-width        4)  ; Sane tab-width
-
-  ;; Setup scrolling
-  (global-set-key (kbd "M-n") (kbd "C-u 1 C-v"))
-  (global-set-key (kbd "M-p") (kbd "C-u 1 M-v"))
-  (global-set-key (kbd "M-L") (kbd "C-l"))
-  (setq scroll-step 1
-        scroll-margin 0
-        scroll-conservatively 100000
-        scroll-preserve-screen-position t
-        mouse-wheel-scroll-amount '(1 ((shift) . 1)))
-
-  ;; Setup font
-  (add-to-list
-   'default-frame-alist
-   `(font . ,(concat "DejaVu Sans Mono"
-                     (let ((size (getenv "EMACS_FONT_SIZE")))
-                       (if size (concat "-" size) "")))))
-
-  ;; Setup local files
-  (setq
-   backup-directory-alist '(("." . "~/.emacs.d/backups"))
-   custom-file            "~/.emacs.d/custom.el"
-   create-lockfiles       nil   ; No need for ~ files when editing
-   auto-save-default      nil)  ; No auto-save of file-visiting buffers
-  (when (file-exists-p custom-file)
-    (load custom-file))
-
-  ;; Customize theme
-  (custom-theme-set-faces
-   'doom-nova
-   `(hl-line ((t (:background ,(doom-color 'bg-alt)))))))
-
-(use-package all-the-icons)
-
-(use-package doom-modeline
-  :hook (after-init . doom-modeline-mode)
-  :config
-  (defun doom-buffer-name ()
-    (let ((doom-modeline-buffer-file-name-style 'truncate-with-project))
-      (doom-modeline-buffer-file-name)))
-
-  (setq frame-title-format '((:eval (doom-buffer-name)) " - %F")
-        doom-modeline-icon t
-        doom-modeline-buffer-file-name-style 'relative-from-project
-        doom-modeline-major-mode-icon nil
-        doom-modeline-buffer-encoding nil)
-
-  (custom-set-faces
-   `(mode-line-inactive ((t (:background ,(doom-color 'bg-alt)))))))
-
-(use-package minions
-  :config (minions-mode 1))
 
 ;;;;;;;;;;;;;;;;;;;; General packages ;;;;;;;;;;;;;;;;;;;;
 
@@ -272,10 +273,6 @@ Buffers visiting files not existing/readable will be killed."
   (setq ediff-split-window-function 'split-window-horizontally
         ediff-window-setup-function 'ediff-setup-windows-plain
         ediff-force-faces t))
-
-(use-package uniquify
-  :ensure nil
-  :config (setq uniquify-buffer-name-style 'forward))
 
 (use-package exec-path-from-shell
   :if (memq system-type '(gnu gnu/linux darwin))
