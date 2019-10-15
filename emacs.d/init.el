@@ -554,6 +554,7 @@ Buffers visiting files not existing/readable will be killed."
               ("C-z !" . lsp-ui-flycheck-list)
               ("C-z z" . lsp-toggle-highlighting)
               ("C-z d" . lsp-describe-thing-at-point)
+              ("C-z f" . lsp-format-buffer)
               ("C-z m" . lsp-ui-imenu)
               ("C-z r" . lsp-rename)
               ("C-z ." . lsp-find-definition)
