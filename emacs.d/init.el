@@ -777,7 +777,7 @@ Buffers visiting files not existing/readable will be killed."
 ;; https://github.com/jorgenschaefer/elpy
 
 ;; sudo pacman -Syu ipython poetry
-;; pip install --user rope flake8 importmagic black
+;; pip install --user black flake8 jedi rope importmagic
 
 (use-package elpy
   :init
