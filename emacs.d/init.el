@@ -776,7 +776,7 @@ Buffers visiting files not existing/readable will be killed."
 
 ;; https://github.com/jorgenschaefer/elpy
 
-;; sudo pacman -Syu ipython
+;; sudo pacman -Syu ipython poetry
 ;; pip install --user rope flake8 importmagic black
 
 (use-package elpy
@@ -787,7 +787,12 @@ Buffers visiting files not existing/readable will be killed."
   :config
   (setq python-shell-interpreter "ipython"
         python-shell-interpreter-args "--simple-prompt -i"
+        elpy-rpc-virtualenv-path 'current
         elpy-modules (delq 'elpy-module-flymake elpy-modules)))
+
+(use-package poetry
+  :hook
+  (python-mode . (lambda () (local-set-key (kbd "C-c p") 'poetry))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;; C/C++ ;;;;;;;;;;;;;;;;;;;;;;;;;
 
