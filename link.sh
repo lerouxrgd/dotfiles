@@ -1,21 +1,13 @@
-#!/bin/bash
-
-############################
-# This script creates symlinks from the home directory to any desired dotfiles in ~/dotfiles
-############################
-
-########## Variables
+#!/usr/bin/env bash
 
 dir=~/dotfiles         # dotfiles directory
 olddir=~/dotfiles_old  # old dotfiles backup directory
 
-# list of files/folders to symlink in ~
+# list of files/dirs to symlink to in ~
 files="lein emacs.d bash_custom"
 
-# list of files/folders to symlink in ~/.config
+# list of files/dirs to symlink to in ~/.config
 configs="flake8"
-
-##########
 
 echo "Using $olddir for dotfiles backup"
 mkdir -p $olddir
@@ -47,4 +39,3 @@ for file in $configs; do
         ln -s $dir/$file ~/.config/$file
     fi
 done
-
