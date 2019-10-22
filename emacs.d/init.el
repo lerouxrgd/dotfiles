@@ -933,9 +933,7 @@ Buffers visiting files not existing/readable will be killed."
               ("M-." . racer-find-definition))
   :config
   (use-package company-racer
-    :config
-    (add-to-list 'company-backends 'company-racer)
-    (setq company-tooltip-align-annotations t)))
+    :config (add-to-list 'company-backends 'company-racer)))
 
 (use-package cargo
   :hook (rust-mode . cargo-minor-mode))
