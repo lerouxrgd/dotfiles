@@ -135,6 +135,19 @@
 
 ;;;;;;;;;;;;;;;;;;;;; Custom functions ;;;;;;;;;;;;;;;;;;;
 
+(defmacro ->> (&rest body)
+  "Clojure-like thread last macro for BODY."
+  (let ((result (pop body)))
+    (dolist (form body result)
+      (setq result (append form (list result))))))
+
+(defmacro -> (&rest body)
+  "Clojure-like thread first macro for BODY."
+  (let ((result (pop body)))
+    (dolist (form body result)
+      (setq result (append (list (car form) result)
+                           (cdr form))))))
+
 (defun unkillable-scratch-buffer ()
   "Disallow killing of scratch and delete its content instead."
   (if (equal (buffer-name (current-buffer)) "*scratch*")
@@ -596,6 +609,9 @@ Buffers visiting files not existing/readable will be killed."
   (electric-indent-mode 1)
   (electric-pair-mode 1))
 
+(use-package highlight-indent-guides
+  :config (setq highlight-indent-guides-method 'character))
+
 (use-package yaml-mode
   :mode "\\.yaml\\'")
 
@@ -780,19 +796,21 @@ Buffers visiting files not existing/readable will be killed."
 ;; pip install --user black flake8 jedi rope importmagic
 
 (use-package elpy
-  :init
-  (advice-add 'python-mode :before 'elpy-enable)
+  :init (advice-add 'python-mode :before 'elpy-enable)
   :hook
-  (elpy-mode . (lambda () (add-hook 'before-save-hook 'elpy-format-code)))
+  ((python-mode . highlight-indent-guides-mode)
+   (elpy-mode   . (lambda () (add-hook 'before-save-hook 'elpy-format-code))))
   :config
   (setq python-shell-interpreter "ipython"
         python-shell-interpreter-args "--simple-prompt -i"
         elpy-rpc-virtualenv-path 'current
-        elpy-modules (delq 'elpy-module-flymake elpy-modules)))
+        elpy-modules (->> elpy-modules
+                          (delq 'elpy-module-flymake)
+                          (delq 'elpy-module-highlight-indentation))))
 
 (use-package poetry
-  :hook
-  (python-mode . (lambda () (local-set-key (kbd "C-c p") 'poetry))))
+  :hook (python-mode
+         . (lambda () (local-set-key (kbd "C-c p") 'poetry))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;; C/C++ ;;;;;;;;;;;;;;;;;;;;;;;;;
 
