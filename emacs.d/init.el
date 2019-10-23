@@ -548,14 +548,7 @@ Buffers visiting files not existing/readable will be killed."
   :config
   (setq lsp-prefer-flymake nil
         lsp-document-highlight-delay 0.1
-        lsp-enable-symbol-highlighting nil)
-
-  (add-to-list 'lsp-language-id-configuration '(flow-mode . "flow"))
-  (lsp-register-client
-   (make-lsp-client
-    :new-connection (lsp-stdio-connection '("flow" "lsp"))
-    :major-modes '(flow-mode)
-    :server-id 'lsp-flow)))
+        lsp-enable-symbol-highlighting nil))
 
 (use-package lsp-ui
   :hook (lsp-mode . lsp-ui-mode)
@@ -788,15 +781,7 @@ Buffers visiting files not existing/readable will be killed."
 ;; https://github.com/codesuki/add-node-modules-path
 
 (use-package add-node-modules-path
-  :preface
-  (define-derived-mode flow-mode js-mode "flow-mode"
-    "A dedicated major flow-mode, useful for LSP setup")
-  (add-to-list 'magic-mode-alist '("// @flow"        . flow-mode))
-  (add-to-list 'magic-mode-alist '("/\\* @flow \\*/" . flow-mode))
-  :after flycheck
-  :hook (js-mode . add-node-modules-path)
-  :config
-  (flycheck-add-mode 'javascript-eslint 'flow-mode))
+  :hook (js-mode . add-node-modules-path))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;; Python ;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -819,8 +804,7 @@ Buffers visiting files not existing/readable will be killed."
                           (delq 'elpy-module-highlight-indentation))))
 
 (use-package poetry
-  :hook (python-mode
-         . (lambda () (local-set-key (kbd "C-c p") 'poetry))))
+  :hook (python-mode . (lambda () (local-set-key (kbd "C-c p") 'poetry))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;; C/C++ ;;;;;;;;;;;;;;;;;;;;;;;;;
 
