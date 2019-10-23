@@ -341,7 +341,7 @@ Buffers visiting files not existing/readable will be killed."
    (","   . mc/unmark-previous-like-this)
    ("C->" . mc/skip-to-next-like-this)
    ("C-<" . mc/skip-to-previous-like-this)
-   ("h"   . mc-hide-unmatched-lines-mode)
+   ("C-h" . mc-hide-unmatched-lines-mode)
    :map
    mc/keymap
    ("<backtab>" . mc/vertical-align-with-space))
@@ -382,10 +382,6 @@ Buffers visiting files not existing/readable will be killed."
           try-expand-dabbrev-all-buffers
           try-expand-dabbrev-from-kill
           yas-hippie-try-expand)))
-
-(use-package auto-yasnippet
-  :bind (("C-x C-x C-s" . aya-create)
-         ("M-Y"         . aya-expand)))
 
 (use-package undo-tree
   :bind ("C-M-/" . undo-tree-visualize)
@@ -611,6 +607,20 @@ Buffers visiting files not existing/readable will be killed."
 
 (use-package highlight-indent-guides
   :config (setq highlight-indent-guides-method 'character))
+
+(use-package hideshow
+  :hook (prog-mode . hs-minor-mode)
+  :bind(("C-x C-x C-s" . hs-toggle-hiding)
+        ("C-x C-x M-s" . hs-show-all)
+        ("C-x C-x S"   . hs-hide-all)))
+
+(use-package fold-this
+  :after selected
+  :bind (:map selected-keymap
+              ("s" . fold-this))
+  :config
+  (custom-set-faces
+   `(fold-this-overlay ((t (:foreground ,(doom-color 'white)))))))
 
 (use-package yaml-mode
   :mode "\\.yaml\\'")
