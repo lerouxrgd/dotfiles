@@ -608,10 +608,19 @@ Buffers visiting files not existing/readable will be killed."
         ("C-x C-x S"   . hs-hide-all)))
 
 (use-package fold-this
-  :after selected
+  :after (selected hideshow)
   :bind (:map selected-keymap
-              ("s" . fold-this))
-  :config
+              ("s" . fold-this)
+              ("z" . fold-all-but-this))
+  :init
+  (advice-add 'hs-show-all :before 'fold-this-unfold-all)
+
+  (defun fold-all-but-this ()
+    (interactive)
+    (fold-this (point-min) (region-beginning))
+    (fold-this (region-end) (point-max))
+    (deactivate-mark))
+
   (custom-set-faces
    `(fold-this-overlay ((t (:foreground ,(doom-color 'white)))))))
 
