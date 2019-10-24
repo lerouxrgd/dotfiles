@@ -442,7 +442,7 @@ Buffers visiting files not existing/readable will be killed."
       (treemacs--find-workspace))
     (treemacs-do-add-project-to-workspace
      (project-or-root)
-     (car (last (butlast (split-string (project-or-root) "/")))))
+     (-> (project-or-root) (split-string "/" "") (last) (car)))
     (treemacs-select-window))
 
   (doom-themes-treemacs-config)
