@@ -450,11 +450,19 @@ Buffers visiting files not existing/readable will be killed."
         treemacs-file-follow-delay 0
         treemacs--workspaces (list (make-treemacs-workspace))))
 
-(use-package dired-subtree
-  :defer 1
-  :bind (:map dired-mode-map
-              ("<right>" . dired-subtree-insert)
-              ("<left>"  . dired-subtree-remove)))
+(use-package dired
+  :ensure nil
+  :hook (dired-mode . dired-hide-details-mode)
+  :config
+  (use-package dired-subtree
+    :bind (:map dired-mode-map
+                ("<right>" . dired-subtree-insert)
+                ("<left>"  . dired-subtree-remove)))
+  (use-package dired-git-info
+    :bind (:map dired-mode-map
+                (")" . dired-git-info-mode)))
+  (use-package diredfl
+    :config (diredfl-global-mode 1)))
 
 (use-package helm
   :preface (require 'helm-config)
