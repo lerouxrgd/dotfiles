@@ -621,14 +621,13 @@ Buffers visiting files not existing/readable will be killed."
               ("s" . fold-this)
               ("z" . fold-all-but-this))
   :init
-  (advice-add 'hs-show-all :before 'fold-this-unfold-all)
-
   (defun fold-all-but-this ()
     (interactive)
     (fold-this (point-min) (region-beginning))
     (fold-this (region-end) (point-max))
     (deactivate-mark))
-
+  :config
+  (advice-add 'hs-show-all :before 'fold-this-unfold-all)
   (custom-set-faces
    `(fold-this-overlay ((t (:foreground ,(doom-color 'white)))))))
 
