@@ -445,6 +445,7 @@ Buffers visiting files not existing/readable will be killed."
      (-> (project-or-root) (split-string "/" "") (last) (car)))
     (treemacs-select-window))
 
+  (use-package treemacs-magit)
   (doom-themes-treemacs-config)
   (setq treemacs-collapse-dirs 7
         treemacs-file-follow-delay 0
