@@ -611,9 +611,9 @@ Buffers visiting files not existing/readable will be killed."
 
 (use-package hideshow
   :hook (prog-mode . hs-minor-mode)
-  :bind(("C-x C-x C-s" . hs-toggle-hiding)
-        ("C-x C-x M-s" . hs-show-all)
-        ("C-x C-x S"   . hs-hide-all)))
+  :bind (("C-x C-x C-s" . hs-toggle-hiding)
+         ("C-x C-x M-s" . hs-show-all)
+         ("C-x C-x S"   . hs-hide-level)))
 
 (use-package fold-this
   :after (selected hideshow)
