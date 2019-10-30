@@ -40,9 +40,9 @@
   (package-refresh-contents)
   (package-install 'use-package))
 
+(require 'bind-key)
 (eval-when-compile
   (require 'use-package)
-  (require 'bind-key)
   (use-package cl))
 
 (setq use-package-always-ensure t)
@@ -481,7 +481,7 @@ Buffers visiting files not existing/readable will be killed."
       (dotimes (_ 10)
         (when (= p (point))
           (apply orig-fun args)))))
-  (advice-add 'pop-to-mark-command :around #'dedup-pop-to-mark)
+  (advice-add 'pop-to-mark-command :around 'dedup-pop-to-mark)
 
   (helm-autoresize-mode t))
 
@@ -966,5 +966,11 @@ Buffers visiting files not existing/readable will be killed."
 
 (use-package cargo
   :hook (rust-mode . cargo-minor-mode))
+
+;; https://github.com/ksqsf/pest-mode
+;; cargo install pesta
+(use-package pest-mode
+  :quelpa (pest-mode :fetcher github :repo "ksqsf/pest-mode")
+  :mode "\\.pest\\'")
 
 ;;; init.el ends here
