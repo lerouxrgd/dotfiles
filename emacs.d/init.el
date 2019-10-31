@@ -135,13 +135,13 @@
 
 ;;;;;;;;;;;;;;;;;;;;; Custom functions ;;;;;;;;;;;;;;;;;;;
 
-(defmacro ->> (&rest body)
+(defmacro -->> (&rest body)
   "Clojure-like thread last macro for BODY."
   (let ((result (pop body)))
     (dolist (form body result)
       (setq result (append form (list result))))))
 
-(defmacro -> (&rest body)
+(defmacro --> (&rest body)
   "Clojure-like thread first macro for BODY."
   (let ((result (pop body)))
     (dolist (form body result)
@@ -442,7 +442,7 @@ Buffers visiting files not existing/readable will be killed."
       (treemacs--find-workspace))
     (treemacs-do-add-project-to-workspace
      (project-or-root)
-     (-> (project-or-root) (split-string "/" "") (last) (car)))
+     (--> (project-or-root) (split-string "/" "") (last) (car)))
     (treemacs-select-window))
 
   (use-package treemacs-magit)
@@ -562,17 +562,18 @@ Buffers visiting files not existing/readable will be killed."
 (use-package lsp-ui
   :hook (lsp-mode . lsp-ui-mode)
   :bind (:map lsp-ui-mode-map
-              ("C-z !" . lsp-ui-flycheck-list)
-              ("C-z z" . lsp-toggle-highlighting)
-              ("C-z d" . lsp-describe-thing-at-point)
-              ("C-z f" . lsp-format-buffer)
-              ("C-z m" . lsp-ui-imenu)
-              ("C-z r" . lsp-rename)
-              ("C-z ." . lsp-find-definition)
-              ("C-z ?" . lsp-find-references)
-              ("C-z I" . lsp-find-implementation)
-              ("C-z D" . lsp-find-declaration)
-              ("C-z T" . lsp-find-type-definition))
+              ("C-z !"   . lsp-ui-flycheck-list)
+              ("C-z d"   . lsp-describe-thing-at-point)
+              ("C-z f"   . lsp-format-buffer)
+              ("C-z m"   . lsp-ui-imenu)
+              ("C-z r"   . lsp-rename)
+              ("C-z ."   . lsp-find-definition)
+              ("C-z ?"   . lsp-find-references)
+              ("C-z I"   . lsp-find-implementation)
+              ("C-z D"   . lsp-find-declaration)
+              ("C-z T"   . lsp-find-type-definition)
+              ("C-z M-z" . lsp-toggle-highlighting)
+              ("C-z M-d" . lsp-toggle-eldoc))
 
   :config
   (setq lsp-ui-sideline-enable nil
@@ -581,8 +582,18 @@ Buffers visiting files not existing/readable will be killed."
   (defun lsp-toggle-highlighting ()
     (interactive)
     (if lsp-enable-symbol-highlighting
-        (setq lsp-enable-symbol-highlighting nil)
-      (setq lsp-enable-symbol-highlighting t)))
+        (progn (setq lsp-enable-symbol-highlighting nil)
+               (message "LSP symbol highlighting OFF"))
+      (setq lsp-enable-symbol-highlighting t)
+      (message "LSP symbol highlighting ON")))
+
+  (defun lsp-toggle-eldoc ()
+    (interactive)
+    (if lsp-eldoc-render-all
+        (progn (setq lsp-eldoc-render-all nil)
+               (message "LSP eldoc render all OFF"))
+      (setq lsp-eldoc-render-all t)
+      (message "LSP eldoc render all ON")))
 
   (use-package helm-lsp
     :bind (:map lsp-ui-mode-map
@@ -633,7 +644,30 @@ Buffers visiting files not existing/readable will be killed."
    `(fold-this-overlay ((t (:foreground ,(doom-color 'white)))))))
 
 (use-package yaml-mode
-  :mode "\\.yaml\\'")
+  :mode "\\.yaml\\'"
+  :hook (yaml-mode
+         . (lambda ()
+             (local-set-key (kbd "<backtab>") 'company-complete))))
+
+;; npm install -g yaml-language-server
+(use-package yaml-mode-ext
+  :quelpa (yaml-mode-ext :fetcher github :repo "lerouxrgd/yaml-mode-ext")
+  :hook (yaml-mode . (lambda () (require 'yaml-mode-ext)))
+  :bind (:map yaml-mode-map
+              ("C-c C-c RET" . yaml-reset-schemas)
+              ("C-c C-c k"   . yaml-set-schema-k8s))
+  :config
+  (defvar lsp-yaml-schemas)
+
+  (defun yaml-reset-schemas ()
+    (interactive)
+    (setq lsp-yaml-schemas (make-hash-table))
+    (message "LSP yaml schemas reset"))
+
+  (defun yaml-set-schema-k8s ()
+    (interactive)
+    (setq lsp-yaml-schemas '(:kubernetes "*.yml"))
+    (message "LSP yaml schema set to: kubernetes")))
 
 (use-package toml-mode
   :mode "\\.toml\\'")
@@ -680,18 +714,6 @@ Buffers visiting files not existing/readable will be killed."
 
 (use-package kubernetes
   :commands (kubernetes-overview))
-
-;; npm install -g yaml-language-server
-(use-package lsp-yaml
-  :quelpa (lsp-yaml :fetcher github :repo "iquiw/lsp-yaml")
-  :hook (yaml-mode
-         . (lambda ()
-             (setq-local lsp-eldoc-render-all t)
-             (eldoc-mode)
-             (local-set-key
-              (kbd "<backtab>") 'company-complete)))
-  :config
-  (setq lsp-yaml-schemas '(:kubernetes "*.yml")))
 
 (use-package restclient
   :after (helm company)
@@ -769,9 +791,10 @@ Buffers visiting files not existing/readable will be killed."
         cider-repl-history-file "~/.emacs.d/cider-history"))
 
 (use-package helm-cider
+  :after clojure-mode
   :hook (clojure-mode . helm-cider-mode)
-  :bind (("C-c M-b" . helm-cider-cheatsheet)
-         ("C-c M-B" . helm-cider-spec))
+  :bind (("C-c s" . helm-cider-cheatsheet)
+         ("C-c S" . helm-cider-spec))
   :config
   (setq helm-cider--doc-actions
         (helm-make-actions
@@ -816,9 +839,9 @@ Buffers visiting files not existing/readable will be killed."
   (setq python-shell-interpreter "ipython"
         python-shell-interpreter-args "--simple-prompt -i"
         elpy-rpc-virtualenv-path 'current
-        elpy-modules (->> elpy-modules
-                          (delq 'elpy-module-flymake)
-                          (delq 'elpy-module-highlight-indentation))))
+        elpy-modules (-->> elpy-modules
+                           (delq 'elpy-module-flymake)
+                           (delq 'elpy-module-highlight-indentation))))
 
 (use-package poetry
   :hook (python-mode . (lambda () (local-set-key (kbd "C-c p") 'poetry))))
@@ -924,7 +947,7 @@ Buffers visiting files not existing/readable will be killed."
   :config
   (setq gofmt-command "goimports")
   (use-package go-guru
-    :bind-keymap ("C-c C-c" . go-guru-map))
+    :config (define-key go-mode-map (kbd "C-c C-c") 'go-guru-map))
   (use-package go-rename)
   (use-package go-errcheck)
   (use-package golint)
@@ -971,6 +994,7 @@ Buffers visiting files not existing/readable will be killed."
 ;; cargo install pesta
 (use-package pest-mode
   :quelpa (pest-mode :fetcher github :repo "ksqsf/pest-mode")
-  :mode "\\.pest\\'")
+  :mode "\\.pest\\'"
+  :hook (pest-mode . flymake-mode))
 
 ;;; init.el ends here
