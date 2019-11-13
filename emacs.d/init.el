@@ -88,7 +88,6 @@
 
 (blink-cursor-mode   -1) ; Turn off blinking cursor
 (show-paren-mode      1) ; Highlight matching parenthesis
-(global-hl-line-mode  1) ; Highlight current line
 (column-number-mode   1) ; Show column number
 
 (prefer-coding-system 'utf-8)         ; Use UTF-8
@@ -106,6 +105,11 @@
  fill-column      80  ; Right margin when filling paragraphs
  indent-tabs-mode nil ; Don't use hard tabs
  tab-width        4)  ; Sane tab-width
+
+;; Setup line highlighting
+(global-hl-line-mode 1)
+(add-hook 'activate-mark-hook   (lambda () (global-hl-line-mode -1)))
+(add-hook 'deactivate-mark-hook (lambda () (global-hl-line-mode 1)))
 
 ;; Setup scrolling
 (global-set-key (kbd "M-n") (kbd "C-u 1 C-v"))
