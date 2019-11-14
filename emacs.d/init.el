@@ -634,14 +634,16 @@ Buffers visiting files not existing/readable will be killed."
 (use-package fold-this
   :after (selected hideshow)
   :bind (:map selected-keymap
-              ("s" . fold-this)
-              ("z" . fold-all-but-this))
+              ("s" . fold-this-or-rest))
   :init
-  (defun fold-all-but-this ()
-    (interactive)
-    (fold-this (point-min) (region-beginning))
-    (fold-this (region-end) (point-max))
-    (deactivate-mark))
+  (defun fold-this-or-rest (&optional arg)
+    (interactive "P")
+    (if (not arg)
+        (fold-this (region-beginning) (region-end))
+      ;; fold-all-but-this
+      (fold-this (point-min) (region-beginning))
+      (fold-this (region-end) (point-max))
+      (deactivate-mark)))
   :config
   (advice-add 'hs-show-all :before 'fold-this-unfold-all)
   (custom-set-faces
