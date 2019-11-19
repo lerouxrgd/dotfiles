@@ -139,13 +139,13 @@
 
 ;;;;;;;;;;;;;;;;;;;;; Custom functions ;;;;;;;;;;;;;;;;;;;
 
-(defmacro -->> (&rest body)
+(defmacro ~>> (&rest body)
   "Clojure-like thread last macro for BODY."
   (let ((result (pop body)))
     (dolist (form body result)
       (setq result (append form (list result))))))
 
-(defmacro --> (&rest body)
+(defmacro ~> (&rest body)
   "Clojure-like thread first macro for BODY."
   (let ((result (pop body)))
     (dolist (form body result)
@@ -446,7 +446,7 @@ Buffers visiting files not existing/readable will be killed."
       (treemacs--find-workspace))
     (treemacs-do-add-project-to-workspace
      (project-or-root)
-     (--> (project-or-root) (split-string "/" "") (last) (car)))
+     (~> (project-or-root) (split-string "/" "") (last) (car)))
     (treemacs-select-window))
 
   (use-package treemacs-magit)
@@ -845,9 +845,9 @@ Buffers visiting files not existing/readable will be killed."
   (setq python-shell-interpreter "ipython"
         python-shell-interpreter-args "--simple-prompt -i"
         elpy-rpc-virtualenv-path 'current
-        elpy-modules (-->> elpy-modules
-                           (delq 'elpy-module-flymake)
-                           (delq 'elpy-module-highlight-indentation))))
+        elpy-modules (~>> elpy-modules
+                          (delq 'elpy-module-flymake)
+                          (delq 'elpy-module-highlight-indentation))))
 
 (use-package poetry
   :hook (python-mode . (lambda () (local-set-key (kbd "C-c p") 'poetry))))
