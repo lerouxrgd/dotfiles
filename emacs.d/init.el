@@ -752,7 +752,9 @@ Buffers visiting files not existing/readable will be killed."
 
 (use-package paredit
   :hook ((emacs-lisp-mode . enable-paredit-mode)
-         (lisp-mode       . enable-paredit-mode)))
+         (lisp-mode       . enable-paredit-mode))
+  :bind (("<C-s-right>" . paredit-forward-slurp-sexp)
+         ("<C-s-left>"  . paredit-forward-barf-sexp)))
 
 ;; yay -Syu chez-scheme
 (use-package geiser
