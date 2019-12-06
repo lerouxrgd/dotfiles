@@ -63,6 +63,7 @@
    'doom-nova
    `(hl-line ((t (:background ,(doom-color 'bg-alt)))))))
 
+;; M-x all-the-icons-install-fonts
 (use-package all-the-icons)
 
 (use-package doom-modeline
@@ -122,6 +123,7 @@
       mouse-wheel-scroll-amount '(1 ((shift) . 1)))
 
 ;; Setup font
+;; sudo pacman -Syu ttf-dejavu
 (add-to-list
  'default-frame-alist
  `(font . ,(concat "DejaVu Sans Mono"
@@ -228,8 +230,6 @@ Buffers visiting files not existing/readable will be killed."
          :map company-active-map
          ("<right>" . company-abort))
   :config
-  (add-hook 'buffer-list-update-hook
-            (lambda () (auto-complete-mode -1)))
   (setq company-tooltip-align-annotations t))
 
 (use-package flycheck
