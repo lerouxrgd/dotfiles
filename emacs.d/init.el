@@ -560,7 +560,6 @@ Buffers visiting files not existing/readable will be killed."
   :hook (prog-mode . lsp-mode)
   :config
   (setq lsp-prefer-flymake nil
-        lsp-document-highlight-delay 0.1
         lsp-enable-symbol-highlighting nil))
 
 (use-package lsp-ui
@@ -575,29 +574,11 @@ Buffers visiting files not existing/readable will be killed."
               ("C-z ?"   . lsp-find-references)
               ("C-z I"   . lsp-find-implementation)
               ("C-z D"   . lsp-find-declaration)
-              ("C-z T"   . lsp-find-type-definition)
-              ("C-z M-z" . lsp-toggle-highlighting)
-              ("C-z M-d" . lsp-toggle-eldoc))
+              ("C-z T"   . lsp-find-type-definition))
 
   :config
   (setq lsp-ui-sideline-enable nil
         lsp-ui-doc-enable nil)
-
-  (defun lsp-toggle-highlighting ()
-    (interactive)
-    (if lsp-enable-symbol-highlighting
-        (progn (setq lsp-enable-symbol-highlighting nil)
-               (message "LSP symbol highlighting OFF"))
-      (setq lsp-enable-symbol-highlighting t)
-      (message "LSP symbol highlighting ON")))
-
-  (defun lsp-toggle-eldoc ()
-    (interactive)
-    (if lsp-eldoc-render-all
-        (progn (setq lsp-eldoc-render-all nil)
-               (message "LSP eldoc render all OFF"))
-      (setq lsp-eldoc-render-all t)
-      (message "LSP eldoc render all ON")))
 
   (use-package helm-lsp
     :bind (:map lsp-ui-mode-map
@@ -813,7 +794,8 @@ Buffers visiting files not existing/readable will be killed."
 (use-package clj-refactor
   :hook (clojure-mode . clj-refactor-mode)
   :config
-  (cljr-add-keybindings-with-prefix "C-c TAB")
+  (cljr-add-keybindings-with-prefix "C-c C-SPC")
+  (define-key clj-refactor-map (kbd "C-c C-SPC C-?") 'cljr-find-usages)
   (setq cljr-warn-on-eval nil))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;; Java ;;;;;;;;;;;;;;;;;;;;;;;;;;
