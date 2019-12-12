@@ -574,11 +574,25 @@ Buffers visiting files not existing/readable will be killed."
               ("C-z ?"   . lsp-find-references)
               ("C-z I"   . lsp-find-implementation)
               ("C-z D"   . lsp-find-declaration)
-              ("C-z T"   . lsp-find-type-definition))
+              ("C-z T"   . lsp-find-type-definition)
+              ("C-z M-z" . lsp-toggle-highlighting))
 
   :config
   (setq lsp-ui-sideline-enable nil
         lsp-ui-doc-enable nil)
+
+  (defun lsp-toggle-highlighting ()
+    (interactive)
+    (setq lsp-enable-symbol-highlighting (not lsp-enable-symbol-highlighting))
+    (cond
+     ((and lsp-enable-symbol-highlighting  (lsp--capability "documentHighlightProvider"))
+      (add-hook 'lsp-on-idle-hook #'lsp--document-highlight nil t)
+      (lsp--info "Highlighting enabled."))
+     ((not lsp-enable-symbol-highlighting)
+      (remove-hook 'lsp-on-idle-hook #'lsp--document-highlight t)
+      (lsp--remove-overlays 'lsp-highlight)
+      (lsp--info "Highlighting disabled."))
+     (t (user-error "Current server does not support highlights?"))))
 
   (use-package helm-lsp
     :bind (:map lsp-ui-mode-map
