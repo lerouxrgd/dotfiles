@@ -469,6 +469,10 @@ Buffers visiting files not existing/readable will be killed."
   (use-package diredfl
     :config (diredfl-global-mode 1)))
 
+(use-package avy
+  :bind (("M-SPC". avy-goto-char-2)
+         ("M-g g". avy-goto-line)))
+
 (use-package helm
   :preface (require 'helm-config)
   :bind (("C-x x" . helm-command-prefix)
