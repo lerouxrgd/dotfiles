@@ -831,6 +831,15 @@ Buffers visiting files not existing/readable will be killed."
 (use-package add-node-modules-path
   :hook (js-mode . add-node-modules-path))
 
+;;;;;;;;;;;;;;;;;;;;;;;;; Erlang ;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; https://github.com/erlang-ls/erlang_ls
+
+;; sudo pacman -Syu erlang
+;; yay -Syu rebar3
+
+(use-package erlang)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;; Python ;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; https://github.com/jorgenschaefer/elpy
