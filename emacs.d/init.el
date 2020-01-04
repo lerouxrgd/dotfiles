@@ -638,7 +638,14 @@ Buffers visiting files not existing/readable will be killed."
   :hook (prog-mode . hs-minor-mode)
   :bind (("C-x C-x C-s" . hs-toggle-hiding)
          ("C-x C-x M-s" . hs-show-all)
-         ("C-x C-x S"   . hs-hide-level)))
+         ("C-x C-x S"   . hs-hide-level))
+  :config
+  (defun display-code-line-counts (ov)
+    (when (eq 'code (overlay-get ov 'hs))
+      (overlay-put ov 'help-echo
+                   (buffer-substring (overlay-start ov)
+                                     (overlay-end ov)))))
+  (setq hs-set-up-overlay 'display-code-line-counts))
 
 (use-package fold-this
   :after (selected hideshow)
