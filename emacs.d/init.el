@@ -488,7 +488,7 @@ Buffers visiting files not existing/readable will be killed."
   :bind (("C-x x" . helm-command-prefix)
          :map helm-command-map
          ("SPC" . helm-all-mark-rings)
-         ("x"   . helm-register)
+         ("y"   . helm-register)
          ("m"   . helm-imenu)
          ("."   . helm-etags-select))
 
