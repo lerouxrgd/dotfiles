@@ -855,7 +855,9 @@ Buffers visiting files not existing/readable will be killed."
 ;; sudo pacman -Syu erlang
 ;; yay -Syu rebar3
 
-(use-package erlang)
+(use-package erlang
+  :no-require t
+  :config (require 'erlang-start))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;; Python ;;;;;;;;;;;;;;;;;;;;;;;;;
 
