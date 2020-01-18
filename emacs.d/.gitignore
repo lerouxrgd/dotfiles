@@ -19,6 +19,7 @@ quelpa
 workspace
 eclipse.jdt.ls
 elpy
+cache
 .lsp-session*
 .mc-lists.el
 .cache
