@@ -240,6 +240,9 @@ Buffers visiting files not existing/readable will be killed."
          :map company-active-map
          ("<right>" . company-abort))
   :config
+  (use-package company-box
+    :hook (company-mode . company-box-mode)
+    :config (setq company-box-icons-alist 'company-box-icons-all-the-icons))
   (setq company-tooltip-align-annotations t))
 
 (use-package flycheck
