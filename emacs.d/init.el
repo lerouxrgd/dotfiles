@@ -151,18 +151,8 @@
 
 ;;;;;;;;;;;;;;;;;;;;; Custom functions ;;;;;;;;;;;;;;;;;;;
 
-(defmacro ~>> (&rest body)
-  "Clojure-like thread last macro for BODY."
-  (let ((result (pop body)))
-    (dolist (form body result)
-      (setq result (append form (list result))))))
-
-(defmacro ~> (&rest body)
-  "Clojure-like thread first macro for BODY."
-  (let ((result (pop body)))
-    (dolist (form body result)
-      (setq result (append (list (car form) result)
-                           (cdr form))))))
+(use-package dash
+  :config (dash-enable-font-lock))
 
 (defun unkillable-scratch-buffer ()
   "Disallow killing of scratch and delete its content instead."
@@ -459,7 +449,7 @@ Buffers visiting files not existing/readable will be killed."
       (treemacs--find-workspace))
     (treemacs-do-add-project-to-workspace
      (project-or-root)
-     (~> (project-or-root) (split-string "/" "") (last) (car)))
+     (-> (project-or-root) (split-string "/" "") (last) (car)))
     (treemacs-select-window))
 
   (use-package treemacs-magit)
@@ -485,6 +475,38 @@ Buffers visiting files not existing/readable will be killed."
 (use-package avy
   :bind (("M-SPC". avy-goto-char-2)
          ("M-g g". avy-goto-line)))
+
+(use-package origami
+  :bind-keymap ("M-o" . origami-mode-map)
+  :bind (:map origami-mode-map
+              ("M-o M-o" . origami-recursively-toggle-node)
+              ("M-o M-." . origami-forward-fold)
+              ("M-o M-," . origami-previous-fold)
+              ("M-o M-r" . origami-reset)
+              ("M-o O"   . origami-show-only-node)
+              ("M-o <"   . origami-close-all-nodes)
+              ("M-o >"   . origami-open-all-nodes)
+              ("M-o /"   . origami-undo)
+              ("M-o ?"   . origami-redo))
+  :config (global-origami-mode))
+
+(use-package fold-this
+  :after selected
+  :bind (("C-x C-x M-o" . fold-this-unfold-all)
+         :map selected-keymap
+              ("o" . fold-this-or-rest))
+  :init
+  (defun fold-this-or-rest (&optional arg)
+    (interactive "P")
+    (if (not arg)
+        (fold-this (region-beginning) (region-end))
+      ;; fold-all-but-this
+      (fold-this (point-min) (region-beginning))
+      (fold-this (region-end) (point-max))
+      (deactivate-mark)))
+  :config
+  (custom-set-faces
+   `(fold-this-overlay ((t (:foreground ,(doom-color 'white)))))))
 
 (use-package helm
   :preface (require 'helm-config)
@@ -611,6 +633,10 @@ Buffers visiting files not existing/readable will be killed."
       (lsp--info "Highlighting disabled."))
      (t (user-error "Current server does not support highlights?"))))
 
+  (use-package lsp-origami
+    :bind (:map lsp-ui-mode-map
+                ("C-z M-o" . lsp-origami-mode)))
+
   (use-package helm-lsp
     :bind (:map lsp-ui-mode-map
                 ("C-z a" . lsp-workspace-symbol)
@@ -636,37 +662,6 @@ Buffers visiting files not existing/readable will be killed."
 
 (use-package highlight-indent-guides
   :config (setq highlight-indent-guides-method 'character))
-
-(use-package hideshow
-  :hook (prog-mode . hs-minor-mode)
-  :bind (("C-x C-x C-s" . hs-toggle-hiding)
-         ("C-x C-x M-s" . hs-show-all)
-         ("C-x C-x S"   . hs-hide-level))
-  :config
-  (defun display-code-line-counts (ov)
-    (when (eq 'code (overlay-get ov 'hs))
-      (overlay-put ov 'help-echo
-                   (buffer-substring (overlay-start ov)
-                                     (overlay-end ov)))))
-  (setq hs-set-up-overlay 'display-code-line-counts))
-
-(use-package fold-this
-  :after (selected hideshow)
-  :bind (:map selected-keymap
-              ("s" . fold-this-or-rest))
-  :init
-  (defun fold-this-or-rest (&optional arg)
-    (interactive "P")
-    (if (not arg)
-        (fold-this (region-beginning) (region-end))
-      ;; fold-all-but-this
-      (fold-this (point-min) (region-beginning))
-      (fold-this (region-end) (point-max))
-      (deactivate-mark)))
-  :config
-  (advice-add 'hs-show-all :before 'fold-this-unfold-all)
-  (custom-set-faces
-   `(fold-this-overlay ((t (:foreground ,(doom-color 'white)))))))
 
 (use-package yaml-mode
   :mode "\\.yaml\\'"
@@ -878,7 +873,7 @@ Buffers visiting files not existing/readable will be killed."
   (setq python-shell-interpreter "ipython"
         python-shell-interpreter-args "--simple-prompt -i"
         elpy-rpc-virtualenv-path 'current
-        elpy-modules (~>> elpy-modules
+        elpy-modules (->> elpy-modules
                           (delq 'elpy-module-flymake)
                           (delq 'elpy-module-highlight-indentation))))
 
