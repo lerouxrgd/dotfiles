@@ -226,10 +226,23 @@ Buffers visiting files not existing/readable will be killed."
          :map company-active-map
          ("<right>" . company-abort))
   :config
+  (setq company-tooltip-align-annotations t)
+
   (use-package company-box
     :hook (company-mode . company-box-mode)
-    :config (setq company-box-icons-alist 'company-box-icons-all-the-icons))
-  (setq company-tooltip-align-annotations t))
+    :bind (:map company-active-map
+                ("C-v" . fixed-scroll-up-cmd)
+                ("M-v" . fixed-scroll-down-cmd))
+    :config
+    (defun fixed-scroll-up-cmd ()
+      (interactive)
+      (company-next-page)
+      (company-box--change-line))
+    (defun fixed-scroll-down-cmd ()
+      (interactive)
+      (company-previous-page)
+      (company-box--change-line))
+    (setq company-box-icons-alist 'company-box-icons-all-the-icons)))
 
 (use-package flycheck
   :hook ((after-init      . global-flycheck-mode)
