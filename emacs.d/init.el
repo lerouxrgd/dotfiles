@@ -81,69 +81,57 @@
 (use-package minions
   :config (minions-mode 1))
 
-;;;;;;;;;;;;;;;;;;;;; Custom settings ;;;;;;;;;;;;;;;;;;;;
+(use-package emacs
+  :config
+  (blink-cursor-mode   -1) ; Turn off blinking cursor
+  (show-paren-mode      1) ; Highlight matching parenthesis
+  (column-number-mode   1) ; Show column number
 
-(blink-cursor-mode   -1) ; Turn off blinking cursor
-(show-paren-mode      1) ; Highlight matching parenthesis
-(column-number-mode   1) ; Show column number
+  (prefer-coding-system 'utf-8)
+  (fset 'yes-or-no-p 'y-or-n-p)
+  (put 'upcase-region   'disabled nil) ; Allow upcase selection
+  (put 'downcase-region 'disabled nil) ; Allow downcase selection
 
-(prefer-coding-system 'utf-8)         ; Use UTF-8
-(fset 'yes-or-no-p 'y-or-n-p)         ; Use y/n for questions
-(put 'upcase-region   'disabled nil)  ; Allow upcase selection
-(put 'downcase-region 'disabled nil)  ; Allow downcase selection
+  (setq
+   inhibit-splash-screen      t
+   inhibit-startup-message    t
+   initial-major-mode         'text-mode
+   uniquify-buffer-name-style 'forward
+   ring-bell-function         'ignore)
 
-(setq
- inhibit-startup-message t  ; Go to scratch buffer on startup
- inhibit-splash-screen   t  ; No splash screen
- uniquify-buffer-name-style 'forward
- ring-bell-function         'ignore)
+  (setq-default
+   fill-column      80  ; Right margin when filling paragraphs
+   indent-tabs-mode nil ; Don't use hard tabs
+   tab-width        4)
 
-(setq-default
- fill-column      80  ; Right margin when filling paragraphs
- indent-tabs-mode nil ; Don't use hard tabs
- tab-width        4)  ; Sane tab-width
+  ;; Setup line highlighting
+  (global-hl-line-mode 1)
+  (add-hook 'activate-mark-hook   (lambda () (global-hl-line-mode -1)))
+  (add-hook 'deactivate-mark-hook (lambda () (global-hl-line-mode 1)))
 
-;; Setup line highlighting
-(global-hl-line-mode 1)
-(add-hook 'activate-mark-hook   (lambda () (global-hl-line-mode -1)))
-(add-hook 'deactivate-mark-hook (lambda () (global-hl-line-mode 1)))
+  ;; Setup scrolling
+  (setq scroll-step 1
+        scroll-margin 0
+        scroll-conservatively 100000
+        scroll-preserve-screen-position t
+        mouse-wheel-scroll-amount '(1 ((shift) . 1)))
 
-;; Setup scrolling
-(global-set-key (kbd "M-L") (kbd "C-l"))
-(global-set-key (kbd "M-n") (kbd "C-u 1 C-v"))
-(global-set-key (kbd "M-p") (kbd "C-u 1 M-v"))
-(global-set-key (kbd "<C-M-down>")
-                (lambda ()
-                  (interactive)
-                  (let ((scroll-preserve-screen-position 1))
-                    (scroll-up-command 2))))
-(global-set-key (kbd "<C-M-up>")
-                (lambda ()
-                  (interactive)
-                  (let ((scroll-preserve-screen-position 1))
-                    (scroll-down-command 2))))
-(setq scroll-step 1
-      scroll-margin 0
-      scroll-conservatively 100000
-      scroll-preserve-screen-position t
-      mouse-wheel-scroll-amount '(1 ((shift) . 1)))
+  ;; Setup font
+  ;; sudo pacman -Syu ttf-dejavu
+  (add-to-list
+   'default-frame-alist
+   `(font . ,(concat "DejaVu Sans Mono"
+                     (let ((size (getenv "EMACS_FONT_SIZE")))
+                       (if size (concat "-" size) "")))))
 
-;; Setup font
-;; sudo pacman -Syu ttf-dejavu
-(add-to-list
- 'default-frame-alist
- `(font . ,(concat "DejaVu Sans Mono"
-                   (let ((size (getenv "EMACS_FONT_SIZE")))
-                     (if size (concat "-" size) "")))))
-
-;; Setup local files
-(setq
- backup-directory-alist '(("." . "~/.emacs.d/backups"))
- custom-file            "~/.emacs.d/custom.el"
- create-lockfiles       nil   ; No need for ~ files when editing
- auto-save-default      nil)  ; No auto-save of file-visiting buffers
-(when (file-exists-p custom-file)
-  (load custom-file))
+  ;; Setup local files
+  (setq
+   backup-directory-alist '(("." . "~/.emacs.d/backups"))
+   custom-file            "~/.emacs.d/custom.el"
+   create-lockfiles       nil   ; No need for ~ files when editing
+   auto-save-default      nil)  ; No auto-save of file-visiting buffers
+  (when (file-exists-p custom-file)
+    (load custom-file)))
 
 ;;;;;;;;;;;;;;;;;;;;; Custom functions ;;;;;;;;;;;;;;;;;;;
 
@@ -192,6 +180,18 @@ Buffers visiting files not existing/readable will be killed."
             (message "Killed unreadable file buffer: %s" filename))))))
   (message "Finished reverting buffers containing unmodified files."))
 
+(defun scrolling-down ()
+  "Scrolling down."
+  (interactive)
+  (let ((scroll-preserve-screen-position 1))
+    (scroll-up-command 2)))
+
+(defun scrolling-up ()
+  "Scrolling up."
+  (interactive)
+  (let ((scroll-preserve-screen-position 1))
+    (scroll-down-command 2)))
+
 (add-hook 'kill-buffer-query-functions 'unkillable-scratch-buffer)
 (add-hook 'before-save-hook            'delete-trailing-whitespace)
 
@@ -204,6 +204,10 @@ Buffers visiting files not existing/readable will be killed."
 (global-set-key (kbd "C-x C-x C-r") 'revert-all-file-buffers)
 (global-set-key (kbd "C-x C-b")     'ibuffer)
 (global-set-key (kbd "C-x C-z")     'repeat)
+(global-set-key (kbd "<C-M-down>")  'scrolling-down)
+(global-set-key (kbd "<C-M-up>")    'scrolling-up)
+(global-set-key (kbd "M-n")         (kbd "C-u 1 C-v"))
+(global-set-key (kbd "M-p")         (kbd "C-u 1 M-v"))
 (global-set-key (kbd "M-F")         'forward-whitespace)
 (global-set-key (kbd "M-B")         'backward-whitespace)
 (global-set-key (kbd "C-;")         'toggle-comment-on-line)
@@ -362,14 +366,18 @@ Buffers visiting files not existing/readable will be killed."
    mc/keymap
    ("<backtab>" . mc/vertical-align-with-space))
 
-  :hook (multiple-cursors-mode . mc-selected-keys)
+  :hook ((multiple-cursors-mode . mc-selected-keys)
+         (multiple-cursors-mode . global-hl-line-mode))
+
   :config
   (defun mc-selected-keys ()
     (if (bound-and-true-p multiple-cursors-mode)
-        (progn (define-key selected-keymap (kbd "}") 'mc/cycle-forward)
-               (define-key selected-keymap (kbd "{") 'mc/cycle-backward))
-      (progn (define-key selected-keymap (kbd "}") nil)
-             (define-key selected-keymap (kbd "{") nil)))))
+        (progn
+          (define-key selected-keymap (kbd "}") 'mc/cycle-forward)
+          (define-key selected-keymap (kbd "{") 'mc/cycle-backward))
+      (progn
+        (define-key selected-keymap (kbd "}") nil)
+        (define-key selected-keymap (kbd "{") nil)))))
 
 (use-package visual-regexp
   :bind (("C-x C-x C-?" . vr/query-replace)
