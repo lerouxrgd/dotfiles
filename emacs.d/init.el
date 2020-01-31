@@ -25,27 +25,23 @@
 ;;;;;;;;;;;;;;;;;;; Package management ;;;;;;;;;;;;;;;;;;;
 
 (require 'package)
-(setq package-archives
+(setq package-enable-at-startup nil
+      package-archives
       '(("gnu"          . "https://elpa.gnu.org/packages/")
         ("melpa"        . "https://melpa.org/packages/")
         ("melpa-stable" . "https://stable.melpa.org/packages/")
         ("tromey"       . "https://tromey.com/elpa/")))
-
-;; No auto package loading, that's handled via use-package
-(unless (bound-and-true-p package--initialized)
-  (setq package-enable-at-startup nil)
-  (package-initialize))
+(package-initialize)
 
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
 
-(require 'bind-key)
 (eval-when-compile
-  (require 'use-package)
-  (use-package cl))
+  (require 'use-package))
 
-(setq use-package-always-ensure t)
+(use-package use-package
+  :config (setq use-package-always-ensure t))
 
 (use-package gnu-elpa-keyring-update)
 
