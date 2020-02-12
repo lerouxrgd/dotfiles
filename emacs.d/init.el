@@ -548,7 +548,8 @@ Buffers visiting files not existing/readable will be killed."
 ;; sudo pacman -Syu fd
 (use-package helm-fd
   :bind (:map helm-command-map
-              ("/" . helm-fd-project)))
+              ("/" . helm-fd-project))
+  :config (setq helm-fd-relative-paths t))
 
 (use-package helm-c-yasnippet
   :after yasnippet
