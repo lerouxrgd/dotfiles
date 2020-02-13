@@ -10,9 +10,15 @@
 ;;; Code:
 
 ;; Startup GC tuning
-(setq gc-cons-threshold (* 256 1024 1024))
+(defvar tmp--file-name-handler-alist file-name-handler-alist)
+(setq gc-cons-threshold most-positive-fixnum
+      gc-cons-percentage 0.6
+      file-name-handler-alist nil)
 (add-hook 'emacs-startup-hook
-          (lambda () (setq gc-cons-threshold (* 16 1024 1024))))
+          (lambda ()
+            (setq gc-cons-threshold (* 16 1024 1024)
+                  gc-cons-percentage 0.1
+                  file-name-handler-alist tmp--file-name-handler-alist)))
 
 ;; Main frame setup
 (setq frame-resize-pixelwise t)
@@ -54,7 +60,7 @@
 
 (use-package doom-themes
   :init
-  (load-theme 'doom-nova t) ; Define theme
+  (load-theme 'doom-nova t)
   (custom-theme-set-faces
    'doom-nova
    `(hl-line ((t (:background ,(doom-color 'bg-alt)))))))
