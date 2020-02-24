@@ -69,20 +69,18 @@
 (use-package all-the-icons)
 
 (use-package doom-modeline
-  :hook (after-init . doom-modeline-mode)
+  :hook (window-setup . doom-modeline-mode)
   :config
-  (defun doom-buffer-name ()
-    (let ((doom-modeline-buffer-file-name-style 'truncate-with-project))
-      (doom-modeline-buffer-file-name)))
-
-  (setq frame-title-format '((:eval (doom-buffer-name)) " - %F")
-        doom-modeline-icon t
-        doom-modeline-buffer-file-name-style 'relative-from-project
+  (setq doom-modeline-icon t
         doom-modeline-major-mode-icon nil
+        doom-modeline-minor-modes t
+        doom-modeline-buffer-file-name-style 'relative-from-project
         doom-modeline-buffer-encoding nil)
 
-  (custom-set-faces
-   `(mode-line-inactive ((t (:background ,(doom-color 'bg-alt)))))))
+  (defun doom-modeline-buffer-name ()
+    (let ((doom-modeline-buffer-file-name-style 'truncate-with-project))
+      (doom-modeline-buffer-file-name)))
+  (setq frame-title-format '((:eval (doom-modeline-buffer-name)) " - %F")))
 
 (use-package minions
   :config (minions-mode 1))
