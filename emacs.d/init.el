@@ -622,7 +622,7 @@ Buffers visiting files not existing/readable will be killed."
 (use-package lsp-mode
   :hook (prog-mode . lsp-mode)
   :config
-  (setq lsp-prefer-flymake nil
+  (setq lsp-diagnostic-package :flycheck
         lsp-enable-symbol-highlighting nil))
 
 (use-package lsp-ui
