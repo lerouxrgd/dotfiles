@@ -384,11 +384,15 @@ Buffers visiting files not existing/readable will be killed."
         (define-key selected-keymap (kbd "{") nil)))))
 
 (use-package visual-regexp
-  :bind (("C-x C-x C-?" . vr/query-replace)
-         ("C-x C-x C-k" . vr/mc-mark)
+  :bind (("C-x C-x M-%" . vr/query-replace)
+         ("C-x C-x C->" . vr/mc-mark)
          ("C-M-S"       . vr/isearch-forward)
          ("C-M-R"       . vr/isearch-backward))
   :config (use-package visual-regexp-steroids))
+
+(use-package anzu
+  :config
+  (global-anzu-mode +1))
 
 (use-package string-inflection
   :bind (("C-x M-i c" . string-inflection-lower-camelcase)
