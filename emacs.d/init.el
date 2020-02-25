@@ -116,8 +116,8 @@
   ;; Setup scrolling
   (setq scroll-step 1
         scroll-margin 0
-        scroll-conservatively 100000
-        scroll-preserve-screen-position t
+        scroll-conservatively 10000
+        scroll-preserve-screen-position 1
         mouse-wheel-scroll-amount '(1 ((shift) . 1)))
 
   ;; Setup font
@@ -184,17 +184,17 @@ Buffers visiting files not existing/readable will be killed."
             (message "Killed unreadable file buffer: %s" filename))))))
   (message "Finished reverting buffers containing unmodified files."))
 
-(defun scrolling-down ()
+(defun scroll-down-preserve-line ()
   "Scrolling down."
   (interactive)
-  (let ((scroll-preserve-screen-position 1))
-    (scroll-up-command 2)))
+  (let ((scroll-preserve-screen-position t))
+    (scroll-up-command 1)))
 
-(defun scrolling-up ()
+(defun scroll-up-preserve-line ()
   "Scrolling up."
   (interactive)
-  (let ((scroll-preserve-screen-position 1))
-    (scroll-down-command 2)))
+  (let ((scroll-preserve-screen-position t))
+    (scroll-down-command 1)))
 
 (add-hook 'kill-buffer-query-functions 'unkillable-scratch-buffer)
 (add-hook 'before-save-hook            'delete-trailing-whitespace)
@@ -208,10 +208,10 @@ Buffers visiting files not existing/readable will be killed."
 (global-set-key (kbd "C-x C-x C-r") 'revert-all-file-buffers)
 (global-set-key (kbd "C-x C-b")     'ibuffer)
 (global-set-key (kbd "C-x C-z")     'repeat)
-(global-set-key (kbd "<C-M-down>")  'scrolling-down)
-(global-set-key (kbd "<C-M-up>")    'scrolling-up)
-(global-set-key (kbd "M-n")         (kbd "C-u 1 C-v"))
-(global-set-key (kbd "M-p")         (kbd "C-u 1 M-v"))
+(global-set-key (kbd "<C-M-down>")  (kbd "C-u 2 C-v"))
+(global-set-key (kbd "<C-M-up>")    (kbd "C-u 2 M-v"))
+(global-set-key (kbd "M-n")         'scroll-up-preserve-line)
+(global-set-key (kbd "M-p")         'scroll-down-preserve-line)
 (global-set-key (kbd "M-F")         'forward-whitespace)
 (global-set-key (kbd "M-B")         'backward-whitespace)
 (global-set-key (kbd "C-;")         'toggle-comment-on-line)
