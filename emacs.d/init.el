@@ -539,7 +539,7 @@ Buffers visiting files not existing/readable will be killed."
          :map helm-command-map
          ("SPC" . helm-all-mark-rings)
          ("y"   . helm-register)
-         ("m"   . helm-imenu)
+         ("m"   . helm-semantic-or-imenu)
          ("."   . helm-etags-select))
 
   :config
