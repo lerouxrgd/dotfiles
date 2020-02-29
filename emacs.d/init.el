@@ -857,13 +857,17 @@ Buffers visiting files not existing/readable will be killed."
   (define-key clj-refactor-map (kbd "C-c C-SPC C-?") 'cljr-find-usages)
   (setq cljr-warn-on-eval nil))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;; Java ;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;; Java/Scala ;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; https://github.com/emacs-lsp/lsp-java
+;; https://github.com/scalameta/metals
 
 (use-package lsp-java
   :after lsp
   :config (add-hook 'java-mode-hook 'lsp))
+
+(use-package scala-mode
+  :mode "\\.s\\(cala\\|bt\\)$")
 
 ;;;;;;;;;;;;;;;;;;;;;;; Javascript ;;;;;;;;;;;;;;;;;;;;;;;
 
