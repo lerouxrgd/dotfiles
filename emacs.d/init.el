@@ -184,13 +184,13 @@ Buffers visiting files not existing/readable will be killed."
             (message "Killed unreadable file buffer: %s" filename))))))
   (message "Finished reverting buffers containing unmodified files."))
 
-(defun scroll-down-preserve-line ()
+(defun scroll-up-preserve-line ()
   "Scrolling down."
   (interactive)
   (let ((scroll-preserve-screen-position t))
     (scroll-up-command 1)))
 
-(defun scroll-up-preserve-line ()
+(defun scroll-down-preserve-line ()
   "Scrolling up."
   (interactive)
   (let ((scroll-preserve-screen-position t))
