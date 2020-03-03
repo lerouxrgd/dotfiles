@@ -297,7 +297,7 @@ Buffers visiting files not existing/readable will be killed."
   :config
   (setq magit-diff-refine-hunk t)
   (use-package magit-todos
-    :hook (magit-mode . magit-todos-mode))
+    :config (magit-todos-mode))
   (use-package magit-ediff
     :ensure nil
     :config (setq magit-ediff-dwim-show-on-hunks t)))
@@ -391,8 +391,7 @@ Buffers visiting files not existing/readable will be killed."
   :config (use-package visual-regexp-steroids))
 
 (use-package anzu
-  :config
-  (global-anzu-mode +1))
+  :config (global-anzu-mode))
 
 (use-package string-inflection
   :bind (("C-x M-i c" . string-inflection-lower-camelcase)
