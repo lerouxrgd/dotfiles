@@ -26,6 +26,6 @@ emc() { setsid emacsclient -c -F "((undecorated . t) (fullscreen . maximized))" 
 
 emk() { emacsclient --eval "(progn (setq kill-emacs-hook nil) (kill-emacs))" ;}
 
-em() { TERM=konsole-direct emacs -nw -Q $(reverse_array "$@") ;}
+em() { emacsclient -t $@ ;}
 
 alias ll='ls -alF'
