@@ -11,7 +11,7 @@
 
 ;; Startup GC tuning
 (defvar tmp--file-name-handler-alist file-name-handler-alist)
-(setq gc-cons-threshold most-positive-fixnum
+(setq gc-cons-threshold (* 1024 1024 1024)
       gc-cons-percentage 0.6
       file-name-handler-alist nil)
 (add-hook 'emacs-startup-hook
