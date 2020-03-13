@@ -196,6 +196,13 @@ Buffers visiting files not existing/readable will be killed."
   (let ((scroll-preserve-screen-position t))
     (scroll-down-command 1)))
 
+(defun recenter-middle (&rest _)
+  "Recenter to middle position, ignore params, useful when used as an advice."
+  (recenter))
+
+(advice-add 'xref-pop-marker-stack :after 'recenter-middle)
+(advice-add 'xref-find-definitions :after 'recenter-middle)
+
 (add-hook 'kill-buffer-query-functions 'unkillable-scratch-buffer)
 (add-hook 'before-save-hook            'delete-trailing-whitespace)
 
@@ -603,6 +610,7 @@ Buffers visiting files not existing/readable will be killed."
 
 (use-package helm-xref
   :config
+  (advice-add 'helm-xref-goto-xref-item :after 'recenter-middle)
   (setq helm-always-two-windows t
         helm-split-window-inside-p t
         xref-show-xrefs-function 'helm-xref-show-xrefs)
