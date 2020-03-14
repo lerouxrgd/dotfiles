@@ -241,23 +241,10 @@ Buffers visiting files not existing/readable will be killed."
          :map company-active-map
          ("<right>" . company-abort))
   :config
-  (setq company-tooltip-align-annotations t)
-
-  (use-package company-box
-    :hook (company-mode . company-box-mode)
-    :bind (:map company-active-map
-                ("C-v" . fixed-scroll-up-cmd)
-                ("M-v" . fixed-scroll-down-cmd))
-    :config
-    (defun fixed-scroll-up-cmd ()
-      (interactive)
-      (company-next-page)
-      (company-box--change-line))
-    (defun fixed-scroll-down-cmd ()
-      (interactive)
-      (company-previous-page)
-      (company-box--change-line))
-    (setq company-box-icons-alist 'company-box-icons-all-the-icons)))
+  (setq company-tooltip-align-annotations t
+        company-selection-wrap-around t)
+  (use-package company-quickhelp
+    :config (company-quickhelp-mode)))
 
 (use-package flycheck
   :hook ((after-init      . global-flycheck-mode)
@@ -448,9 +435,7 @@ Buffers visiting files not existing/readable will be killed."
         '("^ " "^[*]" "null" "^Magit.*"))
   (custom-set-faces
    `(nswbuff-current-buffer-face
-     ((t (:weight bold
-                  :background ,(doom-color 'blue)
-                  :foreground ,(doom-color 'bg)))))
+     ((t (:weight bold :background ,(doom-color 'blue) :foreground ,(doom-color 'bg)))))
    `(nswbuff-separator-face
      ((t (:foreground ,(doom-color 'orange)))))
    `(nswbuff-special-buffers-face
