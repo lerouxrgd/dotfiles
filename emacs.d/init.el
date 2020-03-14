@@ -1040,6 +1040,7 @@ Buffers visiting files not existing/readable will be killed."
   :bind (:map rust-mode-map
               ("M-." . racer-find-definition))
   :config
+  (advice-add 'racer-find-definition :after 'recenter-middle)
   (use-package company-racer
     :config (add-to-list 'company-backends 'company-racer)))
 
