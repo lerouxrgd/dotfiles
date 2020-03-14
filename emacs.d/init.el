@@ -839,8 +839,12 @@ Buffers visiting files not existing/readable will be killed."
   :hook ((cider-repl-mode . paredit-mode)
          (cider-mode      . eldoc-mode))
   :config
+  (advice-add 'cider-find-var :after 'recenter-middle)
   (setq cider-repl-display-help-banner nil
-        cider-repl-history-file "~/.emacs.d/cider-history"))
+        cider-prompt-for-symbol nil
+        cider-repl-history-file "~/.emacs.d/cider-history"
+        cider-repl-tab-command
+        (lambda () (company-indent-or-complete-common (symbol-at-point)))))
 
 (use-package helm-cider
   :hook (clojure-mode . helm-cider-mode)
@@ -854,10 +858,10 @@ Buffers visiting files not existing/readable will be killed."
          "Find definition" (wrap-helm-cider-action helm-cider--find-var))))
 
 (use-package clj-refactor
+  :pin melpa-stable
   :hook (clojure-mode . clj-refactor-mode)
   :config
   (cljr-add-keybindings-with-prefix "C-c C-SPC")
-  (define-key clj-refactor-map (kbd "C-c C-SPC C-?") 'cljr-find-usages)
   (setq cljr-warn-on-eval nil))
 
 ;;;;;;;;;;;;;;;;;;;;;;; Java/Scala ;;;;;;;;;;;;;;;;;;;;;;;
