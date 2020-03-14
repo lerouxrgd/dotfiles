@@ -247,16 +247,12 @@ Buffers visiting files not existing/readable will be killed."
     :config (company-quickhelp-mode)))
 
 (use-package flycheck
-  :hook ((after-init      . global-flycheck-mode)
-         (emacs-lisp-mode . flycheck-on-save))
+  :hook (after-init . global-flycheck-mode)
   :bind (("C-x !" . flycheck-errors-buffer)
          :map flycheck-error-list-mode-map
          ("<C-return>" . flycheck-goto-error-kill-buffer))
 
   :init
-  (defun flycheck-on-save ()
-    (setq flycheck-check-syntax-automatically '(mode-enabled save)))
-
   (defun flycheck-errors-buffer ()
     (interactive)
     (flycheck-list-errors)
@@ -271,9 +267,8 @@ Buffers visiting files not existing/readable will be killed."
   (setq flycheck-display-errors-function
         'flycheck-display-error-messages-unless-error-list)
   (add-to-list 'display-buffer-alist
-               `(,(rx bos "*Flycheck errors*" eos)
-                 (display-buffer-reuse-window
-                  display-buffer-in-side-window)
+               '("*Flycheck errors*"
+                 (display-buffer-reuse-window display-buffer-in-side-window)
                  (side            . bottom)
                  (reusable-frames . visible)
                  (window-height   . 0.20))))
@@ -781,6 +776,11 @@ Buffers visiting files not existing/readable will be killed."
   (setq ess-use-flymake nil))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;; Lisp ;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(use-package emacs
+  :hook (emacs-lisp-mode
+         . (lambda ()
+             (setq flycheck-check-syntax-automatically '(mode-enabled save)))))
 
 (use-package paredit
   :hook ((emacs-lisp-mode . enable-paredit-mode)
