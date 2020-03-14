@@ -804,6 +804,18 @@ Buffers visiting files not existing/readable will be killed."
 ;; https://github.com/clojure-emacs/clojure-mode
 ;; https://github.com/clojure-emacs/cider
 ;; https://github.com/clojure-emacs/clj-refactor.el
+;; https://github.com/borkdude/flycheck-clj-kondo
+
+;; https://github.com/technomancy/leiningen
+;; https://github.com/thheller/shadow-cljs
+;; https://github.com/borkdude/clj-kondo
+;; https://github.com/snoe/clojure-lsp
+;; https://github.com/weavejester/cljfmt
+
+;; sudo pacman -Syu leiningen
+;; yay -Syu nodejs-shadow-cljs
+;; yay -Syu clj-kondo-bin
+;; yay -Syu clojure-lsp-bin
 
 (use-package clojure-mode
   :mode (("\\.clj\\'"  . clojure-mode)
@@ -817,10 +829,10 @@ Buffers visiting files not existing/readable will be killed."
          (clojure-mode . subword-mode)
          (clojure-mode . rainbow-delimiters-mode))
   :config
-  (use-package clojure-mode-extra-font-locking))
+  (use-package clojure-mode-extra-font-locking)
+  (use-package flycheck-clj-kondo))
 
 (use-package cider
-  :after clojure-mode
   :bind (("C-c M-f" . cider-format-buffer)
          :map cider-repl-mode-map
          ("C-c C-o" . cider-repl-clear-buffer))
@@ -831,7 +843,6 @@ Buffers visiting files not existing/readable will be killed."
         cider-repl-history-file "~/.emacs.d/cider-history"))
 
 (use-package helm-cider
-  :after clojure-mode
   :hook (clojure-mode . helm-cider-mode)
   :bind (("C-c s" . helm-cider-cheatsheet)
          ("C-c S" . helm-cider-spec))
@@ -854,6 +865,8 @@ Buffers visiting files not existing/readable will be killed."
 ;; https://github.com/emacs-lsp/lsp-java
 ;; https://github.com/scalameta/metals
 
+;; yay -Syu metals
+
 (use-package lsp-java
   :after lsp
   :config (add-hook 'java-mode-hook 'lsp))
@@ -870,10 +883,13 @@ Buffers visiting files not existing/readable will be killed."
 
 ;;;;;;;;;;;;;;;;;;;;;;;;; Erlang ;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; https://erlang.org/doc/man/erlang.el.html
+;; https://github.com/erlang/rebar3
 ;; https://github.com/erlang-ls/erlang_ls
 
 ;; sudo pacman -Syu erlang
 ;; yay -Syu rebar3
+;; yay -Syu erlang_ls-git
 
 (use-package erlang
   :no-require t

@@ -1,3 +1,5 @@
-{:user {:plugins [[lein-try "0.4.3"]
-                  [lein-ancient "0.6.14"]
-                  [lein-exec "0.3.7"]]}}
+{:user {:plugins
+        [[lein-ancient "0.6.15"]
+         [lein-cljfmt "0.6.7"]
+         [lein-try "0.4.3"]
+         [lein-exec "0.3.7"]]}}
