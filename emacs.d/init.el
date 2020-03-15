@@ -306,6 +306,9 @@ Buffers visiting files not existing/readable will be killed."
   :custom (exec-path-from-shell-arguments nil))
 
 (use-package bash-completion
+  :hook (shell-mode
+         . (lambda ()
+             (local-set-key (kbd "TAB") 'company-indent-or-complete-common)))
   :config (bash-completion-setup))
 
 (use-package recentf
@@ -429,6 +432,8 @@ Buffers visiting files not existing/readable will be killed."
         nswbuff-exclude-buffer-regexps
         '("^ " "^[*]" "null" "^Magit.*"))
   (custom-set-faces
+   `(nswbuff-default-face
+     ((t (:inherit default))))
    `(nswbuff-current-buffer-face
      ((t (:weight bold :background ,(doom-color 'blue) :foreground ,(doom-color 'bg)))))
    `(nswbuff-separator-face
