@@ -261,9 +261,11 @@ Buffers visiting files not existing/readable will be killed."
   (defun flycheck-goto-error-kill-buffer ()
     (interactive)
     (flycheck-error-list-goto-error)
-    (kill-buffer "*Flycheck errors*"))
+    (kill-buffer "*Flycheck errors*")
+    (recenter-middle))
 
   :config
+  (advice-add 'flycheck-error-list-goto-error :after 'recenter-middle)
   (setq flycheck-display-errors-function
         'flycheck-display-error-messages-unless-error-list)
   (add-to-list 'display-buffer-alist
@@ -908,8 +910,8 @@ Buffers visiting files not existing/readable will be killed."
 
 ;; https://github.com/jorgenschaefer/elpy
 
-;; sudo pacman -Syu ipython poetry
-;; pip install --user black flake8 jedi rope importmagic
+;; sudo pacman -Syu ipython python-poetry
+;; pip install --user black flake8 jedi
 
 (use-package elpy
   :init (advice-add 'python-mode :before 'elpy-enable)
