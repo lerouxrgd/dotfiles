@@ -200,8 +200,9 @@ Buffers visiting files not existing/readable will be killed."
   "Recenter to middle position, ignore params, useful when used as an advice."
   (recenter))
 
-(advice-add 'xref-pop-marker-stack :after 'recenter-middle)
-(advice-add 'xref-find-definitions :after 'recenter-middle)
+(advice-add 'xref-pop-marker-stack      :after 'recenter-middle)
+(advice-add 'xref-find-definitions      :after 'recenter-middle)
+(advice-add 'occur-mode-goto-occurrence :after 'recenter-middle)
 
 (add-hook 'kill-buffer-query-functions 'unkillable-scratch-buffer)
 (add-hook 'before-save-hook            'delete-trailing-whitespace)
@@ -840,6 +841,7 @@ Buffers visiting files not existing/readable will be killed."
   (use-package flycheck-clj-kondo))
 
 (use-package cider
+  :after clojure-mode
   :bind (("C-c M-f" . cider-format-buffer)
          :map cider-repl-mode-map
          ("C-c C-o" . cider-repl-clear-buffer))
@@ -854,6 +856,7 @@ Buffers visiting files not existing/readable will be killed."
         (lambda () (company-indent-or-complete-common (symbol-at-point)))))
 
 (use-package helm-cider
+  :after clojure-mode
   :hook (clojure-mode . helm-cider-mode)
   :bind (("C-c s" . helm-cider-cheatsheet)
          ("C-c S" . helm-cider-spec))
@@ -917,7 +920,10 @@ Buffers visiting files not existing/readable will be killed."
   :init (advice-add 'python-mode :before 'elpy-enable)
   :hook
   ((python-mode . highlight-indent-guides-mode)
-   (elpy-mode   . (lambda () (add-hook 'before-save-hook 'elpy-format-code))))
+   (elpy-mode   . (lambda () (add-hook 'before-save-hook 'elpy-format-code)))
+   (inferior-python-mode
+    . (lambda ()
+        (local-set-key (kbd "TAB") 'company-indent-or-complete-common))))
   :config
   (setq python-shell-interpreter "ipython"
         python-shell-interpreter-args "--simple-prompt -i"
