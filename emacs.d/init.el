@@ -310,8 +310,7 @@ Buffers visiting files not existing/readable will be killed."
 
 (use-package bash-completion
   :hook (shell-mode
-         . (lambda ()
-             (local-set-key (kbd "TAB") 'company-indent-or-complete-common)))
+         . (lambda () (local-set-key (kbd "TAB") 'company-indent-or-complete-common)))
   :config (bash-completion-setup))
 
 (use-package recentf
@@ -544,6 +543,7 @@ Buffers visiting files not existing/readable will be killed."
         (when (= p (point))
           (apply orig-fun args)))))
   (advice-add 'pop-to-mark-command :around 'dedup-pop-to-mark)
+  (advice-add 'dedup-pop-to-mark :after 'recenter-middle)
 
   (helm-autoresize-mode t))
 
@@ -777,9 +777,7 @@ Buffers visiting files not existing/readable will be killed."
   :mode (("\\.[rR]\\'" . ess-r-mode)
          ("\\.jl\\'"   . julia-mode))
   :hook (ess-mode
-         . (lambda ()
-             (local-set-key
-              (kbd "TAB") 'company-indent-or-complete-common)))
+         . (lambda () (local-set-key (kbd "TAB") 'company-indent-or-complete-common)))
   :config
   (setq ess-use-flymake nil))
 
@@ -922,9 +920,9 @@ Buffers visiting files not existing/readable will be killed."
   ((python-mode . highlight-indent-guides-mode)
    (elpy-mode   . (lambda () (add-hook 'before-save-hook 'elpy-format-code)))
    (inferior-python-mode
-    . (lambda ()
-        (local-set-key (kbd "TAB") 'company-indent-or-complete-common))))
+    . (lambda () (local-set-key (kbd "TAB") 'company-indent-or-complete-common))))
   :config
+  (advice-add 'elpy-format-code :after 'recenter-middle)
   (setq python-shell-interpreter "ipython"
         python-shell-interpreter-args "--simple-prompt -i"
         elpy-rpc-virtualenv-path 'current
@@ -934,6 +932,9 @@ Buffers visiting files not existing/readable will be killed."
 
 (use-package poetry
   :hook (python-mode . (lambda () (local-set-key (kbd "C-c p") 'poetry))))
+
+(use-package pippel
+  :after python-mode)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;; C/C++ ;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -1060,7 +1061,27 @@ Buffers visiting files not existing/readable will be killed."
 
 (use-package rust-mode
   :mode "\\.rs\\'"
+  :bind ("C-c C-o" . rust-occur-definitions)
   :config
+  (defun rust-occur-definitions ()
+    (interactive)
+    (let ((list-matching-lines-face nil))
+      (occur (concat "^\s*\\("
+                     "\\(pub.*?\s\\|\\)mod\\|"
+                     "\\(pub.*?\s\\|\\)type\\|"
+                     "\\(pub.*?\s\\|\\)struct\\|"
+                     "\\(pub.*?\s\\|\\)enum\\|"
+                     "\\(pub.*?\s\\|unsafe\s\\|const\s\\|async\s\\|\\)fn\\|"
+                     "\\(pub.*?\s\\|unsafe\s\\|\\)trait\\|"
+                     "\\(pub.*?\s\\|\\)const\\|"
+                     "\\(pub.*?\s\\|\\)static\sref\\|"
+                     "lazy_static\!\\|"
+                     "impl"
+                     "\\)\s")))
+    (let ((window (get-buffer-window "*Occur*")))
+      (if window
+          (select-window window)
+        (switch-to-buffer "*Occur*"))))
   (setq rust-format-on-save t)
   (use-package flycheck-rust
     :after flycheck
