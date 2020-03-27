@@ -922,17 +922,24 @@ Buffers visiting files not existing/readable will be killed."
 ;; pip install --user compiledb cmake_format
 
 (use-package ccls
-  :hook ((c-mode c++-mode objc-mode)
-         . (lambda () (require 'ccls) (lsp)))
+  :hook ((c-mode c++-mode objc-mode) . setup-ccls)
   :bind (:map c-mode-base-map
-              ("C-c C-c" . ff-find-other-file)
-              ("C-z H"   . ccls-inheritance-hierarchy)
-              ("C-z C"   . ccls-call-hierarchy)
-              ("C-z M"   . ccls-member-hierarchy)
-              ("C-z L"   . ccls-code-lens-mode))
+              ("C-c C-c" . ff-find-other-file))
   :init
   (setq flycheck-disabled-checkers
         '(c/c++-clang c/c++-cppcheck c/c++-gcc))
+  :config
+  (defun setup-ccls ()
+    (require 'ccls)
+    (lsp)
+    (define-key lsp-command-map (kbd "ci") 'ccls-inheritance-hierarchy)
+    (define-key lsp-command-map (kbd "cc") 'ccls-call-hierarchy)
+    (define-key lsp-command-map (kbd "cm") 'ccls-member-hierarchy)
+    (define-key lsp-command-map (kbd "cl") 'ccls-code-lens-mode)
+    (which-key-add-major-mode-key-based-replacements
+      major-mode
+      (concat lsp-keymap-prefix " c")
+      "ccls"))
   :custom
   (ff-search-directories
    '("." "/usr/include" "/usr/local/include/*" ; original values
