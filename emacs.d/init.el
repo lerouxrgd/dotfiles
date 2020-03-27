@@ -2,10 +2,8 @@
 
 ;;; Commentary:
 
-;;; This is my Emacs config.
-;;; There are many like it, but this one is mine.
-;;; My Emacs config is my best friend.  It is my life.
-;;; I must master it as I must master my life.
+;;; Rebuild all packages:
+;;; M-: (byte-recompile-directory package-user-dir nil 'force)
 
 ;;; Code:
 
@@ -617,61 +615,41 @@ Buffers visiting files not existing/readable will be killed."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;; LSP ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (use-package lsp-mode
-  :hook (prog-mode . lsp-mode)
-  :config
-  (setq lsp-diagnostic-package :flycheck
+  :commands lsp
+  :hook ((prog-mode . lsp-mode)
+         (lsp-mode  . lsp-enable-which-key-integration))
+  :init
+  (setq lsp-keymap-prefix "C-z"
+        lsp-diagnostic-package :flycheck
         lsp-enable-symbol-highlighting nil))
 
 (use-package lsp-ui
   :hook (lsp-mode . lsp-ui-mode)
-  :bind (:map lsp-ui-mode-map
-              ("C-z !"   . lsp-ui-flycheck-list)
-              ("C-z d"   . lsp-describe-thing-at-point)
-              ("C-z f"   . lsp-format-buffer)
-              ("C-z m"   . lsp-ui-imenu)
-              ("C-z r"   . lsp-rename)
-              ("C-z ."   . lsp-find-definition)
-              ("C-z ?"   . lsp-find-references)
-              ("C-z I"   . lsp-find-implementation)
-              ("C-z D"   . lsp-find-declaration)
-              ("C-z T"   . lsp-find-type-definition)
-              ("C-z M-z" . lsp-toggle-highlighting))
-
+  :bind (:map lsp-command-map
+              ("!"   . lsp-ui-flycheck-list)
+              ("m"   . lsp-ui-imenu)
+              ("."   . lsp-find-definition)
+              ("?"   . lsp-find-references))
   :config
   (setq lsp-ui-sideline-enable nil
-        lsp-ui-doc-enable nil)
+        lsp-ui-doc-enable nil))
 
-  (defun lsp-toggle-highlighting ()
-    (interactive)
-    (setq lsp-enable-symbol-highlighting (not lsp-enable-symbol-highlighting))
-    (cond
-     ((and lsp-enable-symbol-highlighting  (lsp--capability "documentHighlightProvider"))
-      (add-hook 'lsp-on-idle-hook #'lsp--document-highlight nil t)
-      (lsp--info "Highlighting enabled."))
-     ((not lsp-enable-symbol-highlighting)
-      (remove-hook 'lsp-on-idle-hook #'lsp--document-highlight t)
-      (lsp--remove-overlays 'lsp-highlight)
-      (lsp--info "Highlighting disabled."))
-     (t (user-error "Current server does not support highlights?"))))
+(use-package lsp-treemacs :after (lsp-mode treemacs))
 
-  (use-package lsp-origami
-    :bind (:map lsp-ui-mode-map
-                ("C-z M-o" . lsp-origami-mode)))
+(use-package lsp-origami
+  :after lsp-mode
+  :bind (:map lsp-command-map
+              ("To" . lsp-origami-mode)))
 
-  (use-package helm-lsp
-    :bind (:map lsp-ui-mode-map
-                ("C-z a" . lsp-workspace-symbol)
-                ("C-z A" . lsp-global-workspace-symbol))
-    :config
-    (defun lsp-workspace-symbol ()
-      (interactive)
-      (helm-lsp-workspace-symbol t))
-    (defun lsp-global-workspace-symbol ()
-      (interactive)
-      (helm-lsp-global-workspace-symbol t))))
+(use-package helm-lsp
+  :after lsp-mode
+  :bind
+  (:map lsp-command-map
+        ("ga" . (lambda () (interactive) (helm-lsp-workspace-symbol t)))
+        ("gA" . (lambda () (interactive) (helm-lsp-global-workspace-symbol t)))))
 
 (use-package company-lsp
-  :after (company lsp-mode)
+  :after (lsp-mode company-mode)
   :config (add-to-list 'company-backends 'company-lsp))
 
 ;;;;;;;;;;;;;;;;;;;;;;; Simple formatting ;;;;;;;;;;;;;;;;
@@ -880,7 +858,6 @@ Buffers visiting files not existing/readable will be killed."
 ;; yay -Syu metals
 
 (use-package lsp-java
-  :after lsp
   :config (add-hook 'java-mode-hook 'lsp))
 
 (use-package scala-mode
