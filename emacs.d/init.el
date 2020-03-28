@@ -1066,10 +1066,11 @@ Buffers visiting files not existing/readable will be killed."
       (if window
           (select-window window)
         (switch-to-buffer "*Occur*"))))
-  (setq rust-format-on-save t)
-  (use-package flycheck-rust
-    :after flycheck
-    :hook (flycheck-mode . flycheck-rust-setup)))
+  (setq rust-format-on-save t))
+
+(use-package flycheck-rust
+  :after rust-mode
+  :hook (flycheck-mode . flycheck-rust-setup))
 
 (use-package racer
   :hook
