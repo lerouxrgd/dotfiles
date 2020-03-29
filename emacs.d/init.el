@@ -147,6 +147,11 @@
              nil)
     t))
 
+(defun switch-to-scratch-buffer ()
+  "Switch to scratch buffer."
+  (interactive)
+  (switch-to-buffer "*scratch*"))
+
 (defun project-or-root ()
   "If git project, find root, otherwise find where Emacs was started."
   (or (cdr (project-current))
@@ -220,6 +225,7 @@ Buffers visiting files not existing/readable will be killed."
 (global-set-key (kbd "M-p")         'scroll-down-preserve-line)
 (global-set-key (kbd "M-F")         'forward-whitespace)
 (global-set-key (kbd "M-B")         'backward-whitespace)
+(global-set-key (kbd "s-z")         'switch-to-scratch-buffer)
 (global-set-key (kbd "C-;")         'toggle-comment-on-line)
 (global-set-key (kbd "C-z")          nil)
 
@@ -531,6 +537,7 @@ Buffers visiting files not existing/readable will be killed."
          ("SPC" . helm-all-mark-rings)
          ("y"   . helm-register)
          ("m"   . helm-semantic-or-imenu)
+         ("c"   . helm-comint-input-ring)
          ("."   . helm-etags-select))
 
   :config
@@ -894,10 +901,9 @@ Buffers visiting files not existing/readable will be killed."
 (use-package elpy
   :init (advice-add 'python-mode :before 'elpy-enable)
   :hook
-  ((python-mode . highlight-indent-guides-mode)
-   (elpy-mode   . (lambda () (add-hook 'before-save-hook 'elpy-format-code)))
-   (inferior-python-mode
-    . (lambda () (local-set-key (kbd "TAB") 'company-indent-or-complete-common))))
+  ((python-mode          . highlight-indent-guides-mode)
+   (elpy-mode            . (lambda () (add-hook 'before-save-hook 'elpy-format-code)))
+   (inferior-python-mode . (lambda () (local-set-key (kbd "TAB") 'company-complete))))
   :config
   (advice-add 'elpy-format-code :after 'recenter-middle)
   (setq python-shell-interpreter "ipython"
