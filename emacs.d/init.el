@@ -703,6 +703,8 @@ Buffers visiting files not existing/readable will be killed."
          ("\\.avsc\\'" . json-mode))
   :config (setq js-indent-level 2))
 
+(use-package protobuf-mode)
+
 (use-package dockerfile-mode
   :mode "Dockerfile\\'")
 
