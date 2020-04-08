@@ -747,13 +747,13 @@ Buffers visiting files not existing/readable will be killed."
   :commands (kubernetes-overview))
 
 (use-package restclient
-  :after (helm company)
   :config
   (use-package restclient-helm)
   (use-package company-restclient
+    :hook (restclient-mode
+           . (lambda () (add-to-list 'company-backends 'company-restclient)))
     :bind (:map restclient-mode-map
-                ("C-c TAB" . company-complete))
-    :init (add-to-list 'company-backends 'company-restclient)))
+                ("C-c TAB" . company-complete))))
 
 ;;;;;;;;;;;;;;;;;;;;;;; Scientific ;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -1037,7 +1037,7 @@ Buffers visiting files not existing/readable will be killed."
   (use-package go-errcheck)
   (use-package golint)
   (use-package company-go
-    :config (add-to-list 'company-backends 'company-go)))
+    :hook (go-mode . (lambda () (add-to-list 'company-backends 'company-go)))))
 
 (use-package go-eldoc
   :hook (go-mode . go-eldoc-setup))
