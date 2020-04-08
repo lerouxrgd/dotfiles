@@ -217,7 +217,7 @@ Buffers visiting files not existing/readable will be killed."
 (global-set-key (kbd "C-x C-x")      nil)
 (global-set-key (kbd "C-x C-x C-x") 'exchange-point-and-mark)
 (global-set-key (kbd "C-x C-x C-r") 'revert-all-file-buffers)
-(global-set-key (kbd "C-x C-b")     'ibuffer)
+(global-set-key (kbd "C-x C-S-b")   'ibuffer)
 (global-set-key (kbd "C-x C-z")     'repeat)
 (global-set-key (kbd "<C-M-down>")  (kbd "C-u 2 C-v"))
 (global-set-key (kbd "<C-M-up>")    (kbd "C-u 2 M-v"))
@@ -446,6 +446,9 @@ Buffers visiting files not existing/readable will be killed."
      ((t (:foreground ,(doom-color 'orange)))))
    `(nswbuff-special-buffers-face
      ((t (:foreground ,(doom-color 'yellow)))))))
+
+(use-package bufler
+  :bind ("C-x C-b" . bufler))
 
 (use-package eyebrowse
   :config
