@@ -132,8 +132,10 @@
    custom-file            "~/.emacs.d/custom.el"
    create-lockfiles       nil   ; No need for ~ files when editing
    auto-save-default      nil)  ; No auto-save of file-visiting buffers
-  (when (file-exists-p custom-file)
-    (load custom-file)))
+  (add-hook 'emacs-startup-hook
+            (lambda ()
+              (when (file-exists-p custom-file)
+                (load custom-file)))))
 
 ;;;;;;;;;;;;;;;;;;;;; Custom functions ;;;;;;;;;;;;;;;;;;;
 
@@ -899,9 +901,12 @@ Buffers visiting files not existing/readable will be killed."
 ;;;;;;;;;;;;;;;;;;;;;;;;; Python ;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; https://github.com/jorgenschaefer/elpy
+;; https://github.com/galaunay/poetry.el
+;; https://github.com/brotzeit/pippel
+;; https://github.com/millejoh/emacs-ipython-notebook
 
-;; sudo pacman -Syu ipython python-poetry
-;; pip install --user black flake8 jedi
+;; sudo pacman -Syu ipython pyenv
+;; pip install --user jedi black flake8 pylint
 
 (use-package elpy
   :init (advice-add 'python-mode :before 'elpy-enable)
@@ -913,6 +918,7 @@ Buffers visiting files not existing/readable will be killed."
   (advice-add 'elpy-format-code :after 'recenter-middle)
   (setq python-shell-interpreter "ipython"
         python-shell-interpreter-args "--simple-prompt -i"
+        ;; elpy-syntax-check-command "pylint"
         elpy-rpc-virtualenv-path 'current
         elpy-modules (->> elpy-modules
                           (delq 'elpy-module-flymake)
@@ -923,6 +929,8 @@ Buffers visiting files not existing/readable will be killed."
 
 (use-package pippel
   :after python-mode)
+
+(use-package ein)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;; C/C++ ;;;;;;;;;;;;;;;;;;;;;;;;;
 

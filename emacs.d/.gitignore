@@ -13,6 +13,7 @@ cider-history
 transient
 request
 url
+tramp
 
 # workspace local files
 quelpa
