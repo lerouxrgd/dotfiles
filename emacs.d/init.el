@@ -102,7 +102,7 @@
    ring-bell-function         'ignore)
 
   (setq-default
-   fill-column      80  ; Right margin when filling paragraphs
+   fill-column      88  ; Right margin when filling paragraphs
    indent-tabs-mode nil ; Don't use hard tabs
    tab-width        4)
 
