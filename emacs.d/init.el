@@ -776,9 +776,11 @@ Buffers visiting files not existing/readable will be killed."
 ;;;;;;;;;;;;;;;;;;;;;;;;;; Lisp ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (use-package emacs
-  :hook (emacs-lisp-mode
-         . (lambda ()
-             (setq flycheck-check-syntax-automatically '(mode-enabled save)))))
+  :hook (emacs-lisp-mode . (lambda () (setq flycheck-check-syntax-automatically
+                                            '(mode-enabled save)))))
+
+(use-package flycheck-package
+  :no-require t)
 
 (use-package paredit
   :hook ((emacs-lisp-mode . enable-paredit-mode)
@@ -786,16 +788,16 @@ Buffers visiting files not existing/readable will be killed."
   :bind (("<C-s-right>" . paredit-forward-slurp-sexp)
          ("<C-s-left>"  . paredit-forward-barf-sexp)))
 
+(use-package rainbow-delimiters)
+
 ;; yay -Syu chez-scheme
 (use-package geiser
   :preface (setq geiser-active-implementations '(chez))
   :hook ((scheme-mode      . enable-paredit-mode)
          (geiser-repl-mode . enable-paredit-mode)))
 
-(use-package flycheck-package
-  :no-require t)
-
-(use-package rainbow-delimiters)
+;; yay -Syu janet-lang
+(use-package janet-mode)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;; Clojure ;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -1064,7 +1066,8 @@ Buffers visiting files not existing/readable will be killed."
 
 (use-package rust-mode
   :mode "\\.rs\\'"
-  :bind ("C-c C-o" . rust-occur-definitions)
+  :bind (:map rust-mode-map
+              ("C-c C-o" . rust-occur-definitions))
   :config
   (defun rust-occur-definitions ()
     (interactive)
