@@ -418,9 +418,6 @@ Buffers visiting files not existing/readable will be killed."
   :bind ("C-M-/" . undo-tree-visualize)
   :config (global-undo-tree-mode))
 
-(use-package powerthesaurus
-  :bind ("C-x M-s" . powerthesaurus-lookup-word-dwim))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;; Navigation ;;;;;;;;;;;;;;;;;;;;
 
 (use-package windmove
@@ -638,10 +635,10 @@ Buffers visiting files not existing/readable will be killed."
 (use-package lsp-ui
   :hook (lsp-mode . lsp-ui-mode)
   :bind (:map lsp-command-map
-              ("!"   . lsp-ui-flycheck-list)
-              ("m"   . lsp-ui-imenu)
-              ("."   . lsp-find-definition)
-              ("?"   . lsp-find-references))
+              ("!" . lsp-ui-flycheck-list)
+              ("m" . lsp-ui-imenu)
+              ("." . lsp-find-definition)
+              ("?" . lsp-find-references))
   :config
   (setq lsp-ui-sideline-enable nil
         lsp-ui-doc-enable nil))
@@ -677,8 +674,7 @@ Buffers visiting files not existing/readable will be killed."
 (use-package yaml-mode
   :mode "\\.yaml\\'"
   :hook (yaml-mode
-         . (lambda ()
-             (local-set-key (kbd "<backtab>") 'company-complete))))
+         . (lambda () (local-set-key (kbd "<backtab>") 'company-complete))))
 
 ;; npm install -g yaml-language-server
 (use-package yaml-mode-ext
@@ -1069,6 +1065,7 @@ Buffers visiting files not existing/readable will be killed."
   :bind (:map rust-mode-map
               ("C-c C-o" . rust-occur-definitions))
   :config
+  (setq rust-format-on-save t)
   (defun rust-occur-definitions ()
     (interactive)
     (let ((list-matching-lines-face nil))
@@ -1087,8 +1084,7 @@ Buffers visiting files not existing/readable will be killed."
     (let ((window (get-buffer-window "*Occur*")))
       (if window
           (select-window window)
-        (switch-to-buffer "*Occur*"))))
-  (setq rust-format-on-save t))
+        (switch-to-buffer "*Occur*")))))
 
 (use-package flycheck-rust
   :after rust-mode
@@ -1096,8 +1092,8 @@ Buffers visiting files not existing/readable will be killed."
 
 (use-package racer
   :hook
-  ((rust-mode . racer-mode)
-   (rust-mode . eldoc-mode))
+  ((rust-mode  . racer-mode)
+   (racer-mode . eldoc-mode))
   :bind (:map rust-mode-map
               ("M-." . racer-find-definition))
   :config
