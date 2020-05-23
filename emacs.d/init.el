@@ -209,8 +209,10 @@ Buffers visiting files not existing/readable will be killed."
 (advice-add 'xref-find-definitions      :after 'recenter-middle)
 (advice-add 'occur-mode-goto-occurrence :after 'recenter-middle)
 
-(add-hook 'kill-buffer-query-functions 'unkillable-scratch-buffer)
-(add-hook 'before-save-hook            'delete-trailing-whitespace)
+(add-hook 'kill-buffer-query-functions     'unkillable-scratch-buffer)
+(add-hook 'before-save-hook                'delete-trailing-whitespace)
+(add-hook 'occur-mode-find-occurrence-hook 'xref-pulse-momentarily)
+(add-hook 'occur-mode-find-occurrence-hook 'recenter-middle)
 
 (global-set-key (kbd "S-C-<left>")  'shrink-window-horizontally)
 (global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally)
@@ -1084,7 +1086,9 @@ Buffers visiting files not existing/readable will be killed."
     (let ((window (get-buffer-window "*Occur*")))
       (if window
           (select-window window)
-        (switch-to-buffer "*Occur*")))))
+        (switch-to-buffer "*Occur*"))
+      (setq-local list-matching-lines-face nil)
+      (put 'list-matching-lines-face 'permanent-local t))))
 
 (use-package flycheck-rust
   :after rust-mode
