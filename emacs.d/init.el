@@ -1,13 +1,14 @@
-;;; init.el --- Main Emacs initialization -*- lexical-binding: t -*-
+;;; init.el --- Emacs initialization -*- lexical-binding: t -*-
 
 ;;; Commentary:
 
-;;; Rebuild all packages:
-;;; M-: (byte-recompile-directory package-user-dir nil 'force)
+;; Rebuild all packages:
+;; M-: (byte-recompile-directory package-user-dir nil 'force)
 
 ;;; Code:
 
-;; Startup GC tuning
+;;;;;;;;;;;;;;;;;;;;;;;;; Startup ;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defvar tmp--file-name-handler-alist file-name-handler-alist)
 (setq gc-cons-threshold (* 1024 1024 1024)
       gc-cons-percentage 0.6
@@ -26,7 +27,7 @@
 (tool-bar-mode   -1) ; Turn off tool bar
 (menu-bar-mode   -1) ; Turn off menu bars
 
-;;;;;;;;;;;;;;;;;;; Package management ;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;; Package management ;;;;;;;;;;;;;;;;;;;;
 
 (require 'package)
 (setq package-enable-at-startup nil
@@ -54,7 +55,7 @@
   (setq quelpa-update-melpa-p nil
         quelpa-checkout-melpa-p nil))
 
-;;;;;;;;;;;;;;;;;;;;;;;; Interface ;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;; Interface ;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (use-package doom-themes
   :init
@@ -137,7 +138,7 @@
               (when (file-exists-p custom-file)
                 (load custom-file)))))
 
-;;;;;;;;;;;;;;;;;;;;; Custom functions ;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;; Custom functions ;;;;;;;;;;;;;;;;;;;;;
 
 (use-package dash
   :config (dash-enable-font-lock))
@@ -233,7 +234,7 @@ Buffers visiting files not existing/readable will be killed."
 (global-set-key (kbd "C-;")         'toggle-comment-on-line)
 (global-set-key (kbd "C-z")          nil)
 
-;;;;;;;;;;;;;;;;;;;; General packages ;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;; General packages ;;;;;;;;;;;;;;;;;;;;;
 
 (use-package which-key
   :hook (after-init . which-key-mode))
@@ -334,7 +335,7 @@ Buffers visiting files not existing/readable will be killed."
 (use-package editorconfig
   :config (editorconfig-mode 1))
 
-;;;;;;;;;;;;;;;;;;;;;;;;; Editing ;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;; Editing ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (use-package iedit
   :bind (("C-:" . iedit-mode)
@@ -420,7 +421,7 @@ Buffers visiting files not existing/readable will be killed."
   :bind ("C-M-/" . undo-tree-visualize)
   :config (global-undo-tree-mode))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;; Navigation ;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;; Navigation ;;;;;;;;;;;;;;;;;;;;;;;;
 
 (use-package windmove
   :config (windmove-default-keybindings))
@@ -617,13 +618,10 @@ Buffers visiting files not existing/readable will be killed."
 
 (use-package dumb-jump
   :bind ("C-c ." . dumb-jump-go)
-  :hook (c-mode-common
-         . (lambda ()
-             (local-set-key (kbd "C-c .") 'dumb-jump-go)))
-  :config
-  (setq dumb-jump-selector 'helm))
+  :hook (c-mode-common . (lambda () (local-set-key (kbd "C-c .") 'dumb-jump-go)))
+  :config (setq dumb-jump-selector 'helm))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;; LSP ;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;; LSP ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (use-package lsp-mode
   :commands lsp
@@ -663,7 +661,7 @@ Buffers visiting files not existing/readable will be killed."
   :after (lsp-mode company-mode)
   :config (add-to-list 'company-backends 'company-lsp))
 
-;;;;;;;;;;;;;;;;;;;;;;; Simple formatting ;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;; Simple formatting ;;;;;;;;;;;;;;;;;;;;
 
 (use-package electric
   :config
@@ -735,7 +733,7 @@ Buffers visiting files not existing/readable will be killed."
          ("C-M-p" . symbol-overlay-jump-last))
   :config (setq symbol-overlay-idle-time 0.2))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;; Ops ;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;; Ops ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (use-package terraform-mode
   :hook (terraform-mode . terraform-format-on-save-mode)
@@ -755,7 +753,7 @@ Buffers visiting files not existing/readable will be killed."
     :bind (:map restclient-mode-map
                 ("C-c TAB" . company-complete))))
 
-;;;;;;;;;;;;;;;;;;;;;;; Scientific ;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;; Scientific ;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; sudo pacman -Syu texlive-core
 (use-package latex-preview-pane
@@ -771,7 +769,7 @@ Buffers visiting files not existing/readable will be killed."
   :config
   (setq ess-use-flymake nil))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;; Lisp ;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;; Lisp ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (use-package emacs
   :hook (emacs-lisp-mode . (lambda () (setq flycheck-check-syntax-automatically
@@ -797,7 +795,7 @@ Buffers visiting files not existing/readable will be killed."
 ;; yay -Syu janet-lang
 (use-package janet-mode)
 
-;;;;;;;;;;;;;;;;;;;;;;;;; Clojure ;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;; Clojure ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; https://github.com/clojure-emacs/clojure-mode
 ;; https://github.com/clojure-emacs/cider
@@ -864,7 +862,7 @@ Buffers visiting files not existing/readable will be killed."
   (cljr-add-keybindings-with-prefix "C-c C-SPC")
   (setq cljr-warn-on-eval nil))
 
-;;;;;;;;;;;;;;;;;;;;;;; Java/Scala ;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;; Java/Scala ;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; https://github.com/emacs-lsp/lsp-java
 ;; https://github.com/scalameta/metals
@@ -877,14 +875,14 @@ Buffers visiting files not existing/readable will be killed."
 (use-package scala-mode
   :mode "\\.s\\(cala\\|bt\\)$")
 
-;;;;;;;;;;;;;;;;;;;;;;; Javascript ;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;; Javascript ;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; https://github.com/codesuki/add-node-modules-path
 
 (use-package add-node-modules-path
   :hook (js-mode . add-node-modules-path))
 
-;;;;;;;;;;;;;;;;;;;;;;;;; Erlang ;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;; Erlang ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; https://erlang.org/doc/man/erlang.el.html
 ;; https://github.com/erlang/rebar3
@@ -898,7 +896,7 @@ Buffers visiting files not existing/readable will be killed."
   :no-require t
   :config (require 'erlang-start))
 
-;;;;;;;;;;;;;;;;;;;;;;;;; Python ;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;; Python ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; https://github.com/jorgenschaefer/elpy
 ;; https://github.com/galaunay/poetry.el
@@ -932,7 +930,7 @@ Buffers visiting files not existing/readable will be killed."
 
 (use-package ein)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;; C/C++ ;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;; C/C++ ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; https://github.com/MaskRay/emacs-ccls
 
@@ -1015,7 +1013,7 @@ Buffers visiting files not existing/readable will be killed."
 (use-package eldoc-cmake
   :hook (cmake-mode . eldoc-cmake-enable))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;; Go ;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;; Go ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; https://github.com/dominikh/go-mode.el
 ;; https://github.com/dominikh/go-errcheck.el
@@ -1050,7 +1048,7 @@ Buffers visiting files not existing/readable will be killed."
 (use-package go-eldoc
   :hook (go-mode . go-eldoc-setup))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;; Rust ;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;; Rust ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; https://github.com/rust-lang/rust-mode
 ;; https://github.com/flycheck/flycheck-rust
