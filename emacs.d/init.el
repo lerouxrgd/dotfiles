@@ -9,6 +9,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;; Startup ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; GC tuning
 (defvar tmp--file-name-handler-alist file-name-handler-alist)
 (setq gc-cons-threshold (* 1024 1024 1024)
       gc-cons-percentage 0.6
@@ -20,7 +21,8 @@
                   file-name-handler-alist tmp--file-name-handler-alist)))
 
 ;; Main frame setup
-(setq frame-resize-pixelwise t)
+(setq frame-resize-pixelwise t
+      frame-inhibit-implied-resize t)
 (set-frame-parameter nil 'fullscreen 'maximized)
 (set-frame-parameter nil 'undecorated t)
 (scroll-bar-mode -1) ; Turn off native OS scroll bars
@@ -98,7 +100,7 @@
   (setq
    inhibit-splash-screen      t
    inhibit-startup-message    t
-   initial-major-mode         'text-mode
+   initial-major-mode         'fundamental-mode
    uniquify-buffer-name-style 'forward
    ring-bell-function         'ignore)
 
@@ -206,6 +208,15 @@ Buffers visiting files not existing/readable will be killed."
   "Recenter to middle position, ignore params, useful when used as an advice."
   (recenter))
 
+(defun defer-garbage-collection-h ()
+  "Deactivate gc, used for minibuffer."
+  (setq gc-cons-threshold most-positive-fixnum))
+
+(defun restore-garbage-collection-h ()
+  "Restore gc, used for minibuffer."
+  (run-at-time
+   1 nil (lambda () (setq gc-cons-threshold (* 16 1024 1024)))))
+
 (advice-add 'xref-pop-marker-stack      :after 'recenter-middle)
 (advice-add 'xref-find-definitions      :after 'recenter-middle)
 (advice-add 'occur-mode-goto-occurrence :after 'recenter-middle)
@@ -214,6 +225,8 @@ Buffers visiting files not existing/readable will be killed."
 (add-hook 'before-save-hook                'delete-trailing-whitespace)
 (add-hook 'occur-mode-find-occurrence-hook 'xref-pulse-momentarily)
 (add-hook 'occur-mode-find-occurrence-hook 'recenter-middle)
+(add-hook 'minibuffer-setup-hook           'defer-garbage-collection-h)
+(add-hook 'minibuffer-exit-hook            'restore-garbage-collection-h)
 
 (global-set-key (kbd "S-C-<left>")  'shrink-window-horizontally)
 (global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally)
@@ -482,8 +495,7 @@ Buffers visiting files not existing/readable will be killed."
   (use-package treemacs-magit)
   (doom-themes-treemacs-config)
   (setq treemacs-collapse-dirs 7
-        treemacs-file-follow-delay 0
-        treemacs--workspaces (list (make-treemacs-workspace))))
+        treemacs-file-follow-delay 0))
 
 (use-package dired
   :ensure nil
@@ -575,36 +587,13 @@ Buffers visiting files not existing/readable will be killed."
   (setq swiper-helm-display-function 'helm-default-display-buffer))
 
 ;; sudo pacman -Syu ripgrep
-(use-package helm-rg
-  :bind (("C-c c" . helm-rg-project)
-         ("C-c C" . helm-rg))
-
+(use-package helm-ag
+  :bind (("C-c c" . (lambda () (interactive) (helm-do-ag (project-or-root))))
+         ("C-c C" . (lambda () (interactive) (helm-do-ag default-directory))))
   :config
-  (defun helm-rg-project (pattern)
-    (interactive (list (helm-rg--get-thing-at-pt)))
-    (let ((default-directory (project-or-root)))
-      (helm-rg pattern t)))
-
-  (setq helm-always-two-windows t
-        helm-split-window-inside-p t
-        helm-rg--color-format-argument-alist
-        '((red :cmd-line green :text-property green)))
-
-  (custom-set-faces
-   `(helm-rg-title-face
-     ((t (:foreground ,(doom-color 'black) :background ,(doom-color 'base6)))))
-   `(helm-rg-active-arg-face
-     ((t (:foreground ,(doom-color 'green)))))
-   `(helm-rg-error-message
-     ((t (:foreground ,(doom-color 'yellow)))))
-   `(helm-rg-line-number-match-face
-     ((t (:foreground ,(doom-color 'base6)))))
-   `(helm-rg-file-match-face
-     ((t (:foreground ,(doom-color 'teal)))))
-   `(helm-rg-preview-line-highlight
-     ((t (:foreground ,(doom-color 'bg) :background ,(doom-color 'highlight)))))
-   `(helm-rg-directory-header-face
-     ((t (:foreground ,(doom-color 'black) :background ,(doom-color 'base6)))))))
+  (setq helm-ag-base-command "rg --no-heading"
+        helm-ag-success-exit-status '(0 2)
+        helm-ag-insert-at-point 'symbol))
 
 (use-package helm-xref
   :config
