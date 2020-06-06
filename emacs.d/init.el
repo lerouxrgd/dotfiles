@@ -217,6 +217,12 @@ Buffers visiting files not existing/readable will be killed."
   (run-at-time
    1 nil (lambda () (setq gc-cons-threshold (* 16 1024 1024)))))
 
+(use-package bind-map
+  :preface (defvar my-keymap-key "C-x M-x")
+  :config (bind-map my-keymap
+                    :keys (my-keymap-key)
+                    :bindings ("r" 'revert-all-file-buffers)))
+
 (advice-add 'xref-pop-marker-stack      :after 'recenter-middle)
 (advice-add 'xref-find-definitions      :after 'recenter-middle)
 (advice-add 'occur-mode-goto-occurrence :after 'recenter-middle)
@@ -232,9 +238,6 @@ Buffers visiting files not existing/readable will be killed."
 (global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally)
 (global-set-key (kbd "S-C-<down>")  'shrink-window)
 (global-set-key (kbd "S-C-<up>")    'enlarge-window)
-(global-set-key (kbd "C-x C-x")      nil)
-(global-set-key (kbd "C-x C-x C-x") 'exchange-point-and-mark)
-(global-set-key (kbd "C-x C-x C-r") 'revert-all-file-buffers)
 (global-set-key (kbd "C-x C-S-b")   'ibuffer)
 (global-set-key (kbd "C-x C-z")     'repeat)
 (global-set-key (kbd "<C-M-down>")  (kbd "C-u 2 C-v"))
@@ -400,21 +403,26 @@ Buffers visiting files not existing/readable will be killed."
         (define-key selected-keymap (kbd "{") nil)))))
 
 (use-package visual-regexp
-  :bind (("C-x C-x M-%" . vr/query-replace)
-         ("C-x C-x C->" . vr/mc-mark)
-         ("C-M-S"       . vr/isearch-forward)
-         ("C-M-R"       . vr/isearch-backward))
+  :bind (("C-M-S" . vr/isearch-forward)
+         ("C-M-R" . vr/isearch-backward)
+         :map my-keymap
+         ("M-%" . vr/query-replace)
+         (">"   . vr/mc-mark))
   :config (use-package visual-regexp-steroids))
 
 (use-package anzu
   :config (global-anzu-mode))
 
 (use-package string-inflection
-  :bind (("C-x M-i c" . string-inflection-lower-camelcase)
-         ("C-x M-i C" . string-inflection-camelcase)
-         ("C-x M-i k" . string-inflection-kebab-case)
-         ("C-x M-i s" . string-inflection-underscore)
-         ("C-x M-i u" . string-inflection-upcase)))
+  :preface
+  (which-key-add-key-based-replacements
+    (concat my-keymap-key " i") "string-inflection")
+  :bind ((:map my-keymap
+               ("i c" . string-inflection-lower-camelcase)
+               ("i C" . string-inflection-camelcase)
+               ("i k" . string-inflection-kebab-case)
+               ("i s" . string-inflection-underscore)
+               ("i u" . string-inflection-upcase))))
 
 (use-package yasnippet
   :hook (prog-mode . yas-minor-mode)
@@ -531,9 +539,10 @@ Buffers visiting files not existing/readable will be killed."
 
 (use-package fold-this
   :after selected
-  :bind (("C-x C-x M-o" . fold-this-unfold-all)
-         :map selected-keymap
-              ("o" . fold-this-or-rest))
+  :bind ((:map selected-keymap
+               ("o" . fold-this-or-rest))
+         (:map my-keymap
+               ("M-o" . fold-this-unfold-all)))
   :init
   (defun fold-this-or-rest (&optional arg)
     (interactive "P")
@@ -567,7 +576,9 @@ Buffers visiting files not existing/readable will be killed."
   (advice-add 'pop-to-mark-command :around 'dedup-pop-to-mark)
   (advice-add 'dedup-pop-to-mark :after 'recenter-middle)
 
-  (helm-autoresize-mode t))
+  (helm-autoresize-mode t)
+  (setq helm-always-two-windows t
+        helm-split-window-inside-p t))
 
 ;; sudo pacman -Syu fd
 (use-package helm-fd
@@ -598,9 +609,7 @@ Buffers visiting files not existing/readable will be killed."
 (use-package helm-xref
   :config
   (advice-add 'helm-xref-goto-xref-item :after 'recenter-middle)
-  (setq helm-always-two-windows t
-        helm-split-window-inside-p t
-        xref-show-xrefs-function 'helm-xref-show-xrefs)
+  (setq xref-show-xrefs-function 'helm-xref-show-xrefs)
   (custom-set-faces
    `(helm-xref-file-name
      ((t (:foreground ,(doom-color 'teal)))))))
@@ -714,12 +723,13 @@ Buffers visiting files not existing/readable will be killed."
         markdown-live-preview-delete-export 'delete-on-export))
 
 (use-package symbol-overlay
-  :bind (("C-x C-x C-a" . symbol-overlay-put)
-         ("C-x C-x M-a" . symbol-overlay-remove-all)
-         ("C-z C-z"     . symbol-overlay-mode)
-         :map symbol-overlay-mode-map
-         ("C-M-n" . symbol-overlay-jump-next)
-         ("C-M-p" . symbol-overlay-jump-last))
+  :bind (("C-z C-z" . symbol-overlay-mode)
+         (:map my-keymap
+               ("a"   . symbol-overlay-put)
+               ("M-a" . symbol-overlay-remove-all))
+         (:map symbol-overlay-mode-map
+               ("C-M-n" . symbol-overlay-jump-next)
+               ("C-M-p" . symbol-overlay-jump-last)))
   :config (setq symbol-overlay-idle-time 0.2))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;; Ops ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -943,9 +953,7 @@ Buffers visiting files not existing/readable will be killed."
     (define-key lsp-command-map (kbd "cm") 'ccls-member-hierarchy)
     (define-key lsp-command-map (kbd "cl") 'ccls-code-lens-mode)
     (which-key-add-major-mode-key-based-replacements
-      major-mode
-      (concat lsp-keymap-prefix " c")
-      "ccls"))
+      major-mode (concat lsp-keymap-prefix " c") "ccls"))
   :custom
   (ff-search-directories
    '("." "/usr/include" "/usr/local/include/*" ; original values
