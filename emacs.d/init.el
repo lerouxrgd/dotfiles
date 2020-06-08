@@ -242,6 +242,7 @@ Buffers visiting files not existing/readable will be killed."
 (global-set-key (kbd "C-x C-z")     'repeat)
 (global-set-key (kbd "<C-M-down>")  (kbd "C-u 2 C-v"))
 (global-set-key (kbd "<C-M-up>")    (kbd "C-u 2 M-v"))
+(global-set-key (kbd "M-DEL")       (kbd "C-u 0 C-k"))
 (global-set-key (kbd "M-n")         'scroll-up-preserve-line)
 (global-set-key (kbd "M-p")         'scroll-down-preserve-line)
 (global-set-key (kbd "M-F")         'forward-whitespace)
@@ -1071,12 +1072,12 @@ Buffers visiting files not existing/readable will be killed."
                      "\\(pub.*?\s\\|\\)type\\|"
                      "\\(pub.*?\s\\|\\)struct\\|"
                      "\\(pub.*?\s\\|\\)enum\\|"
-                     "\\(pub.*?\s\\|unsafe\s\\|const\s\\|async\s\\|\\)fn\\|"
+                     "\\(pub.*?\s\\|unsafe\s\\|extern.+?\s\\|const\s\\|async\s\\|\\)+fn\\|"
                      "\\(pub.*?\s\\|unsafe\s\\|\\)trait\\|"
                      "\\(pub.*?\s\\|\\)const\\|"
                      "\\(pub.*?\s\\|\\)static\sref\\|"
-                     "lazy_static\!\\|"
-                     "impl"
+                     "impl\\(<.+?>\\|\\)\\|"
+                     "lazy_static\!"
                      "\\)\s")))
     (let ((window (get-buffer-window "*Occur*")))
       (if window
