@@ -217,15 +217,24 @@ Buffers visiting files not existing/readable will be killed."
   (run-at-time
    1 nil (lambda () (setq gc-cons-threshold (* 16 1024 1024)))))
 
+(defun dedup-pop-to-mark (orig-fun &rest args)
+  "Apply ORIG-FUN with ARGS while point is still at the same position."
+  (let ((p (point)))
+    (dotimes (_ 10)
+      (when (= p (point))
+        (apply orig-fun args)))))
+
 (use-package bind-map
   :preface (defvar my-keymap-key "C-x M-x")
   :config (bind-map my-keymap
                     :keys (my-keymap-key)
                     :bindings ("r" 'revert-all-file-buffers)))
 
-(advice-add 'xref-pop-marker-stack      :after 'recenter-middle)
-(advice-add 'xref-find-definitions      :after 'recenter-middle)
-(advice-add 'occur-mode-goto-occurrence :after 'recenter-middle)
+(advice-add 'xref-pop-marker-stack      :after  'recenter-middle)
+(advice-add 'xref-find-definitions      :after  'recenter-middle)
+(advice-add 'occur-mode-goto-occurrence :after  'recenter-middle)
+(advice-add 'dedup-pop-to-mark          :after  'recenter-middle)
+(advice-add 'pop-to-mark-command        :around 'dedup-pop-to-mark)
 
 (add-hook 'kill-buffer-query-functions     'unkillable-scratch-buffer)
 (add-hook 'before-save-hook                'delete-trailing-whitespace)
@@ -520,6 +529,16 @@ Buffers visiting files not existing/readable will be killed."
   (use-package diredfl
     :config (diredfl-global-mode 1)))
 
+(use-package symbol-overlay
+  :bind (("C-z C-z" . symbol-overlay-mode)
+         (:map my-keymap
+               ("a"   . symbol-overlay-put)
+               ("M-a" . symbol-overlay-remove-all))
+         (:map symbol-overlay-mode-map
+               ("C-M-n" . symbol-overlay-jump-next)
+               ("C-M-p" . symbol-overlay-jump-last)))
+  :config (setq symbol-overlay-idle-time 0.2))
+
 (use-package avy
   :bind (("M-SPC". avy-goto-char-2)
          ("M-g g". avy-goto-line)))
@@ -569,14 +588,6 @@ Buffers visiting files not existing/readable will be killed."
 
   :config
   (require 'helm-ring)
-  (defun dedup-pop-to-mark (orig-fun &rest args)
-    (let ((p (point)))
-      (dotimes (_ 10)
-        (when (= p (point))
-          (apply orig-fun args)))))
-  (advice-add 'pop-to-mark-command :around 'dedup-pop-to-mark)
-  (advice-add 'dedup-pop-to-mark :after 'recenter-middle)
-
   (helm-autoresize-mode t)
   (setq helm-always-two-windows t
         helm-split-window-inside-p t))
@@ -722,16 +733,6 @@ Buffers visiting files not existing/readable will be killed."
                 ("g" . grip-mode)))
   (setq markdown-command "marked"
         markdown-live-preview-delete-export 'delete-on-export))
-
-(use-package symbol-overlay
-  :bind (("C-z C-z" . symbol-overlay-mode)
-         (:map my-keymap
-               ("a"   . symbol-overlay-put)
-               ("M-a" . symbol-overlay-remove-all))
-         (:map symbol-overlay-mode-map
-               ("C-M-n" . symbol-overlay-jump-next)
-               ("C-M-p" . symbol-overlay-jump-last)))
-  :config (setq symbol-overlay-idle-time 0.2))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;; Ops ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
