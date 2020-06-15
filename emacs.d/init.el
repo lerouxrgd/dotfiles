@@ -224,6 +224,13 @@ Buffers visiting files not existing/readable will be killed."
       (when (= p (point))
         (apply orig-fun args)))))
 
+(defun isearch-exit-mark-match ()
+  "Exit isearch and mark the current match."
+  (interactive)
+  (isearch-exit)
+  (push-mark isearch-other-end)
+  (activate-mark))
+
 (use-package bind-map
   :preface (defvar my-keymap-key "C-x M-x")
   :config (bind-map my-keymap
@@ -242,6 +249,8 @@ Buffers visiting files not existing/readable will be killed."
 (add-hook 'occur-mode-find-occurrence-hook 'recenter-middle)
 (add-hook 'minibuffer-setup-hook           'defer-garbage-collection-h)
 (add-hook 'minibuffer-exit-hook            'restore-garbage-collection-h)
+
+(define-key isearch-mode-map (kbd "<C-return>") 'isearch-exit-mark-match)
 
 (global-set-key (kbd "S-C-<left>")  'shrink-window-horizontally)
 (global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally)
