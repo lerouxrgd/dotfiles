@@ -21,8 +21,7 @@
                   file-name-handler-alist tmp--file-name-handler-alist)))
 
 ;; Main frame setup
-(setq frame-resize-pixelwise t
-      frame-inhibit-implied-resize t)
+(setq frame-resize-pixelwise t)
 (set-frame-parameter nil 'fullscreen 'maximized)
 (set-frame-parameter nil 'undecorated t)
 (scroll-bar-mode -1) ; Turn off native OS scroll bars
@@ -329,9 +328,12 @@ Buffers visiting files not existing/readable will be killed."
   (ido-ubiquitous-mode 1))
 
 (use-package magit
-  :bind ("C-x g" . magit-status)
+  :bind (("C-x g" . magit-status)
+         :map magit-status-mode-map
+         ("<M-return>" . magit-diff-visit-file-other-window))
   :config
   (setq magit-diff-refine-hunk t)
+  (advice-add 'magit-diff-visit-file-other-window :after 'recenter-middle)
   (use-package magit-todos
     :config (magit-todos-mode))
   (use-package magit-ediff
