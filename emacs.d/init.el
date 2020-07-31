@@ -638,9 +638,10 @@ Buffers visiting files not existing/readable will be killed."
      ((t (:foreground ,(doom-color 'teal)))))))
 
 (use-package dumb-jump
-  :bind ("C-c ." . dumb-jump-go)
-  :hook (c-mode-common . (lambda () (local-set-key (kbd "C-c .") 'dumb-jump-go)))
-  :config (setq dumb-jump-selector 'helm))
+  :config
+  (setq xref-backend-functions (remq 'etags--xref-backend xref-backend-functions)
+        dumb-jump-selector 'helm)
+  (add-to-list 'xref-backend-functions #'dumb-jump-xref-activate t))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;; LSP ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -891,6 +892,9 @@ Buffers visiting files not existing/readable will be killed."
 
 ;; https://github.com/codesuki/add-node-modules-path
 
+(use-package js
+  :hook (js-mode . (lambda () (local-set-key (kbd "M-.") 'xref-find-definitions))))
+
 (use-package add-node-modules-path
   :hook (js-mode . add-node-modules-path))
 
@@ -1065,6 +1069,7 @@ Buffers visiting files not existing/readable will be killed."
 ;; https://github.com/racer-rust/emacs-racer
 ;; https://github.com/kwrooijen/cargo.el
 
+;; rustup toolchain install stable
 ;; rustup component add rust-src rust-analysis
 ;; rustup component add rustfmt rls clippy
 ;; rustup toolchain add nightly
