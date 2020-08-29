@@ -652,7 +652,6 @@ Buffers visiting files not existing/readable will be killed."
          (lsp-mode  . lsp-enable-which-key-integration))
   :init
   (setq lsp-keymap-prefix "C-z"
-        lsp-diagnostic-package :flycheck
         lsp-enable-symbol-highlighting nil))
 
 (use-package lsp-ui
