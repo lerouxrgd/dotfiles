@@ -7,37 +7,18 @@
 
 ;;; Code:
 
-;;;;;;;;;;;;;;;;;;;;;;;;; Startup ;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; GC tuning
-(defvar tmp--file-name-handler-alist file-name-handler-alist)
-(setq gc-cons-threshold (* 1024 1024 1024)
-      gc-cons-percentage 0.6
-      file-name-handler-alist nil)
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (setq gc-cons-threshold (* 16 1024 1024)
-                  gc-cons-percentage 0.1
-                  file-name-handler-alist tmp--file-name-handler-alist)))
-
 ;; Main frame setup
 (setq frame-resize-pixelwise t)
 (set-frame-parameter nil 'fullscreen 'maximized)
 (set-frame-parameter nil 'undecorated t)
-(scroll-bar-mode -1) ; Turn off native OS scroll bars
-(tool-bar-mode   -1) ; Turn off tool bar
-(menu-bar-mode   -1) ; Turn off menu bars
 
 ;;;;;;;;;;;;;;;;;;;; Package management ;;;;;;;;;;;;;;;;;;;;
 
-(require 'package)
-(setq package-enable-at-startup nil
-      package-archives
+(setq package-archives
       '(("gnu"          . "https://elpa.gnu.org/packages/")
         ("melpa"        . "https://melpa.org/packages/")
         ("melpa-stable" . "https://stable.melpa.org/packages/")
         ("tromey"       . "https://tromey.com/elpa/")))
-(package-initialize)
 
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
@@ -86,6 +67,7 @@
   :config (minions-mode 1))
 
 (use-package emacs
+  :ensure nil
   :config
   (blink-cursor-mode   -1) ; Turn off blinking cursor
   (show-paren-mode      1) ; Highlight matching parenthesis
@@ -344,6 +326,7 @@ Buffers visiting files not existing/readable will be killed."
   :bind ("C-x G" . git-timemachine))
 
 (use-package ediff
+  :ensure nil
   :config
   (setq ediff-split-window-function 'split-window-horizontally
         ediff-window-setup-function 'ediff-setup-windows-plain
@@ -360,6 +343,8 @@ Buffers visiting files not existing/readable will be killed."
   :config (bash-completion-setup))
 
 (use-package recentf
+  :ensure nil
+  :defer 1
   :config
   (setq recentf-max-saved-items 50
         recentf-max-menu-items 35
@@ -466,6 +451,7 @@ Buffers visiting files not existing/readable will be killed."
 ;;;;;;;;;;;;;;;;;;;;;;;; Navigation ;;;;;;;;;;;;;;;;;;;;;;;;
 
 (use-package windmove
+  :ensure nil
   :config (windmove-default-keybindings))
 
 (use-package buffer-move
@@ -623,6 +609,7 @@ Buffers visiting files not existing/readable will be killed."
 
 ;; sudo pacman -Syu ripgrep
 (use-package helm-ag
+  :defer 1
   :bind (("C-c c" . (lambda () (interactive) (helm-do-ag (project-or-root))))
          ("C-c C" . (lambda () (interactive) (helm-do-ag default-directory))))
   :config
@@ -686,6 +673,7 @@ Buffers visiting files not existing/readable will be killed."
 ;;;;;;;;;;;;;;;;;;;; Simple formatting ;;;;;;;;;;;;;;;;;;;;
 
 (use-package electric
+  :ensure nil
   :config
   (electric-indent-mode 1)
   (electric-pair-mode 1))
@@ -883,6 +871,7 @@ Buffers visiting files not existing/readable will be killed."
 ;; yay -Syu metals
 
 (use-package lsp-java
+  :defer 1
   :config (add-hook 'java-mode-hook 'lsp))
 
 (use-package scala-mode
