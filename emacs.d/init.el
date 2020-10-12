@@ -901,6 +901,10 @@ Buffers visiting files not existing/readable will be killed."
   :no-require t
   :config (require 'erlang-start))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;; Lua ;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(use-package lua-mode)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;; Python ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; https://github.com/jorgenschaefer/elpy
