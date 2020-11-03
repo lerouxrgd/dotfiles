@@ -574,6 +574,7 @@ Buffers visiting files not existing/readable will be killed."
   (custom-set-faces
    `(fold-this-overlay ((t (:foreground ,(doom-color 'white)))))))
 
+;; sudo pacman -Syu fd
 (use-package helm
   :preface (require 'helm-config)
   :bind (("C-x x" . helm-command-prefix)
@@ -582,20 +583,23 @@ Buffers visiting files not existing/readable will be killed."
          ("y"   . helm-register)
          ("m"   . helm-semantic-or-imenu)
          ("c"   . helm-comint-input-ring)
+         ("/"   . helm-fd-project)
          ("."   . helm-etags-select))
+
+  :functions helm-fd-1
+  :init
+  (defun helm-fd-project ()
+    (interactive)
+    (require 'helm-fd)
+    (let ((directory (or (cdr (project-current))
+                         (with-current-buffer "*scratch*" default-directory))))
+      (helm-fd-1 directory)))
 
   :config
   (require 'helm-ring)
   (helm-autoresize-mode t)
   (setq helm-always-two-windows t
         helm-split-window-inside-p t))
-
-;; sudo pacman -Syu fd
-(use-package helm-fd
-  :after helm
-  :bind (:map helm-command-map
-              ("/" . helm-fd-project))
-  :config (setq helm-fd-relative-paths t))
 
 (use-package helm-c-yasnippet
   :after yasnippet
@@ -620,11 +624,7 @@ Buffers visiting files not existing/readable will be killed."
 
 (use-package helm-xref
   :config
-  (advice-add 'helm-xref-goto-xref-item :after 'recenter-middle)
-  (setq xref-show-xrefs-function 'helm-xref-show-xrefs)
-  (custom-set-faces
-   `(helm-xref-file-name
-     ((t (:foreground ,(doom-color 'teal)))))))
+  (advice-add 'helm-xref-goto-xref-item :after 'recenter-middle))
 
 (use-package dumb-jump
   :config
@@ -788,13 +788,13 @@ Buffers visiting files not existing/readable will be killed."
 
 (use-package rainbow-delimiters)
 
-;; yay -Syu chez-scheme
+;; pamac install chez-scheme
 (use-package geiser
   :preface (setq geiser-active-implementations '(chez))
   :hook ((scheme-mode      . enable-paredit-mode)
          (geiser-repl-mode . enable-paredit-mode)))
 
-;; yay -Syu janet-lang
+;; pamac install janet-lang
 (use-package janet-mode)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;; Clojure ;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -811,9 +811,9 @@ Buffers visiting files not existing/readable will be killed."
 ;; https://github.com/weavejester/cljfmt
 
 ;; sudo pacman -Syu leiningen
-;; yay -Syu nodejs-shadow-cljs
-;; yay -Syu clj-kondo-bin
-;; yay -Syu clojure-lsp-bin
+;; pamac install nodejs-shadow-cljs
+;; pamac install clj-kondo-bin
+;; pamac install clojure-lsp-bin
 
 (use-package clojure-mode
   :mode (("\\.clj\\'"  . clojure-mode)
@@ -869,7 +869,7 @@ Buffers visiting files not existing/readable will be killed."
 ;; https://github.com/emacs-lsp/lsp-java
 ;; https://github.com/scalameta/metals
 
-;; yay -Syu metals
+;; pamac install metals
 
 (use-package lsp-java
   :defer 1
@@ -895,8 +895,8 @@ Buffers visiting files not existing/readable will be killed."
 ;; https://github.com/erlang-ls/erlang_ls
 
 ;; sudo pacman -Syu erlang
-;; yay -Syu rebar3
-;; yay -Syu erlang_ls-git
+;; pamac install rebar3
+;; pamac install erlang_ls-git
 
 (use-package erlang
   :no-require t
@@ -945,7 +945,7 @@ Buffers visiting files not existing/readable will be killed."
 ;; https://github.com/MaskRay/emacs-ccls
 
 ;; sudo pacman -Syu clang
-;; yay -Syu ccls
+;; pamac install ccls
 ;; pip install --user compiledb cmake_format
 
 (use-package ccls
@@ -1069,6 +1069,7 @@ Buffers visiting files not existing/readable will be killed."
 ;; rustup toolchain add nightly
 ;; cargo +nightly install racer
 
+;; pamac install rust-analyzer
 (use-package rust-mode
   :mode "\\.rs\\'"
   :bind (:map rust-mode-map
