@@ -574,7 +574,6 @@ Buffers visiting files not existing/readable will be killed."
   (custom-set-faces
    `(fold-this-overlay ((t (:foreground ,(doom-color 'white)))))))
 
-;; sudo pacman -Syu fd
 (use-package helm
   :preface (require 'helm-config)
   :bind (("C-x x" . helm-command-prefix)
@@ -583,23 +582,26 @@ Buffers visiting files not existing/readable will be killed."
          ("y"   . helm-register)
          ("m"   . helm-semantic-or-imenu)
          ("c"   . helm-comint-input-ring)
-         ("/"   . helm-fd-project)
          ("."   . helm-etags-select))
-
-  :functions helm-fd-1
-  :init
-  (defun helm-fd-project ()
-    (interactive)
-    (require 'helm-fd)
-    (let ((directory (or (cdr (project-current))
-                         (with-current-buffer "*scratch*" default-directory))))
-      (helm-fd-1 directory)))
-
   :config
   (require 'helm-ring)
   (helm-autoresize-mode t)
   (setq helm-always-two-windows t
         helm-split-window-inside-p t))
+
+;; sudo pacman -Syu fd
+(use-package helm-fd
+  :after helm
+  :ensure nil
+  :bind (:map helm-command-map
+              ("/" . helm-fd-project))
+  :functions helm-fd-1
+  :config
+  (defun helm-fd-project ()
+    (interactive)
+    (let ((directory (or (cdr (project-current))
+                         (with-current-buffer "*scratch*" default-directory))))
+      (helm-fd-1 directory))))
 
 (use-package helm-c-yasnippet
   :after yasnippet
@@ -623,8 +625,7 @@ Buffers visiting files not existing/readable will be killed."
         helm-ag-insert-at-point 'symbol))
 
 (use-package helm-xref
-  :config
-  (advice-add 'helm-xref-goto-xref-item :after 'recenter-middle))
+  :config (advice-add 'helm-xref-goto-xref-item :after 'recenter-middle))
 
 (use-package dumb-jump
   :config
