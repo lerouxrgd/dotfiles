@@ -82,7 +82,8 @@
    inhibit-startup-message    t
    initial-major-mode         'fundamental-mode
    uniquify-buffer-name-style 'forward
-   ring-bell-function         'ignore)
+   ring-bell-function         'ignore
+   split-height-threshold     nil)
 
   (setq-default
    fill-column      88  ; Right margin when filling paragraphs
