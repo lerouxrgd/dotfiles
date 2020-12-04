@@ -26,7 +26,4 @@
 (add-to-list 'initial-frame-alist '(undecorated . t))
 (setq frame-resize-pixelwise t)
 
-;; As of Emacs 27 it is no longer necessary to call `package-initialize'
-(setq package--initialized t)
-
 ;;; early-init.el ends here

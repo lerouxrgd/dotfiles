@@ -9,6 +9,9 @@
 
 ;;;;;;;;;;;;;;;;;;;; Package management ;;;;;;;;;;;;;;;;;;;;
 
+;; As of Emacs 27 it is no longer necessary to call `package-initialize'
+(setq package--initialized t)
+
 (require 'package)
 (setq package-archives
       '(("gnu"          . "https://elpa.gnu.org/packages/")
