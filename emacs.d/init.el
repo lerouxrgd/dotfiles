@@ -7,11 +7,6 @@
 
 ;;; Code:
 
-;; Main frame setup
-(setq frame-resize-pixelwise t)
-(set-frame-parameter nil 'fullscreen 'maximized)
-(set-frame-parameter nil 'undecorated t)
-
 ;;;;;;;;;;;;;;;;;;;; Package management ;;;;;;;;;;;;;;;;;;;;
 
 (require 'package)
