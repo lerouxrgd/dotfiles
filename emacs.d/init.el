@@ -41,9 +41,17 @@
 (use-package doom-themes
   :init
   (load-theme 'doom-nova t)
+
   (custom-theme-set-faces
    'doom-nova
-   `(hl-line ((t (:background ,(doom-color 'bg-alt)))))))
+   `(hl-line ((t (:background ,(doom-color 'bg-alt))))))
+
+  (use-package diff-mode
+    :ensure nil
+    :config
+    (set-face-attribute 'diff-changed nil
+                        :extend t
+                        :background (doom-color 'bg-alt))))
 
 ;; M-x all-the-icons-install-fonts
 (use-package all-the-icons)
@@ -316,11 +324,20 @@ Buffers visiting files not existing/readable will be killed."
   :config
   (setq magit-diff-refine-hunk t)
   (advice-add 'magit-diff-visit-file-other-window :after 'recenter-middle)
+
   (use-package magit-todos
     :config (magit-todos-mode))
+
   (use-package magit-ediff
     :ensure nil
-    :config (setq magit-ediff-dwim-show-on-hunks t)))
+    :config (setq magit-ediff-dwim-show-on-hunks t))
+
+  (use-package vdiff-magit
+    :bind ((:map magit-mode-map
+                 ("C-e" . vdiff-magit-dwim))
+           (:map vdiff-mode-map
+                 ("?" . vdiff-hydra/body)))
+    :config (setq vdiff-magit-dwim-show-on-hunks t)))
 
 (use-package git-timemachine
   :bind ("C-x G" . git-timemachine))
