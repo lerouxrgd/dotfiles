@@ -930,7 +930,7 @@ Buffers visiting files not existing/readable will be killed."
 ;; https://github.com/brotzeit/pippel
 ;; https://github.com/millejoh/emacs-ipython-notebook
 
-;; sudo pacman -Syu ipython pyenv
+;; sudo pacman -Syu ipython pyenv jupyter
 ;; pip install --user jedi black flake8 pylint
 
 (use-package elpy
