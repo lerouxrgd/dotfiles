@@ -376,12 +376,6 @@ Buffers visiting files not existing/readable will be killed."
 
 ;;;;;;;;;;;;;;;;;;;;;;;;; Editing ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(use-package iedit
-  :bind (("C-:" . iedit-mode)
-         :map iedit-mode-keymap
-         ("C-h"   . iedit-show/hide-unmatched-lines)
-         ("C-M-:" . iedit-switch-to-mc-mode)))
-
 (use-package expand-region
   :bind ("C-=" . er/expand-region))
 
@@ -554,7 +548,7 @@ Buffers visiting files not existing/readable will be killed."
   :config (setq symbol-overlay-idle-time 0.2))
 
 (use-package avy
-  :bind (("M-SPC". avy-goto-char-2)
+  :bind (("C-'"  . avy-goto-word-1)
          ("M-g g". avy-goto-line)))
 
 (use-package origami
