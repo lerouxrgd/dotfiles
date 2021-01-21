@@ -132,7 +132,7 @@
 ;;;;;;;;;;;;;;;;;;;;; Custom functions ;;;;;;;;;;;;;;;;;;;;;
 
 (use-package dash
-  :config (dash-enable-font-lock))
+  :config (global-dash-fontify-mode))
 
 (defun unkillable-scratch-buffer ()
   "Disallow killing of scratch and delete its content instead."
@@ -330,14 +330,7 @@ Buffers visiting files not existing/readable will be killed."
 
   (use-package magit-ediff
     :ensure nil
-    :config (setq magit-ediff-dwim-show-on-hunks t))
-
-  (use-package vdiff-magit
-    :bind ((:map magit-mode-map
-                 ("C-e" . vdiff-magit-dwim))
-           (:map vdiff-mode-map
-                 ("?" . vdiff-hydra/body)))
-    :config (setq vdiff-magit-dwim-show-on-hunks t)))
+    :config (setq magit-ediff-dwim-show-on-hunks t)))
 
 (use-package git-timemachine
   :bind ("C-x G" . git-timemachine))
@@ -348,6 +341,32 @@ Buffers visiting files not existing/readable will be killed."
   (setq ediff-split-window-function 'split-window-horizontally
         ediff-window-setup-function 'ediff-setup-windows-plain
         ediff-force-faces t))
+
+(use-package diffview
+  :after magit
+  :bind (:map magit-mode-map
+              ("C-d" . diffview-current))
+  :functions mwheel-scroll-all-function-all
+  :config
+  (defun mwheel-scroll-all-function-all (func &optional arg)
+    (if (and scroll-all-mode arg)
+        (save-selected-window
+          (walk-windows
+           (lambda (win)
+             (select-window win)
+             (condition-case nil
+                 (funcall func arg)
+               (error nil)))))
+      (funcall func arg)))
+
+  (defun mwheel-scroll-all-scroll-up-all (&optional arg)
+    (mwheel-scroll-all-function-all 'scroll-up arg))
+
+  (defun mwheel-scroll-all-scroll-down-all (&optional arg)
+    (mwheel-scroll-all-function-all 'scroll-down arg))
+
+  (setq mwheel-scroll-up-function 'mwheel-scroll-all-scroll-up-all
+        mwheel-scroll-down-function 'mwheel-scroll-all-scroll-down-all))
 
 (use-package exec-path-from-shell
   :if (memq system-type '(gnu gnu/linux darwin))
