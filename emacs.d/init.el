@@ -16,8 +16,7 @@
 (setq package-archives
       '(("gnu"          . "https://elpa.gnu.org/packages/")
         ("melpa"        . "https://melpa.org/packages/")
-        ("melpa-stable" . "https://stable.melpa.org/packages/")
-        ("tromey"       . "https://tromey.com/elpa/")))
+        ("melpa-stable" . "https://stable.melpa.org/packages/")))
 
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
