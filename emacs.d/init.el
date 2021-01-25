@@ -192,6 +192,26 @@ Buffers visiting files not existing/readable will be killed."
   (let ((scroll-preserve-screen-position t))
     (scroll-down-command 1)))
 
+(defun mwheel-scroll-all-function-all (func &optional arg)
+  "Scroll all windows based on FUNC with ARG."
+  (if (and scroll-all-mode arg)
+      (save-selected-window
+        (walk-windows
+         (lambda (win)
+           (select-window win)
+           (condition-case nil
+               (funcall func arg)
+             (error nil)))))
+    (funcall func arg)))
+
+(defun mwheel-scroll-all-scroll-up-all (&optional arg)
+  "Scroll all windows up with ARG."
+  (mwheel-scroll-all-function-all 'scroll-up arg))
+
+(defun mwheel-scroll-all-scroll-down-all (&optional arg)
+  "Scroll all windows down with ARG."
+  (mwheel-scroll-all-function-all 'scroll-down arg))
+
 (defun recenter-middle (&rest _)
   "Recenter to middle position, ignore params, useful when used as an advice."
   (recenter))
@@ -343,26 +363,28 @@ Buffers visiting files not existing/readable will be killed."
 
 (use-package diffview
   :after magit
-  :bind (:map magit-mode-map
-              ("C-d" . diffview-current))
-  :functions mwheel-scroll-all-function-all
+  :bind ((:map magit-mode-map
+               ("C-d" . diffview-current))
+         (:map diffview-mode-map
+               ("l" . diffview-align-windows)))
   :config
-  (defun mwheel-scroll-all-function-all (func &optional arg)
-    (if (and scroll-all-mode arg)
-        (save-selected-window
-          (walk-windows
-           (lambda (win)
-             (select-window win)
-             (condition-case nil
-                 (funcall func arg)
-               (error nil)))))
-      (funcall func arg)))
-
-  (defun mwheel-scroll-all-scroll-up-all (&optional arg)
-    (mwheel-scroll-all-function-all 'scroll-up arg))
-
-  (defun mwheel-scroll-all-scroll-down-all (&optional arg)
-    (mwheel-scroll-all-function-all 'scroll-down arg))
+  (defun diffview-align-windows ()
+    (interactive)
+    (let ((align-to-line (line-number-at-pos))
+          (align-from-top (- (line-number-at-pos (point))
+                             (line-number-at-pos (window-start)))))
+      (when
+          (cond
+           ((string= (buffer-name (current-buffer))
+                     diffview--minus-bufname)
+            (switch-to-buffer-other-window diffview--plus-bufname))
+           ((string= (buffer-name (current-buffer))
+                     diffview--plus-bufname)
+            (switch-to-buffer-other-window diffview--minus-bufname)))
+        (goto-char (point-min))
+        (forward-line (1- align-to-line))
+        (recenter align-from-top)
+        (other-window 1))))
 
   (setq mwheel-scroll-up-function 'mwheel-scroll-all-scroll-up-all
         mwheel-scroll-down-function 'mwheel-scroll-all-scroll-down-all))
