@@ -26,4 +26,12 @@
 (add-to-list 'initial-frame-alist '(undecorated . t))
 (setq frame-resize-pixelwise t)
 
+;; Setup font
+;; sudo pacman -Syu ttf-dejavu
+(add-to-list
+ 'default-frame-alist
+ `(font . ,(concat "DejaVu Sans Mono"
+                   (let ((size (getenv "EMACS_FONT_SIZE")))
+                     (if size (concat "-" size) "")))))
+
 ;;; early-init.el ends here

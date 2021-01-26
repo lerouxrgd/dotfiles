@@ -109,14 +109,6 @@
         scroll-preserve-screen-position 1
         mouse-wheel-scroll-amount '(1 ((shift) . 1)))
 
-  ;; Setup font
-  ;; sudo pacman -Syu ttf-dejavu
-  (add-to-list
-   'default-frame-alist
-   `(font . ,(concat "DejaVu Sans Mono"
-                     (let ((size (getenv "EMACS_FONT_SIZE")))
-                       (if size (concat "-" size) "")))))
-
   ;; Setup local files
   (setq
    backup-directory-alist '(("." . "~/.emacs.d/backups"))
