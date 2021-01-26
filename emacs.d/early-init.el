@@ -25,6 +25,7 @@
 (add-to-list 'initial-frame-alist '(fullscreen . maximized))
 (add-to-list 'initial-frame-alist '(undecorated . t))
 (setq frame-resize-pixelwise t)
+(setq-default mode-line-format nil) ; Disable default modeline at startup
 
 ;; Setup font
 ;; sudo pacman -Syu ttf-dejavu
