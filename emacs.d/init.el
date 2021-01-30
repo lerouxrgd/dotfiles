@@ -505,9 +505,12 @@ Buffers visiting files not existing/readable will be killed."
 
 (use-package nswbuff
   :bind (("C-<tab>"         . nswbuff-switch-to-next-buffer)
-         ("<C-iso-lefttab>" . nswbuff-switch-to-previous-buffer))
+         ("<C-iso-lefttab>" . nswbuff-switch-to-previous-buffer)
+         :map nswbuff-override-map
+         ("k" . nswbuff-kill-this-buffer))
   :config
   (setq nswbuff-display-intermediate-buffers t
+        nswbuff-status-window-layout 'minibuffer
         nswbuff-exclude-buffer-regexps
         '("^ " "^[*]" "null" "^Magit.*"))
   (custom-set-faces
