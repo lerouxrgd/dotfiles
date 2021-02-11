@@ -231,6 +231,12 @@ Buffers visiting files not existing/readable will be killed."
   (push-mark isearch-other-end)
   (activate-mark))
 
+(defun kill-word-no-ring (arg)
+  "Delete characters backward until encountering the beginning of a word.
+With ARG, do this that many times.  Does not push text to `kill-ring'."
+  (interactive "p")
+  (delete-region (point) (progn (forward-word (- arg)) (point))))
+
 (use-package bind-map
   :preface (defvar my-keymap-key "C-x M-x")
   :config (bind-map my-keymap
@@ -252,22 +258,23 @@ Buffers visiting files not existing/readable will be killed."
 
 (define-key isearch-mode-map (kbd "<C-return>") 'isearch-exit-mark-match)
 
-(global-set-key (kbd "S-C-<left>")  'shrink-window-horizontally)
-(global-set-key (kbd "S-C-<right>") 'enlarge-window-horizontally)
-(global-set-key (kbd "S-C-<down>")  'shrink-window)
-(global-set-key (kbd "S-C-<up>")    'enlarge-window)
-(global-set-key (kbd "C-x C-S-b")   'ibuffer)
-(global-set-key (kbd "C-x C-z")     'repeat)
-(global-set-key (kbd "<C-M-down>")  (kbd "C-u 2 C-v"))
-(global-set-key (kbd "<C-M-up>")    (kbd "C-u 2 M-v"))
-(global-set-key (kbd "M-DEL")       (kbd "C-u 0 C-k"))
-(global-set-key (kbd "M-n")         'scroll-up-preserve-line)
-(global-set-key (kbd "M-p")         'scroll-down-preserve-line)
-(global-set-key (kbd "M-F")         'forward-whitespace)
-(global-set-key (kbd "M-B")         'backward-whitespace)
-(global-set-key (kbd "s-z")         'switch-to-scratch-buffer)
-(global-set-key (kbd "C-;")         'toggle-comment-on-line)
-(global-set-key (kbd "C-z")          nil)
+(global-set-key (kbd "S-C-<left>")    'shrink-window-horizontally)
+(global-set-key (kbd "S-C-<right>")   'enlarge-window-horizontally)
+(global-set-key (kbd "S-C-<down>")    'shrink-window)
+(global-set-key (kbd "S-C-<up>")      'enlarge-window)
+(global-set-key (kbd "C-x C-S-b")     'ibuffer)
+(global-set-key (kbd "C-x C-z")       'repeat)
+(global-set-key (kbd "<C-backspace>") 'kill-word-no-ring)
+(global-set-key (kbd "<C-M-down>")    (kbd "C-u 2 C-v"))
+(global-set-key (kbd "<C-M-up>")      (kbd "C-u 2 M-v"))
+(global-set-key (kbd "M-DEL")         (kbd "C-u 0 C-k"))
+(global-set-key (kbd "M-n")           'scroll-up-preserve-line)
+(global-set-key (kbd "M-p")           'scroll-down-preserve-line)
+(global-set-key (kbd "M-F")           'forward-whitespace)
+(global-set-key (kbd "M-B")           'backward-whitespace)
+(global-set-key (kbd "s-z")           'switch-to-scratch-buffer)
+(global-set-key (kbd "C-;")           'toggle-comment-on-line)
+(global-set-key (kbd "C-z")            nil)
 
 ;;;;;;;;;;;;;;;;;;;;; General packages ;;;;;;;;;;;;;;;;;;;;;
 
