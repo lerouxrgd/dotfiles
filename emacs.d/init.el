@@ -976,6 +976,9 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   ((python-mode          . highlight-indent-guides-mode)
    (elpy-mode            . (lambda () (add-hook 'before-save-hook 'elpy-format-code)))
    (inferior-python-mode . (lambda () (local-set-key (kbd "TAB") 'company-complete))))
+  :bind (:map elpy-mode-map
+              ("<C-down>" . forward-paragraph)
+              ("<C-up>"   . backward-paragraph))
   :config
   (advice-add 'elpy-format-code :after 'recenter-middle)
   (setq python-shell-interpreter "ipython"
