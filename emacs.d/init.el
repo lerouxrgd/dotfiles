@@ -874,9 +874,6 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
          ("\\.edn\\'"  . clojure-mode)
          ("\\.cljc\\'" . clojurec-mode)
          ("\\.cljs\\'" . clojurescript-mode))
-  :bind (:map clojure-mode-map
-              ("C-:"   . iedit-mode)
-              ("C-c :" . clojure-toggle-keyword-string))
   :hook ((clojure-mode . enable-paredit-mode)
          (clojure-mode . subword-mode)
          (clojure-mode . rainbow-delimiters-mode))
@@ -923,6 +920,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 ;; https://github.com/emacs-lsp/lsp-java
 ;; https://github.com/scalameta/metals
 
+;; pamac install jdtls
 ;; pamac install metals
 
 (use-package lsp-java
