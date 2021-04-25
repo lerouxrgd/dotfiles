@@ -1076,6 +1076,11 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 (use-package eldoc-cmake
   :hook (cmake-mode . eldoc-cmake-enable))
 
+(use-package glsl-mode
+  :bind (:map glsl-mode-map
+              ("C-c C-c" . ff-find-other-file)
+              ("C-?"     . glsl-find-man-page)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;; Go ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; https://github.com/dominikh/go-mode.el
