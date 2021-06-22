@@ -75,9 +75,10 @@
 (use-package emacs
   :ensure nil
   :config
-  (blink-cursor-mode   -1) ; Turn off blinking cursor
-  (show-paren-mode      1) ; Highlight matching parenthesis
-  (column-number-mode   1) ; Show column number
+  (blink-cursor-mode    -1) ; Turn off blinking cursor
+  (show-paren-mode       1) ; Highlight matching parenthesis
+  (column-number-mode    1) ; Show column number
+  (delete-selection-mode 1) ; Force selected text deletion
 
   (prefer-coding-system 'utf-8)
   (fset 'yes-or-no-p 'y-or-n-p)
