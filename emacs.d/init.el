@@ -591,8 +591,13 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
                ("C-M-p" . symbol-overlay-jump-last)))
   :config (setq symbol-overlay-idle-time 0.2))
 
+(use-package imenu-list
+  :config
+  (global-set-key (kbd "C-'") #'imenu-list-smart-toggle)
+  (setq imenu-list-focus-after-activation t))
+
 (use-package avy
-  :bind (("C-'"  . avy-goto-word-1)
+  :bind (("C-\\"  . avy-goto-word-1)
          ("M-g g". avy-goto-line)))
 
 (use-package origami
