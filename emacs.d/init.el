@@ -1131,7 +1131,6 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
 ;; rustup toolchain install stable
 ;; rustup component add rust-src rust-analysis
-;; rustup component add rustfmt rls clippy
 ;; rustup toolchain add nightly
 ;; cargo +nightly install racer
 
