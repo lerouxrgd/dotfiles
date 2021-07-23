@@ -795,6 +795,8 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   (setq markdown-command "marked"
         markdown-live-preview-delete-export 'delete-on-export))
 
+(use-package rfc-mode)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;; Ops ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (use-package terraform-mode
