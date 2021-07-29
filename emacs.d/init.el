@@ -275,6 +275,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 (global-set-key (kbd "M-B")           'backward-whitespace)
 (global-set-key (kbd "s-z")           'switch-to-scratch-buffer)
 (global-set-key (kbd "C-;")           'toggle-comment-on-line)
+(global-set-key (kbd "C-R")           'revert-all-file-buffers)
 (global-set-key (kbd "C-z")            nil)
 
 ;;;;;;;;;;;;;;;;;;;;; General packages ;;;;;;;;;;;;;;;;;;;;;
