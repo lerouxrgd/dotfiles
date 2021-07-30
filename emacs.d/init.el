@@ -978,7 +978,9 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 ;; pip install --user jedi black flake8 pylint
 
 (use-package elpy
-  :init (advice-add 'python-mode :before 'elpy-enable)
+  :pin melpa-stable
+  :init
+  (advice-add 'python-mode :before 'elpy-enable)
   :hook
   ((python-mode          . highlight-indent-guides-mode)
    (elpy-mode            . (lambda () (add-hook 'before-save-hook 'elpy-format-code)))
