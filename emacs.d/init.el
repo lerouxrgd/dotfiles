@@ -1139,7 +1139,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 ;; rustup toolchain add nightly
 ;; cargo +nightly install racer
 
-;; pamac install rust-analyzer
+;; pamac install rust-analyzer sccache lld
 (use-package rust-mode
   :mode "\\.rs\\'"
   :bind (:map rust-mode-map
@@ -1185,6 +1185,8 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
 (use-package cargo
   :hook (rust-mode . cargo-minor-mode))
+
+(use-package ron-mode)
 
 ;; https://github.com/ksqsf/pest-mode
 ;; cargo install pesta
