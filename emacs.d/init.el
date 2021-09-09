@@ -476,11 +476,11 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   (which-key-add-key-based-replacements
     (concat my-keymap-key " i") "string-inflection")
   :bind ((:map my-keymap
-               ("i c" . string-inflection-lower-camelcase)
-               ("i C" . string-inflection-camelcase)
-               ("i k" . string-inflection-kebab-case)
-               ("i s" . string-inflection-underscore)
-               ("i u" . string-inflection-upcase))))
+               ("i c" . string-inflection-lower-camelcase) ; camelCase
+               ("i p" . string-inflection-camelcase)       ; PascalCase
+               ("i k" . string-inflection-kebab-case)      ; kebab-case
+               ("i s" . string-inflection-underscore)      ; snake_case
+               ("i u" . string-inflection-upcase))))       ; UPPER_CASE
 
 (use-package yasnippet
   :hook (prog-mode . yas-minor-mode)
@@ -586,11 +586,21 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   :bind (("C-z C-z" . symbol-overlay-mode)
          (:map my-keymap
                ("a"   . symbol-overlay-put)
-               ("M-a" . symbol-overlay-remove-all))
+               ("M-a" . symbol-overlay-remove-all)
+               ("M-<" . symbol-overlay-switch-backward)
+               ("M->" . symbol-overlay-switch-forward)
+               )
          (:map symbol-overlay-mode-map
                ("C-M-n" . symbol-overlay-jump-next)
-               ("C-M-p" . symbol-overlay-jump-last)))
-  :config (setq symbol-overlay-idle-time 0.2))
+               ("C-M-p" . symbol-overlay-jump-prev)))
+  :config
+  (advice-add 'symbol-overlay-jump-first      :after 'recenter-middle)
+  (advice-add 'symbol-overlay-jump-last       :after 'recenter-middle)
+  (advice-add 'symbol-overlay-jump-next       :after 'recenter-middle)
+  (advice-add 'symbol-overlay-jump-prev       :after 'recenter-middle)
+  (advice-add 'symbol-overlay-switch-backward :after 'recenter-middle)
+  (advice-add 'symbol-overlay-switch-forward  :after 'recenter-middle)
+  (setq symbol-overlay-idle-time 0.2))
 
 (use-package imenu-list
   :config
