@@ -1,2 +1,4 @@
-.rgignore
+.ccls-cache/
+.clj-kondo/.cache/
 .python-version
+.rgignore
