@@ -4,7 +4,7 @@ dir=~/dotfiles         # dotfiles directory
 olddir=~/dotfiles_old  # old dotfiles backup directory
 
 # list of files/dirs to symlink to in ~
-files="lein emacs.d bash_custom"
+files="lein emacs.d bash_custom gitconfig gitignore"
 
 # list of files/dirs to symlink to in ~/.config
 configs="flake8"
