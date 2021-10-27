@@ -1149,7 +1149,8 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 ;; rustup toolchain add nightly
 ;; cargo +nightly install racer
 
-;; pamac install rust-analyzer sccache lld
+;; sudo pacman -Syu rust-analyzer sccache lld
+;; sudo pacman -Syu cargo-edit cargo-outdated
 (use-package rust-mode
   :mode "\\.rs\\'"
   :bind (:map rust-mode-map
