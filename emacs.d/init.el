@@ -721,8 +721,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
 (use-package lsp-mode
   :commands lsp
-  :hook ((prog-mode . lsp-mode)
-         (lsp-mode  . lsp-enable-which-key-integration))
+  :hook (lsp-mode . lsp-enable-which-key-integration)
   :init
   (setq lsp-keymap-prefix "C-z"
         lsp-enable-symbol-highlighting nil))
@@ -733,7 +732,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
               ("!" . lsp-ui-flycheck-list)
               ("m" . lsp-ui-imenu)
               ("." . lsp-find-definition)
-              ("?" . lsp-find-references))
+              ("?" . lsp-ui-peek-find-references))
   :config
   (setq lsp-ui-sideline-enable nil
         lsp-ui-doc-enable nil))
