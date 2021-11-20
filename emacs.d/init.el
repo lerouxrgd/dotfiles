@@ -91,6 +91,7 @@
    initial-major-mode         'fundamental-mode
    uniquify-buffer-name-style 'forward
    ring-bell-function         'ignore
+   ad-redefinition-action     'accept
    split-height-threshold     nil)
 
   (setq-default
