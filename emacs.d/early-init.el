@@ -24,6 +24,7 @@
 ;; Main frame setup
 (add-to-list 'initial-frame-alist '(fullscreen . maximized))
 (add-to-list 'initial-frame-alist '(undecorated . t))
+(add-to-list 'default-frame-alist '(background-color . "#3c4c55")) ; From doom-nova
 (setq frame-resize-pixelwise t)
 (setq-default mode-line-format nil) ; Disable default modeline at startup
 
