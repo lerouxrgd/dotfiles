@@ -611,6 +611,20 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   :bind (("C-\\"  . avy-goto-word-1)
          ("M-g g". avy-goto-line)))
 
+(use-package goto-line-preview
+  :config
+  (defun with-linum (f &rest args)
+    (linum-mode 1)
+    (unwind-protect
+        (apply f args)
+      (linum-mode -1)))
+
+  (advice-add 'goto-line-preview :around 'with-linum)
+  (advice-add 'goto-line-preview--do :after 'recenter-middle)
+  (setq goto-line-preview-after-hook 'recenter-middle)
+
+  (global-set-key [remap goto-line] 'goto-line-preview))
+
 (use-package origami
   :bind-keymap ("M-o" . origami-mode-map)
   :bind (:map origami-mode-map
