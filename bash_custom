@@ -14,7 +14,7 @@ export PATH=$JAVA_HOME/bin:$PATH
 export PATH=/usr/local/go/bin:$PATH
 export PATH=${GOPATH//://bin:}/bin:$PATH
 
-export RUSTC_WRAPPER=sccache
+export RUSTC_WORKSPACE_WRAPPER=sccache
 
 reverse_array() {
     shopt -s extdebug

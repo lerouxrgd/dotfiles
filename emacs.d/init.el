@@ -248,6 +248,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 (advice-add 'xref-pop-marker-stack      :after  'recenter-middle)
 (advice-add 'xref-find-definitions      :after  'recenter-middle)
 (advice-add 'occur-mode-goto-occurrence :after  'recenter-middle)
+(advice-add 'compile-goto-error         :after  'recenter-middle)
 (advice-add 'dedup-pop-to-mark          :after  'recenter-middle)
 (advice-add 'pop-to-mark-command        :around 'dedup-pop-to-mark)
 
@@ -1209,7 +1210,9 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
     :config (add-to-list 'company-backends 'company-racer)))
 
 (use-package cargo
-  :hook (rust-mode . cargo-minor-mode))
+  :hook (rust-mode . cargo-minor-mode)
+  :config
+  (setq cargo-process--command-clippy "clippy"))
 
 (use-package ron-mode)
 
