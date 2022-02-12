@@ -1048,14 +1048,16 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
         '(c/c++-clang c/c++-cppcheck c/c++-gcc))
   :config
   (defun setup-ccls ()
-    (require 'ccls)
-    (lsp)
-    (define-key lsp-command-map (kbd "ci") 'ccls-inheritance-hierarchy)
-    (define-key lsp-command-map (kbd "cc") 'ccls-call-hierarchy)
-    (define-key lsp-command-map (kbd "cm") 'ccls-member-hierarchy)
-    (define-key lsp-command-map (kbd "cl") 'ccls-code-lens-mode)
-    (which-key-add-major-mode-key-based-replacements
-      major-mode (concat lsp-keymap-prefix " c") "ccls"))
+    (when (derived-mode-p 'c-mode 'c++-mode 'objc-mode)
+      (clang-format-buffer)
+      (require 'ccls)
+      (lsp)
+      (define-key lsp-command-map (kbd "ci") 'ccls-inheritance-hierarchy)
+      (define-key lsp-command-map (kbd "cc") 'ccls-call-hierarchy)
+      (define-key lsp-command-map (kbd "cm") 'ccls-member-hierarchy)
+      (define-key lsp-command-map (kbd "cl") 'ccls-code-lens-mode)
+      (which-key-add-major-mode-key-based-replacements
+        major-mode (concat lsp-keymap-prefix " c") "ccls")))
   :custom
   (ff-search-directories
    '("." "/usr/include" "/usr/local/include/*" ; original values
@@ -1216,11 +1218,11 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
 (use-package ron-mode)
 
-;; https://github.com/ksqsf/pest-mode
 ;; cargo install pesta
 (use-package pest-mode
-  :quelpa (pest-mode :fetcher github :repo "ksqsf/pest-mode")
-  :mode "\\.pest\\'"
   :hook (pest-mode . flymake-mode))
+
+(use-package wgsl-mode
+  :quelpa (wgsl-mode :fetcher github :repo "acowley/wgsl-mode"))
 
 ;;; init.el ends here
