@@ -344,6 +344,8 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
          :map magit-status-mode-map
          ("<M-return>" . magit-diff-visit-file-other-window))
   :config
+  (transient-append-suffix 'magit-log "-A"
+    '("-m" "Omit merge commits" "--no-merges"))
   (setq magit-diff-refine-hunk t)
   (advice-add 'magit-diff-visit-file-other-window :after 'recenter-middle)
 
