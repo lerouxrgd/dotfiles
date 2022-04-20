@@ -735,11 +735,15 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   :bind (:map lsp-command-map
               ("!" . lsp-ui-flycheck-list)
               ("m" . lsp-ui-imenu)
+              ("z" . lsp-ui-doc-mode)
               ("." . lsp-find-definition)
               ("?" . lsp-ui-peek-find-references))
   :config
   (setq lsp-ui-sideline-enable nil
-        lsp-ui-doc-enable nil))
+        lsp-ui-doc-enable nil
+        lsp-ui-doc-show-with-mouse nil
+        lsp-ui-doc-show-with-cursor t
+        lsp-ui-doc-position 'at-point))
 
 (use-package lsp-treemacs :after (lsp-mode treemacs))
 
@@ -754,10 +758,6 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   (:map lsp-command-map
         ("ga" . (lambda () (interactive) (helm-lsp-workspace-symbol t)))
         ("gA" . (lambda () (interactive) (helm-lsp-global-workspace-symbol t)))))
-
-(use-package company-lsp
-  :after (lsp-mode company-mode)
-  :config (add-to-list 'company-backends 'company-lsp))
 
 ;;;;;;;;;;;;;;;;;;;; Simple formatting ;;;;;;;;;;;;;;;;;;;;
 
@@ -1203,15 +1203,11 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   :hook (flycheck-mode . flycheck-rust-setup))
 
 (use-package racer
-  :hook
-  ((rust-mode  . racer-mode)
-   (racer-mode . eldoc-mode))
+  :hook(rust-mode . racer-mode)
   :bind (:map rust-mode-map
               ("M-." . racer-find-definition))
   :config
-  (advice-add 'racer-find-definition :after 'recenter-middle)
-  (use-package company-racer
-    :config (add-to-list 'company-backends 'company-racer)))
+  (advice-add 'racer-find-definition :after 'recenter-middle))
 
 (use-package cargo
   :hook (rust-mode . cargo-minor-mode)
