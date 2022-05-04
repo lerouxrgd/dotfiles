@@ -1206,6 +1206,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   :bind (:map rust-mode-map
               ("M-." . racer-find-definition))
   :config
+  (setq racer-eldoc-timeout 0.01)
   (advice-add 'racer-find-definition :after 'recenter-middle))
 
 (use-package cargo
