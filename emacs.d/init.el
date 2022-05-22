@@ -486,6 +486,14 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
                ("i s" . string-inflection-underscore)      ; snake_case
                ("i u" . string-inflection-upcase))))       ; UPPER_CASE
 
+(use-package smartparens
+  :preface
+  (which-key-add-key-based-replacements
+    (concat my-keymap-key " p") "smartparens")
+  :hook (prog-mode . smartparens-mode)
+  :bind ((:map my-keymap
+               ("p p" . sp-rewrap-sexp))))
+
 (use-package yasnippet
   :hook (prog-mode . yas-minor-mode)
   :bind (("M-/" . hippie-expand)
