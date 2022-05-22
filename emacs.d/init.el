@@ -490,11 +490,22 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   :preface
   (which-key-add-key-based-replacements
     (concat my-keymap-key " p") "smartparens")
-  :hook (prog-mode . smartparens-mode)
+  :hook (prog-mode . smartparens-strict-mode)
   :bind (("<C-s-right>" . sp-forward-slurp-sexp)
          ("<C-s-left>"  . sp-forward-barf-sexp)
          :map my-keymap
-         ("p p" . sp-rewrap-sexp)))
+         ("p p" . sp-rewrap-sexp))
+  :config
+  (require 'smartparens-config)
+  (defun indent-between-pair (&rest _ignored)
+    (newline)
+    (indent-according-to-mode)
+    (forward-line -1)
+    (indent-according-to-mode))
+  (sp-local-pair 'prog-mode "{" nil :post-handlers '((indent-between-pair "RET")))
+  (sp-local-pair 'prog-mode "[" nil :post-handlers '((indent-between-pair "RET")))
+  (sp-local-pair 'prog-mode "(" nil :post-handlers '((indent-between-pair "RET")))
+  (setq sp-highlight-pair-overlay nil))
 
 (use-package yasnippet
   :hook (prog-mode . yas-minor-mode)
@@ -769,12 +780,6 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
         ("gA" . (lambda () (interactive) (helm-lsp-global-workspace-symbol t)))))
 
 ;;;;;;;;;;;;;;;;;;;; Simple formatting ;;;;;;;;;;;;;;;;;;;;
-
-(use-package electric
-  :ensure nil
-  :config
-  (electric-indent-mode 1)
-  (electric-pair-mode 1))
 
 (use-package highlight-indent-guides
   :config (setq highlight-indent-guides-method 'character))
