@@ -748,7 +748,8 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   :hook (lsp-mode . lsp-enable-which-key-integration)
   :init
   (setq lsp-keymap-prefix "C-z"
-        lsp-enable-symbol-highlighting nil))
+        lsp-enable-symbol-highlighting nil
+        lsp-signature-doc-lines 2))
 
 (use-package lsp-ui
   :hook (lsp-mode . lsp-ui-mode)
