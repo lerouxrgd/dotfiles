@@ -491,8 +491,10 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   (which-key-add-key-based-replacements
     (concat my-keymap-key " p") "smartparens")
   :hook (prog-mode . smartparens-mode)
-  :bind ((:map my-keymap
-               ("p p" . sp-rewrap-sexp))))
+  :bind (("<C-s-right>" . sp-forward-slurp-sexp)
+         ("<C-s-left>"  . sp-forward-barf-sexp)
+         :map my-keymap
+         ("p p" . sp-rewrap-sexp)))
 
 (use-package yasnippet
   :hook (prog-mode . yas-minor-mode)
@@ -879,9 +881,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
 (use-package paredit
   :hook ((emacs-lisp-mode . enable-paredit-mode)
-         (lisp-mode       . enable-paredit-mode))
-  :bind (("<C-s-right>" . paredit-forward-slurp-sexp)
-         ("<C-s-left>"  . paredit-forward-barf-sexp)))
+         (lisp-mode       . enable-paredit-mode)))
 
 (use-package rainbow-delimiters)
 
