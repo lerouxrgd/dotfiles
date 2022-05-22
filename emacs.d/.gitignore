@@ -1,4 +1,5 @@
 elpa/*
+eln-cache/
 custom.el
 auto-save-list
 backups
@@ -24,6 +25,7 @@ cache
 .lsp-session*
 .mc-lists.el
 .cache
+.dap-breakpoints
 
 # Network Security Manager
 network-security.data
