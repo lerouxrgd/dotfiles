@@ -1,17 +1,21 @@
 [include]
-    path = ~/.gitconfig-personal
-    path = ~/.gitconfig-work
+    path = ~/.config/git/gitconfig-personal
+    path = ~/.config/git/gitconfig-work
 
 [commit]
-	gpgsign = true
+    gpgsign = true
 
 [core]
-	excludesfile = ~/.gitignore
+    excludesfile = ~/.config/git/ignore
 
-# pacman -Syu git-delta
+[merge]
+    conflictStyle = diff3
+
+# sudo pacman -Syu git-delta
 [delta]
     side-by-side = true
     syntax-theme = Coldark-Dark
 
 [alias]
-	sbs	= !git -c 'pager.show="delta"' -c 'pager.diff="delta"'
+    # git sbs diff
+    sbs = !git -c 'pager.show="delta"' -c 'pager.diff="delta"'

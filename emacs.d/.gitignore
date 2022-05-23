@@ -1,31 +1,3 @@
-elpa/*
-eln-cache/
-custom.el
-auto-save-list
-backups
-*~
-
-# mode related temp files
-recentf
-ido.last
-smex-items
-ac-comphist.dat
-cider-history
-transient
-request
-url
-tramp
-
-# workspace local files
-quelpa
-workspace
-eclipse.jdt.ls
-elpy
-cache
-.lsp-session*
-.mc-lists.el
-.cache
-.dap-breakpoints
-
-# Network Security Manager
-network-security.data
+*
+!init.el
+!early-init.el

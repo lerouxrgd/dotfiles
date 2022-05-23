@@ -4,10 +4,10 @@ dir=~/dotfiles         # dotfiles directory
 olddir=~/dotfiles_old  # old dotfiles backup directory
 
 # list of files/dirs to symlink to in ~
-files="lein emacs.d bash_custom gitconfig gitconfig-personal gitignore"
+files="lein emacs.d bash_custom gitconfig"
 
 # list of files/dirs to symlink to in ~/.config
-configs="flake8"
+configs="flake8 git"
 
 echo "Using $olddir for dotfiles backup"
 mkdir -p $olddir
