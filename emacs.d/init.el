@@ -683,6 +683,12 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   (custom-set-faces
    `(fold-this-overlay ((t (:foreground ,(doom-color 'white)))))))
 
+;; (use-package hideshow
+;;   :hook (prog-mode . hs-minor-mode)
+;;   :bind (("M-o" . hs-toggle-hiding)
+;;          :map my-keymap
+;;          ("M-o" . hs-show-all)))
+
 (use-package helm
   :preface (require 'helm-config)
   :bind (("C-x x" . helm-command-prefix)
