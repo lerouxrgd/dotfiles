@@ -1179,20 +1179,17 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
 ;; https://github.com/rust-lang/rust-mode
 ;; https://github.com/flycheck/flycheck-rust
-;; https://github.com/racer-rust/emacs-racer
 ;; https://github.com/kwrooijen/cargo.el
 
 ;; rustup toolchain install stable
 ;; rustup component add rust-src rust-analysis
-;; rustup toolchain add nightly
-;; cargo +nightly install racer
 
 ;; sudo pacman -Syu rust-analyzer sccache lld
 ;; sudo pacman -Syu cargo-edit cargo-outdated
 (use-package rust-mode
-  :mode "\\.rs\\'"
   :bind (:map rust-mode-map
               ("C-c C-o" . rust-occur-definitions))
+  :hook (rust-mode . lsp)
   :config
   (setq rust-format-on-save t)
   (defun rust-occur-definitions ()
@@ -1220,14 +1217,6 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 (use-package flycheck-rust
   :after rust-mode
   :hook (flycheck-mode . flycheck-rust-setup))
-
-(use-package racer
-  :hook(rust-mode . racer-mode)
-  :bind (:map rust-mode-map
-              ("M-." . racer-find-definition))
-  :config
-  (setq racer-eldoc-timeout 0.01)
-  (advice-add 'racer-find-definition :after 'recenter-middle))
 
 (use-package cargo
   :hook (rust-mode . cargo-minor-mode)
