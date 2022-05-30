@@ -1014,6 +1014,19 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
 (use-package lua-mode)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;; Haxe ;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; https://github.com/emacsorphanage/haxe-mode
+;; https://github.com/vshaxe/haxe-language-server
+;; https://deepnight.net/tutorial/a-quick-guide-to-installing-haxe/
+
+;; sudo pacman -Syu haxe
+;; pamac install hashlink
+;; mkdir -p ~/.haxe-language-server/bin/
+
+(use-package haxe-mode
+  :config (add-hook 'haxe-mode-hook 'lsp))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;; Python ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; https://github.com/jorgenschaefer/elpy
