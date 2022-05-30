@@ -490,7 +490,8 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   :preface
   (which-key-add-key-based-replacements
     (concat my-keymap-key " p") "smartparens")
-  :hook (prog-mode . smartparens-strict-mode)
+  :hook ((prog-mode . smartparens-mode)
+         (conf-mode . smartparens-mode))
   :bind (("<C-s-right>" . sp-forward-slurp-sexp)
          ("<C-s-left>"  . sp-forward-barf-sexp)
          :map my-keymap
