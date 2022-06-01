@@ -295,7 +295,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   :hook (after-init . global-company-mode)
   :bind (("TAB" . company-indent-or-complete-common)
          :map company-active-map
-         ("<right>" . company-abort))
+         ([tab] . company-abort))
   :config
   (setq company-tooltip-align-annotations t
         company-selection-wrap-around t)
@@ -490,14 +490,14 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   :preface
   (which-key-add-key-based-replacements
     (concat my-keymap-key " p") "smartparens")
-  :hook ((prog-mode . smartparens-mode)
-         (conf-mode . smartparens-mode))
   :bind (("<C-s-right>" . sp-forward-slurp-sexp)
          ("<C-s-left>"  . sp-forward-barf-sexp)
          :map my-keymap
          ("p p" . sp-rewrap-sexp))
-  :config
+  :init
   (require 'smartparens-config)
+  (smartparens-global-mode)
+  :config
   (defun indent-between-pair (&rest _ignored)
     (newline)
     (indent-according-to-mode)
