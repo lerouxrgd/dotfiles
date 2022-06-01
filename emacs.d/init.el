@@ -784,6 +784,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   :after lsp-mode
   :bind
   (:map lsp-command-map
+        ("aa" . helm-lsp-code-actions)
         ("ga" . (lambda () (interactive) (helm-lsp-workspace-symbol t)))
         ("gA" . (lambda () (interactive) (helm-lsp-global-workspace-symbol t)))))
 
