@@ -115,6 +115,7 @@
   (setq
    backup-directory-alist '(("." . "~/.emacs.d/backups"))
    custom-file            "~/.emacs.d/custom.el"
+   auth-sources           '("~/.authinfo.gpg")
    create-lockfiles       nil   ; No need for ~ files when editing
    auto-save-default      nil)  ; No auto-save of file-visiting buffers
   (add-hook 'emacs-startup-hook
@@ -342,7 +343,10 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 (use-package magit
   :bind (("C-x g" . magit-status)
          :map magit-status-mode-map
-         ("<M-return>" . magit-diff-visit-file-other-window))
+         ("<M-return>" . magit-diff-visit-file-other-window)
+         :map magit-diff-mode-map
+         ("<M-return>" . magit-diff-visit-file-other-window)
+         ("<backtab>"  . magit-section-cycle-diffs))
   :config
   (transient-append-suffix 'magit-log "-A"
     '("-m" "Omit merge commits" "--no-merges"))
@@ -354,7 +358,14 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
   (use-package magit-ediff
     :ensure nil
-    :config (setq magit-ediff-dwim-show-on-hunks t)))
+    :config (setq magit-ediff-dwim-show-on-hunks t))
+
+  ;; git config --global github.user lerouxrgd
+  ;; machine api.github.com login lerouxrgd^forge password token_xxx
+  (use-package forge)
+  (use-package code-review
+    :config
+    (setq code-review-auth-login-marker 'forge)))
 
 (use-package git-timemachine
   :bind ("C-x G" . git-timemachine))
@@ -430,7 +441,8 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
               ("u" . upcase-region)
               ("l" . downcase-region)
               ("w" . copy-to-register)
-              ("m" . apply-macro-to-region-lines))
+              ("m" . apply-macro-to-region-lines)
+              ("d" . diffview-region))
   :init (selected-global-mode))
 
 (use-package multiple-cursors
