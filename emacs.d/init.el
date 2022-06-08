@@ -774,13 +774,20 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
 (use-package lsp-ui
   :hook (lsp-mode . lsp-ui-mode)
-  :bind (:map lsp-command-map
-              ("!" . lsp-ui-flycheck-list)
-              ("m" . lsp-ui-imenu)
-              ("z" . lsp-ui-doc-mode)
-              ("." . lsp-find-definition)
-              ("?" . lsp-ui-peek-find-references))
+  :bind ((:map lsp-command-map
+               ("!" . lsp-ui-flycheck-list)
+               ("m" . lsp-ui-imenu)
+               ("z" . lsp-ui-doc-mode)
+               ("." . lsp-find-definition)
+               ("?" . lsp-ui-peek-find-references))
+         (:map lsp-ui-flycheck-list-mode-map
+               ("C-<return>" . lsp-ui-flycheck-goto-error-kill-buffer)))
   :config
+  (defun lsp-ui-flycheck-goto-error-kill-buffer ()
+    (interactive)
+    (lsp-ui-flycheck-list--visit)
+    (kill-buffer "*lsp-diagnostics*")
+    (recenter-middle))
   (setq lsp-ui-sideline-enable nil
         lsp-ui-doc-enable nil
         lsp-ui-doc-show-with-mouse nil
