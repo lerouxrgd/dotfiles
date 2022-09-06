@@ -814,31 +814,6 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 (use-package highlight-indent-guides
   :config (setq highlight-indent-guides-method 'character))
 
-(use-package yaml-mode
-  :mode "\\.yaml\\'"
-  :hook (yaml-mode
-         . (lambda () (local-set-key (kbd "<backtab>") 'company-complete))))
-
-;; npm install -g yaml-language-server
-(use-package yaml-mode-ext
-  :quelpa (yaml-mode-ext :fetcher github :repo "lerouxrgd/yaml-mode-ext")
-  :hook (yaml-mode . (lambda () (require 'yaml-mode-ext)))
-  :bind (:map yaml-mode-map
-              ("C-c C-c RET" . yaml-reset-schemas)
-              ("C-c C-c k"   . yaml-set-schema-k8s))
-  :config
-  (defvar lsp-yaml-schemas)
-
-  (defun yaml-reset-schemas ()
-    (interactive)
-    (setq lsp-yaml-schemas (make-hash-table))
-    (message "LSP yaml schemas reset"))
-
-  (defun yaml-set-schema-k8s ()
-    (interactive)
-    (setq lsp-yaml-schemas '(:kubernetes "*.yml"))
-    (message "LSP yaml schema set to: kubernetes")))
-
 (use-package toml-mode
   :mode "\\.toml\\'")
 
@@ -871,14 +846,32 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;; Ops ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; sudo pacman -Syu yaml-language-server
+(use-package yaml-mode
+  :hook (yaml-mode
+         . (lambda () (local-set-key (kbd "<backtab>") 'company-complete)))
+  :bind (:map yaml-mode-map
+              ("C-c C-s" . lsp-yaml-select-buffer-schema)))
+
+(use-package yaml-pro
+  :hook ((yaml-mode     . yaml-pro-mode)
+         (yaml-pro-mode . helm-mode))
+  :bind (:map yaml-mode-map
+              ("M-C-u"    . yaml-pro-up-level)
+              ("M-C-n"    . yaml-pro-next-subtree)
+              ("M-C-p"    . yaml-pro-prev-subtree)
+              ("M-<down>" . yaml-pro-move-subtree-down)
+              ("M-<up>"   . yaml-pro-move-subtree-up)
+              ("C-c C-k"  . yaml-pro-kill-subtree)
+              ("C-c M-o"  . yaml-pro-fold-at-point)
+              ("C-c C-o"  . yaml-pro-unfold-at-point)
+              ("C-c '"    . yaml-pro-edit-scalar)))
+
 (use-package terraform-mode
   :hook (terraform-mode . terraform-format-on-save-mode)
   :config
   (use-package company-terraform
     :config (company-terraform-init)))
-
-(use-package kubernetes
-  :commands (kubernetes-overview))
 
 (use-package restclient
   :config
