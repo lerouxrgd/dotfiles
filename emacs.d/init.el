@@ -851,11 +851,21 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   :hook (yaml-mode
          . (lambda () (local-set-key (kbd "<backtab>") 'company-complete)))
   :bind (:map yaml-mode-map
-              ("C-c C-s" . lsp-yaml-select-buffer-schema)))
+              ("C-c C-s" . helm-lsp-yaml-select-buffer-schema))
+  :config
+  (defun helm-lsp-yaml-select-buffer-schema ()
+    "Run lsp-yaml-select-buffer-schema in temporary helm-mode."
+    (interactive)
+    (unwind-protect
+        (progn
+          (ido-everywhere -1)
+          (helm-mode 1)
+          (lsp-yaml-select-buffer-schema))
+      (helm-mode -1)
+      (ido-everywhere 1))))
 
 (use-package yaml-pro
-  :hook ((yaml-mode     . yaml-pro-mode)
-         (yaml-pro-mode . helm-mode))
+  :hook ((yaml-mode . yaml-pro-mode))
   :bind (:map yaml-mode-map
               ("M-C-u"    . yaml-pro-up-level)
               ("M-C-n"    . yaml-pro-next-subtree)
