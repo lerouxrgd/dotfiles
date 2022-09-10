@@ -622,6 +622,18 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   (use-package diredfl
     :config (diredfl-global-mode 1)))
 
+(use-package occur
+  :ensure nil
+  :bind (:map occur-mode-map
+              ("C-<return>" . occur-mode-goto-occurrence-kill-buffer))
+  :init
+  (defun occur-mode-goto-occurrence-kill-buffer ()
+    (interactive)
+    (occur-mode-goto-occurrence-other-window)
+    (recenter-middle)
+    (other-window 1)
+    (quit-window)))
+
 (use-package symbol-overlay
   :bind (("C-z C-z" . symbol-overlay-mode)
          (:map my-keymap
