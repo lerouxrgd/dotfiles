@@ -250,15 +250,12 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
 (advice-add 'xref-pop-marker-stack      :after  'recenter-middle)
 (advice-add 'xref-find-definitions      :after  'recenter-middle)
-(advice-add 'occur-mode-goto-occurrence :after  'recenter-middle)
 (advice-add 'compile-goto-error         :after  'recenter-middle)
 (advice-add 'dedup-pop-to-mark          :after  'recenter-middle)
 (advice-add 'pop-to-mark-command        :around 'dedup-pop-to-mark)
 
 (add-hook 'kill-buffer-query-functions     'unkillable-scratch-buffer)
 (add-hook 'before-save-hook                'delete-trailing-whitespace)
-(add-hook 'occur-mode-find-occurrence-hook 'xref-pulse-momentarily)
-(add-hook 'occur-mode-find-occurrence-hook 'recenter-middle)
 (add-hook 'minibuffer-setup-hook           'defer-garbage-collection-h)
 (add-hook 'minibuffer-exit-hook            'restore-garbage-collection-h)
 
@@ -626,11 +623,12 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   :ensure nil
   :bind (:map occur-mode-map
               ("C-<return>" . occur-mode-goto-occurrence-kill-buffer))
+  :hook ((occur-mode-find-occurrence . xref-pulse-momentarily)
+         (occur-mode-find-occurrence . recenter-middle))
   :init
   (defun occur-mode-goto-occurrence-kill-buffer ()
     (interactive)
     (occur-mode-goto-occurrence-other-window)
-    (recenter-middle)
     (other-window 1)
     (quit-window)))
 
