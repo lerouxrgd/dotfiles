@@ -19,3 +19,10 @@
 [alias]
     # git sbs diff
     sbs = !git -c 'pager.show="delta"' -c 'pager.diff="delta"'
+
+# sudo pacman -Syu git-lfs
+[filter "lfs"]
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+	clean = git-lfs clean -- %f
