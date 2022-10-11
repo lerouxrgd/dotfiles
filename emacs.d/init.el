@@ -43,7 +43,8 @@
 
   (custom-theme-set-faces
    'doom-nova
-   `(hl-line ((t (:background ,(doom-color 'bg-alt))))))
+   `(hl-line                     ((t (:background ,(doom-color 'bg-alt)))))
+   `(symbol-overlay-default-face ((t (:inherit symbol-overlay-face-1)))))
 
   (use-package diff-mode
     :ensure nil
