@@ -39,24 +39,16 @@
 
 (use-package doom-themes
   :init
-  (load-theme 'doom-nova t)
-
+  (setq doom-theme 'doom-nova)
+  (load-theme doom-theme t)
   (custom-theme-set-faces
-   'doom-nova
-   `(hl-line                     ((t (:background ,(doom-color 'bg-alt)))))
-   `(symbol-overlay-default-face ((t (:inherit symbol-overlay-face-1)))))
-
-  (use-package diff-mode
-    :ensure nil
-    :config
-    (set-face-attribute 'diff-changed nil
-                        :extend t
-                        :background (doom-color 'bg-alt))))
+   doom-theme
+   `(hl-line ((t (:background ,(doom-color 'bg-alt)))))))
 
 ;; M-x all-the-icons-install-fonts
 (use-package all-the-icons
   :config
-  (setq all-the-icons-scale-factor 1.0))
+  (setq all-the-icons-scale-factor 0.85))
 
 (use-package doom-modeline
   :hook (window-setup . doom-modeline-mode)
@@ -66,6 +58,15 @@
         doom-modeline-minor-modes t
         doom-modeline-buffer-file-name-style 'relative-from-project
         doom-modeline-buffer-encoding nil)
+
+  (add-hook 'helm-minibuffer-set-up-hook
+            (lambda () (advice-add #'doom-modeline--active :override (lambda () t))))
+  (add-hook 'helm-cleanup-hook
+            (lambda () (advice-remove #'doom-modeline--active (lambda () t))))
+
+  (custom-set-faces
+   `(mode-line-inactive
+     ((t (:background ,(doom-blend 'grey 'bg 0.2))))))
 
   (defun doom-modeline-buffer-name ()
     (let ((doom-modeline-buffer-file-name-style 'truncate-with-project))
@@ -644,6 +645,10 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
          (:map symbol-overlay-mode-map
                ("C-M-n" . symbol-overlay-jump-next)
                ("C-M-p" . symbol-overlay-jump-prev)))
+  :init
+  (custom-theme-set-faces
+   doom-theme
+   `(symbol-overlay-default-face ((t (:inherit symbol-overlay-face-1)))))
   :config
   (advice-add 'symbol-overlay-jump-first      :after 'recenter-middle)
   (advice-add 'symbol-overlay-jump-last       :after 'recenter-middle)
