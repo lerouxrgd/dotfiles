@@ -48,7 +48,8 @@
 ;; M-x all-the-icons-install-fonts
 (use-package all-the-icons
   :config
-  (setq all-the-icons-scale-factor 0.85))
+  (setq all-the-icons-scale-factor 1.0
+        all-the-icons-default-adjust 0.0))
 
 (use-package doom-modeline
   :hook (window-setup . doom-modeline-mode)
