@@ -742,6 +742,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   :bind (:map helm-command-map
               ("/" . helm-fd-project))
   :config
+  (setq helm-fd-mode-line-function nil)
   (defun helm-fd-project ()
     (interactive)
     (let ((directory (or (cdr (project-current))
