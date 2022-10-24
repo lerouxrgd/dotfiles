@@ -767,7 +767,8 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   :config
   (setq helm-ag-base-command "rg --no-heading"
         helm-ag-success-exit-status '(0 2)
-        helm-ag-insert-at-point 'symbol))
+        helm-ag-insert-at-point 'symbol
+        helm-ag-show-status-function nil))
 
 (use-package helm-xref
   :config (advice-add 'helm-xref-goto-xref-item :after 'recenter-middle))
