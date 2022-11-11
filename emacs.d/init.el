@@ -355,7 +355,8 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
     '("-m" "Omit merge commits" "--no-merges"))
   (setq magit-diff-refine-hunk t)
   (advice-add 'magit-diff-visit-file-other-window :after 'recenter-middle)
-  (advice-add 'magit-diff-buffer-file :after 'recenter-middle)
+  (advice-add 'magit-diff-buffer-file :after
+              (lambda () (select-window (selected-window)) (recenter-middle)))
 
   (use-package magit-todos
     :config (magit-todos-mode))
