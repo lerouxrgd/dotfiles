@@ -344,6 +344,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
 (use-package magit
   :bind (("C-x g" . magit-status)
+         ("C-x D" . magit-diff-buffer-file)
          :map magit-status-mode-map
          ("<M-return>" . magit-diff-visit-file-other-window)
          :map magit-diff-mode-map
@@ -368,6 +369,21 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   (use-package code-review
     :config
     (setq code-review-auth-login-marker 'forge)))
+
+(use-package git-gutter
+  :hook (prog-mode . git-gutter-mode)
+  :bind (("C-x C-<up>"   . git-gutter:previous-hunk)
+         ("C-x C-<down>" . git-gutter:next-hunk))
+  :config
+  (advice-add 'git-gutter:previous-hunk :after 'recenter-middle)
+  (advice-add 'git-gutter:next-hunk :after 'recenter-middle)
+  (setq git-gutter:update-interval 0.02))
+
+(use-package git-gutter-fringe
+  :config
+  (define-fringe-bitmap 'git-gutter-fr:added [224] nil nil '(center repeated))
+  (define-fringe-bitmap 'git-gutter-fr:modified [224] nil nil '(center repeated))
+  (define-fringe-bitmap 'git-gutter-fr:deleted [128 192 224 240] nil nil 'bottom))
 
 (use-package git-timemachine
   :bind ("C-x G" . git-timemachine))
