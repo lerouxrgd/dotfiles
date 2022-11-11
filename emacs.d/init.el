@@ -214,7 +214,7 @@ Buffers visiting files not existing/readable will be killed."
 
 (defun recenter-middle (&rest _)
   "Recenter to middle position, ignore params, useful when used as an advice."
-  (recenter))
+  (select-window (selected-window)) (recenter))
 
 (defun defer-garbage-collection-h ()
   "Deactivate gc, used for minibuffer."
@@ -344,6 +344,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
 (use-package magit
   :bind (("C-x g" . magit-status)
+         ("C-x G" . magit-status-here)
          ("C-x D" . magit-diff-buffer-file)
          :map magit-status-mode-map
          ("<M-return>" . magit-diff-visit-file-other-window)
@@ -353,10 +354,11 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   :config
   (transient-append-suffix 'magit-log "-A"
     '("-m" "Omit merge commits" "--no-merges"))
+
   (setq magit-diff-refine-hunk t)
   (advice-add 'magit-diff-visit-file-other-window :after 'recenter-middle)
-  (advice-add 'magit-diff-buffer-file :after
-              (lambda () (select-window (selected-window)) (recenter-middle)))
+  (advice-add 'magit-diff-buffer-file :after 'recenter-middle)
+  (advice-add 'magit-status-here :after 'recenter-middle)
 
   (use-package magit-todos
     :config (magit-todos-mode))
@@ -389,7 +391,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   (define-fringe-bitmap 'git-gutter-fr:deleted [128 192 224 240] nil nil 'bottom))
 
 (use-package git-timemachine
-  :bind ("C-x G" . git-timemachine))
+  :bind ("C-x T" . git-timemachine))
 
 (use-package ediff
   :ensure nil
