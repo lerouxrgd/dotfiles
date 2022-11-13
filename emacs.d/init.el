@@ -1268,7 +1268,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 (use-package rust-mode
   :bind (:map rust-mode-map
               ("C-c C-o" . rust-occur-definitions))
-  :hook (rust-mode . lsp)
+  :hook (rust-mode . lsp-deferred)
   :config
   (setq rust-format-on-save t)
   (defun rust-occur-definitions ()
