@@ -391,7 +391,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   (define-fringe-bitmap 'git-gutter-fr:deleted [128 192 224 240] nil nil 'bottom))
 
 (use-package git-timemachine
-  :bind ("C-x T" . git-timemachine))
+  :bind ("C-x H" . git-timemachine))
 
 (use-package ediff
   :ensure nil
@@ -834,7 +834,8 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
         lsp-ui-doc-show-with-cursor t
         lsp-ui-doc-position 'at-point))
 
-(use-package lsp-treemacs :after (lsp-mode treemacs))
+(use-package lsp-treemacs
+  :bind ("C-x T" . lsp-treemacs-symbols))
 
 (use-package lsp-origami
   :after lsp-mode
