@@ -1309,7 +1309,6 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 (use-package pest-mode
   :hook (pest-mode . flymake-mode))
 
-(use-package wgsl-mode
-  :quelpa (wgsl-mode :fetcher github :repo "acowley/wgsl-mode"))
+(use-package wgsl-mode)
 
 ;;; init.el ends here
