@@ -829,6 +829,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
     (kill-buffer "*lsp-diagnostics*")
     (recenter-middle))
   (setq lsp-ui-sideline-enable nil
+        lsp-lens-enable nil
         lsp-ui-doc-enable nil
         lsp-ui-doc-show-with-mouse nil
         lsp-ui-doc-show-with-cursor t
