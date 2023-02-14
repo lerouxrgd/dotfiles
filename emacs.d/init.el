@@ -936,7 +936,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Scientific ;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; sudo pacman -Syu texlive-core
+;; sudo pacman -Syu texlive-core texlive-latexextra texlive-fontsextra
 (use-package latex-preview-pane
   :config (setq pdf-latex-command "xelatex"))
 
