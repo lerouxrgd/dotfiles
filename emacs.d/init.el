@@ -810,7 +810,11 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   :init
   (setq lsp-keymap-prefix "C-z"
         lsp-enable-symbol-highlighting nil
-        lsp-signature-doc-lines 2))
+        lsp-signature-doc-lines 2)
+  :config
+  (setq company-transformers nil
+        company-lsp-async t
+        company-lsp-cache-candidates nil))
 
 (use-package lsp-ui
   :hook (lsp-mode . lsp-ui-mode)
@@ -1135,48 +1139,27 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;; C/C++ ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; https://github.com/MaskRay/emacs-ccls
-
 ;; sudo pacman -Syu clang
-;; pamac install ccls
-;; pip install --user compiledb cmake_format
-
-(use-package ccls
-  :hook ((c-mode c++-mode objc-mode) . setup-ccls)
+;; pip install --user compiledb
+(use-package cc-mode
+  :ensure nil
+  :hook
+  (((c-mode c++-mode objc-mode cuda-mode) . lsp-deferred)
+   ((c-mode c++-mode objc-mode cuda-mode) . setup-cc-lsp))
   :bind (:map c-mode-base-map
               ("C-c C-c" . ff-find-other-file))
-  :init
-  (setq flycheck-disabled-checkers
-        '(c/c++-clang c/c++-cppcheck c/c++-gcc))
   :config
-  (defun setup-ccls ()
-    (when (derived-mode-p 'c-mode 'c++-mode 'objc-mode)
-      (clang-format-buffer)
-      (require 'ccls)
-      (lsp)
-      (define-key lsp-command-map (kbd "ci") 'ccls-inheritance-hierarchy)
-      (define-key lsp-command-map (kbd "cc") 'ccls-call-hierarchy)
-      (define-key lsp-command-map (kbd "cm") 'ccls-member-hierarchy)
-      (define-key lsp-command-map (kbd "cl") 'ccls-code-lens-mode)
-      (which-key-add-major-mode-key-based-replacements
-        major-mode (concat lsp-keymap-prefix " c") "ccls")))
-  :custom
-  (ff-search-directories
-   '("." "/usr/include" "/usr/local/include/*" ; original values
-     "../include" "../../include/" "../src/*/*")))
+  (defun setup-cc-lsp ()
+    (when (derived-mode-p 'c-mode 'c++-mode 'objc-mode 'cuda-mode)
+      (add-hook 'before-save-hook 'lsp-format-buffer t)
+      )))
 
-(use-package clang-format
-  :load-path "/usr/share/clang"
-  :hook (before-save . clang-format-code)
-  :config
-  (defun clang-format-code ()
-    (interactive)
-    (when (derived-mode-p 'c-mode 'c++-mode 'objc-mode)
-      (clang-format-buffer))))
+(use-package cuda-mode)
 
 (use-package modern-cpp-font-lock
-  :hook (c++-mode . modern-c++-font-lock-mode))
+  :hook (( c++-mode cuda-mode) . modern-c++-font-lock-mode))
 
+;; pip install --user cmake-format
 (use-package cmake-mode
   :bind (:map cmake-mode-map
               ("C-c C-f" . cmake-format-buffer))
