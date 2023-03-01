@@ -91,13 +91,14 @@
   (put 'downcase-region 'disabled nil) ; Allow downcase selection
 
   (setq
-   inhibit-splash-screen      t
-   inhibit-startup-message    t
-   initial-major-mode         'fundamental-mode
-   uniquify-buffer-name-style 'forward
-   ring-bell-function         'ignore
-   ad-redefinition-action     'accept
-   split-height-threshold     nil)
+   inhibit-splash-screen                    t
+   inhibit-startup-message                  t
+   native-comp-async-report-warnings-errors 'silent
+   initial-major-mode                       'fundamental-mode
+   uniquify-buffer-name-style               'forward
+   ring-bell-function                       'ignore
+   ad-redefinition-action                   'accept
+   split-height-threshold                   nil)
 
   (setq-default
    fill-column      88  ; Right margin when filling paragraphs
@@ -743,7 +744,6 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 ;;          ("M-o" . hs-show-all)))
 
 (use-package helm
-  :preface (require 'helm-config)
   :bind (("C-x x" . helm-command-prefix)
          :map helm-command-map
          ("SPC" . helm-all-mark-rings)
