@@ -814,7 +814,9 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   :config
   (setq company-transformers nil
         company-lsp-async t
-        company-lsp-cache-candidates nil))
+        company-lsp-cache-candidates nil
+        lsp-lens-enable nil
+        lsp-signature-doc-lines 2))
 
 (use-package lsp-ui
   :hook (lsp-mode . lsp-ui-mode)
