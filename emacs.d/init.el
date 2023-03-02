@@ -302,9 +302,19 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
          ([tab] . company-abort))
   :config
   (setq company-tooltip-align-annotations t
+        company-tooltip-minimum-width 50
+        company-tooltip-maximum-width 100
         company-selection-wrap-around t)
-  (use-package company-quickhelp
-    :config (company-quickhelp-mode)))
+  (use-package company-posframe
+    :init (setq company-posframe-quickhelp-show-header nil)
+    :config
+    (company-posframe-mode 1)
+    (define-key company-posframe-active-map (kbd "<C-return>")
+               'company-posframe-quickhelp-toggle)
+    (define-key company-posframe-active-map (kbd "C-<up>")
+               'company-posframe-quickhelp-scroll-down)
+    (define-key company-posframe-active-map (kbd "C-<down>")
+               'company-posframe-quickhelp-scroll-up)))
 
 (use-package flycheck
   :hook (after-init . global-flycheck-mode)
@@ -810,13 +820,11 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   :init
   (setq lsp-keymap-prefix "C-z"
         lsp-enable-symbol-highlighting nil
-        lsp-signature-doc-lines 2)
-  :config
-  (setq company-transformers nil
-        company-lsp-async t
-        company-lsp-cache-candidates nil
         lsp-lens-enable nil
-        lsp-signature-doc-lines 2))
+        lsp-signature-doc-lines 2
+        company-transformers nil
+        company-lsp-async t
+        company-lsp-cache-candidates nil))
 
 (use-package lsp-ui
   :hook (lsp-mode . lsp-ui-mode)
@@ -835,7 +843,6 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
     (kill-buffer "*lsp-diagnostics*")
     (recenter-middle))
   (setq lsp-ui-sideline-enable nil
-        lsp-lens-enable nil
         lsp-ui-doc-enable nil
         lsp-ui-doc-show-with-mouse nil
         lsp-ui-doc-show-with-cursor t
