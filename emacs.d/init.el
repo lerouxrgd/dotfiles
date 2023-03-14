@@ -1298,7 +1298,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
 (use-package ron-mode)
 
-;; cargo install pesta
+;; cargo install pesta pest_fmt
 (use-package pest-mode
   :hook (pest-mode . flymake-mode))
 
