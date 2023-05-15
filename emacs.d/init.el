@@ -9,9 +9,6 @@
 
 ;;;;;;;;;;;;;;;;;;;; Package management ;;;;;;;;;;;;;;;;;;;;
 
-;; As of Emacs 27 it is no longer necessary to call `package-initialize'
-(setq package--initialized t)
-
 (require 'package)
 (setq package-archives
       '(("gnu"          . "https://elpa.gnu.org/packages/")
@@ -22,9 +19,6 @@
   (package-refresh-contents)
   (package-install 'use-package))
 
-(eval-when-compile
-  (require 'use-package))
-
 (use-package use-package
   :config (setq use-package-always-ensure t))
 
@@ -34,6 +28,10 @@
   :config
   (setq quelpa-update-melpa-p nil
         quelpa-checkout-melpa-p nil))
+
+;; TODO: Remove when using Emacs 29
+(use-package sqlite3
+  :config (require 'sqlite3))
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Interface ;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -52,9 +50,11 @@
         all-the-icons-default-adjust 0.0))
 
 (use-package doom-modeline
+  :pin melpa-stable
   :hook (window-setup . doom-modeline-mode)
   :config
   (setq doom-modeline-icon t
+        doom-modeline-height 25
         doom-modeline-major-mode-icon nil
         doom-modeline-minor-modes t
         doom-modeline-buffer-file-name-style 'relative-from-project
@@ -382,9 +382,11 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   ;; git config --global github.user lerouxrgd
   ;; machine api.github.com login lerouxrgd^forge password token_xxx
   (use-package forge)
-  (use-package code-review
-    :config
-    (setq code-review-auth-login-marker 'forge)))
+  ;; TODO: reactivate later ...
+  ;; (use-package code-review
+  ;;   :config
+  ;;   (setq code-review-auth-login-marker 'forge))
+  )
 
 (use-package git-gutter
   :hook (prog-mode . git-gutter-mode)
@@ -966,6 +968,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;; Lisp ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (use-package emacs
+  :ensure nil
   :hook (emacs-lisp-mode . (lambda () (setq flycheck-check-syntax-automatically
                                             '(mode-enabled save)))))
 
