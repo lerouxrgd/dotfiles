@@ -1251,6 +1251,21 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 (use-package go-eldoc
   :hook (go-mode . go-eldoc-setup))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;; Godot ;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; pip install gdtoolkit
+(use-package gdscript-mode
+  :hook (gdscript-mode . lsp-deferred)
+  :bind (:map gdscript-comint--mode-map
+              ("q" . (lambda ()
+                       (interactive)
+                       (let ((kill-buffer-query-functions nil))
+                         (kill-current-buffer))))
+              ("k" . kill-current-buffer))
+  :config
+  (setq lsp-gdscript-port 6008
+        warning-suppress-types '((lsp-mode))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;; Rust ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; https://github.com/rust-lang/rust-mode
