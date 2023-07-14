@@ -24,6 +24,7 @@
 
 (use-package gnu-elpa-keyring-update)
 
+(use-package quelpa)
 (use-package quelpa-use-package
   :config
   (setq quelpa-update-melpa-p nil
@@ -361,7 +362,10 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
          ("<M-return>" . magit-diff-visit-file-other-window)
          :map magit-diff-mode-map
          ("<M-return>" . magit-diff-visit-file-other-window)
-         ("<backtab>"  . magit-section-cycle-diffs))
+         ("<backtab>"  . magit-section-cycle-diffs)
+         :map my-keymap
+         ("g" . magit-status-current-window)
+         ("G" . magit-status-here-current-window))
   :config
   (transient-append-suffix 'magit-log "-A"
     '("-m" "Omit merge commits" "--no-merges"))
@@ -371,22 +375,44 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   (advice-add 'magit-diff-buffer-file :after 'recenter-middle)
   (advice-add 'magit-status-here :after 'recenter-middle)
 
+  (defun magit-status-current-window ()
+    (interactive)
+    (let ((magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1))
+      (magit-status)))
+
+  (defun magit-status-here-current-window ()
+    (interactive)
+    (let ((magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1))
+      (magit-status-here)))
+
   (use-package magit-todos
     :config (magit-todos-mode))
 
   (use-package magit-ediff
     :ensure nil
     :config
-    (setq magit-ediff-dwim-show-on-hunks t))
+    (setq magit-ediff-dwim-show-on-hunks t)))
 
-  ;; git config --global github.user lerouxrgd
-  ;; machine api.github.com login lerouxrgd^forge password token_xxx
-  (use-package forge)
-  ;; TODO: reactivate later ...
-  ;; (use-package code-review
-  ;;   :config
-  ;;   (setq code-review-auth-login-marker 'forge))
-  )
+(use-package forge
+  :after magit)
+
+;; git config --global github.user lerouxrgd
+;; (~/.authinfo.gpg) machine api.github.com login lerouxrgd^forge password token_xxx
+(use-package code-review
+  ;; https://github.com/wandersoncferreira/code-review/issues/245
+  ;; https://github.com/wandersoncferreira/code-review/pull/246
+  :quelpa (code-review
+           :fetcher github
+           :repo "phelrine/code-review"
+           :branch "fix/closql-update")
+  :ensure nil
+  :after magit
+  :bind ((:map magit-status-mode-map
+               ("C-c r" . code-review-forge-pr-at-point))
+         (:map code-review-mode-map
+               ("<M-return>" . magit-diff-visit-file-other-window)))
+  :config
+  (setq code-review-auth-login-marker 'forge))
 
 (use-package git-gutter
   :hook (prog-mode . git-gutter-mode)
