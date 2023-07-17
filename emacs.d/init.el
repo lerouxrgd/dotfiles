@@ -1299,9 +1299,9 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 ;; https://github.com/kwrooijen/cargo.el
 
 ;; rustup toolchain install stable
-;; rustup component add rust-src rust-analysis
+;; rustup component add rust-src rust-analyzer
 
-;; sudo pacman -Syu rust-analyzer sccache lld
+;; sudo pacman -Syu sccache lld
 ;; sudo pacman -Syu cargo-edit cargo-outdated
 (use-package rust-mode
   :bind (:map rust-mode-map
