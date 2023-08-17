@@ -9,30 +9,23 @@
 
 ;;;;;;;;;;;;;;;;;;;; Package management ;;;;;;;;;;;;;;;;;;;;
 
-(require 'package)
 (setq package-archives
       '(("gnu"          . "https://elpa.gnu.org/packages/")
+        ("nongnu"       . "https://elpa.nongnu.org/nongnu/")
         ("melpa"        . "https://melpa.org/packages/")
         ("melpa-stable" . "https://stable.melpa.org/packages/")))
-
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
 
 (use-package use-package
   :config (setq use-package-always-ensure t))
 
 (use-package gnu-elpa-keyring-update)
 
-(use-package quelpa)
-(use-package quelpa-use-package
+(use-package quelpa
   :config
   (setq quelpa-update-melpa-p nil
-        quelpa-checkout-melpa-p nil))
-
-;; TODO: Remove when using Emacs 29
-(use-package sqlite3
-  :config (require 'sqlite3))
+        quelpa-checkout-melpa-p nil
+        quelpa-melpa-recipe-stores '())
+  (use-package quelpa-use-package))
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Interface ;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -81,15 +74,15 @@
 (use-package emacs
   :ensure nil
   :config
-  (blink-cursor-mode    -1) ; Turn off blinking cursor
-  (show-paren-mode       1) ; Highlight matching parenthesis
-  (column-number-mode    1) ; Show column number
-  (delete-selection-mode 1) ; Force selected text deletion
+  (blink-cursor-mode    -1)             ; Turn off blinking cursor
+  (show-paren-mode       1)             ; Highlight matching parenthesis
+  (column-number-mode    1)             ; Show column number
+  (delete-selection-mode 1)             ; Force selected text deletion
 
   (prefer-coding-system 'utf-8)
   (fset 'yes-or-no-p 'y-or-n-p)
-  (put 'upcase-region   'disabled nil) ; Allow upcase selection
-  (put 'downcase-region 'disabled nil) ; Allow downcase selection
+  (put 'upcase-region   'disabled nil)  ; Allow upcase selection
+  (put 'downcase-region 'disabled nil)  ; Allow downcase selection
 
   (setq
    inhibit-splash-screen                    t
@@ -102,8 +95,8 @@
    split-height-threshold                   nil)
 
   (setq-default
-   fill-column      88  ; Right margin when filling paragraphs
-   indent-tabs-mode nil ; Don't use hard tabs
+   fill-column      88     ; Right margin when filling paragraphs
+   indent-tabs-mode nil    ; Don't use hard tabs
    tab-width        4)
 
   ;; Setup line highlighting
@@ -115,16 +108,16 @@
   (setq scroll-step 1
         scroll-margin 0
         scroll-conservatively 10000
-        scroll-preserve-screen-position 1
+        scroll-preserve-screen-position 'always
         mouse-wheel-scroll-amount '(1 ((shift) . 1)))
 
   ;; Setup local files
   (setq
-   backup-directory-alist '(("." . "~/.emacs.d/backups"))
-   custom-file            "~/.emacs.d/custom.el"
+   backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
+   custom-file            (concat user-emacs-directory "custom.el")
    auth-sources           '("~/.authinfo.gpg")
-   create-lockfiles       nil   ; No need for ~ files when editing
-   auto-save-default      nil)  ; No auto-save of file-visiting buffers
+   create-lockfiles       nil           ; No need for ~ files when editing
+   auto-save-default      nil)          ; No auto-save of file-visiting buffers
   (add-hook 'emacs-startup-hook
             (lambda ()
               (when (file-exists-p custom-file)
@@ -149,7 +142,8 @@
 
 (defun project-or-root ()
   "If git project, find root, otherwise find where Emacs was started."
-  (or (cdr (project-current))
+  (or (vc-root-dir)
+      (cdr (project-current))
       (with-current-buffer "*scratch*" default-directory)))
 
 (defun toggle-comment-on-line ()
@@ -241,6 +235,14 @@ Buffers visiting files not existing/readable will be killed."
   (push-mark isearch-other-end)
   (activate-mark))
 
+(defun isearch-with-region ()
+  "Use region as the isearch text."
+  (when mark-active
+    (let ((region (funcall region-extract-function nil)))
+      (deactivate-mark)
+      (isearch-push-state)
+      (isearch-yank-string region))))
+
 (defun kill-word-no-ring (arg)
   "Delete characters backward until encountering the beginning of a word.
 With ARG, do this that many times.  Does not push text to `kill-ring'."
@@ -259,10 +261,11 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 (advice-add 'dedup-pop-to-mark          :after  'recenter-middle)
 (advice-add 'pop-to-mark-command        :around 'dedup-pop-to-mark)
 
-(add-hook 'kill-buffer-query-functions     'unkillable-scratch-buffer)
-(add-hook 'before-save-hook                'delete-trailing-whitespace)
-(add-hook 'minibuffer-setup-hook           'defer-garbage-collection-h)
-(add-hook 'minibuffer-exit-hook            'restore-garbage-collection-h)
+(add-hook 'kill-buffer-query-functions 'unkillable-scratch-buffer)
+(add-hook 'before-save-hook            'delete-trailing-whitespace)
+(add-hook 'minibuffer-setup-hook       'defer-garbage-collection-h)
+(add-hook 'minibuffer-exit-hook        'restore-garbage-collection-h)
+(add-hook 'isearch-mode-hook           'isearch-with-region)
 
 (define-key isearch-mode-map (kbd "<C-return>") 'isearch-exit-mark-match)
 
@@ -293,7 +296,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 (use-package smex
   :bind ("M-x" . smex)
   :config
-  (setq smex-save-file "~/.emacs.d/smex-items")
+  (setq smex-save-file (concat user-emacs-directory "smex-items"))
   (smex-initialize))
 
 (use-package company
@@ -399,8 +402,8 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 ;; git config --global github.user lerouxrgd
 ;; (~/.authinfo.gpg) machine api.github.com login lerouxrgd^forge password token_xxx
 (use-package code-review
-  ;; https://github.com/wandersoncferreira/code-review/issues/245
-  ;; https://github.com/wandersoncferreira/code-review/pull/246
+  ;; FIXME: https://github.com/wandersoncferreira/code-review/issues/245
+  ;; FIXME: https://github.com/wandersoncferreira/code-review/pull/246
   :quelpa (code-review
            :fetcher github
            :repo "phelrine/code-review"
@@ -479,7 +482,6 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
 (use-package recentf
   :ensure nil
-  :defer 1
   :config
   (setq recentf-max-saved-items 50
         recentf-max-menu-items 35
@@ -644,6 +646,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   (eyebrowse-mode t))
 
 (use-package treemacs
+  :pin melpa-stable
   :after doom-themes
   :bind (("C-x t" . treemacs-project)
          :map treemacs-mode-map
@@ -663,7 +666,9 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
     (treemacs-select-window))
 
   (use-package treemacs-magit)
-  (doom-themes-treemacs-config)
+  (use-package treemacs-all-the-icons
+    :config (treemacs-load-theme "all-the-icons"))
+
   (setq treemacs-read-string-input 'from-minibuffer
         treemacs-collapse-dirs 7
         treemacs-file-follow-delay 0))
@@ -701,8 +706,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
                ("a"   . symbol-overlay-put)
                ("M-a" . symbol-overlay-remove-all)
                ("M-<" . symbol-overlay-switch-backward)
-               ("M->" . symbol-overlay-switch-forward)
-               )
+               ("M->" . symbol-overlay-switch-forward))
          (:map symbol-overlay-mode-map
                ("C-M-n" . symbol-overlay-jump-next)
                ("C-M-p" . symbol-overlay-jump-prev)))
@@ -719,67 +723,21 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   (advice-add 'symbol-overlay-switch-forward  :after 'recenter-middle)
   (setq symbol-overlay-idle-time 0.2))
 
-(use-package imenu-list
-  :config
-  (global-set-key (kbd "C-'") #'imenu-list-smart-toggle)
-  (setq imenu-list-focus-after-activation t))
-
 (use-package avy
   :bind (("C-\\"  . avy-goto-word-1)
          ("M-g g". avy-goto-line)))
 
 (use-package goto-line-preview
   :config
-  (defun with-linum (f &rest args)
-    (linum-mode 1)
+  (defun with-line-numbers (f &rest args)
+    (display-line-numbers-mode 1)
     (unwind-protect
         (apply f args)
-      (linum-mode -1)))
-
-  (advice-add 'goto-line-preview :around 'with-linum)
+      (display-line-numbers-mode -1)))
+  (advice-add 'goto-line-preview :around 'with-line-numbers)
   (advice-add 'goto-line-preview--do :after 'recenter-middle)
   (setq goto-line-preview-after-hook 'recenter-middle)
-
   (global-set-key [remap goto-line] 'goto-line-preview))
-
-(use-package origami
-  :bind-keymap ("M-o" . origami-mode-map)
-  :bind (:map origami-mode-map
-              ("M-o M-o" . origami-recursively-toggle-node)
-              ("M-o M-." . origami-forward-fold)
-              ("M-o M-," . origami-previous-fold)
-              ("M-o M-r" . origami-reset)
-              ("M-o O"   . origami-show-only-node)
-              ("M-o <"   . origami-close-all-nodes)
-              ("M-o >"   . origami-open-all-nodes)
-              ("M-o /"   . origami-undo)
-              ("M-o ?"   . origami-redo))
-  :config (global-origami-mode))
-
-(use-package fold-this
-  :after selected
-  :bind ((:map selected-keymap
-               ("o" . fold-this-or-rest))
-         (:map my-keymap
-               ("M-o" . fold-this-unfold-all)))
-  :init
-  (defun fold-this-or-rest (&optional arg)
-    (interactive "P")
-    (if (not arg)
-        (fold-this (region-beginning) (region-end))
-      ;; fold-all-but-this
-      (fold-this (point-min) (region-beginning))
-      (fold-this (region-end) (point-max))
-      (deactivate-mark)))
-  :config
-  (custom-set-faces
-   `(fold-this-overlay ((t (:foreground ,(doom-color 'white)))))))
-
-;; (use-package hideshow
-;;   :hook (prog-mode . hs-minor-mode)
-;;   :bind (("M-o" . hs-toggle-hiding)
-;;          :map my-keymap
-;;          ("M-o" . hs-show-all)))
 
 (use-package helm
   :bind (("C-x x" . helm-command-prefix)
@@ -805,8 +763,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   (setq helm-fd-mode-line-function nil)
   (defun helm-fd-project ()
     (interactive)
-    (let ((directory (or (cdr (project-current))
-                         (with-current-buffer "*scratch*" default-directory))))
+    (let ((directory (project-or-root)))
       (helm-fd-1 directory))))
 
 (use-package helm-c-yasnippet
@@ -822,11 +779,10 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
 ;; sudo pacman -Syu ripgrep
 (use-package helm-ag
-  :defer 1
   :bind (("C-c c" . (lambda () (interactive) (helm-do-ag (project-or-root))))
          ("C-c C" . (lambda () (interactive) (helm-do-ag default-directory))))
   :config
-  (setq helm-ag-base-command "rg --no-heading"
+  (setq helm-ag-base-command "rg -S --no-heading"
         helm-ag-success-exit-status '(0 2)
         helm-ag-insert-at-point 'symbol
         helm-ag-show-status-function nil))
@@ -839,6 +795,44 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   (setq xref-backend-functions (remq 'etags--xref-backend xref-backend-functions)
         dumb-jump-selector 'helm)
   (add-to-list 'xref-backend-functions #'dumb-jump-xref-activate t))
+
+(use-package ov
+  :bind (("M-o M->" . ov-goto-next)
+         ("M-o M-<" . ov-goto-prev))
+  :config
+  (advice-add 'ov-goto-next :after 'recenter-middle)
+  (advice-add 'ov-goto-prev :after 'recenter-middle))
+
+;;;;;;;;;;;;;;;;;;;;;;; Tree Sitter ;;;;;;;;;;;;;;;;;;;;;;;;
+
+(use-package tree-sitter
+  :preface
+  (setq treesit-language-source-alist '())
+  (defun ensure-treesit (grammar-spec)
+    (add-to-list 'treesit-language-source-alist grammar-spec)
+    (unless (treesit-language-available-p (car grammar-spec))
+      (treesit-install-language-grammar (car grammar-spec))))
+  :config
+  (add-to-list 'tree-sitter-major-mode-language-alist '(rust-ts-mode   . rust))
+  (add-to-list 'tree-sitter-major-mode-language-alist '(python-ts-mode . python))
+  (add-to-list 'tree-sitter-major-mode-language-alist '(lua-ts-mode    . lua))
+  (add-to-list 'tree-sitter-major-mode-language-alist '(yaml-ts-mode   . yaml))
+  (use-package tree-sitter-langs)
+  (use-package ts-fold
+    ;; FIXME: https://github.com/emacs-tree-sitter/ts-fold/issues/48
+    :quelpa (ts-fold :fetcher github :repo "emacs-tree-sitter/ts-fold")
+    :bind (("M-o M-o" . ts-fold-toggle)
+           ("M-o o"   . ts-fold-open-all)
+           ("M-o O"   . ts-fold-close-all))
+    :config
+    (add-to-list 'ts-fold-range-alist `(rust-ts-mode   . ,(ts-fold-parsers-rust)))
+    (add-to-list 'ts-fold-range-alist `(python-ts-mode . ,(ts-fold-parsers-python)))
+    (add-to-list 'ts-fold-range-alist `(lua-ts-mode    . ,(ts-fold-parsers-lua)))
+    (add-to-list 'ts-fold-range-alist `(yaml-ts-mode   . ,(ts-fold-parsers-yaml)))
+    (global-ts-fold-mode)))
+
+(use-package combobulate
+  :quelpa (combobulate :fetcher github :repo "mickeynp/combobulate"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;; LSP ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -877,12 +871,12 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
         lsp-ui-doc-position 'at-point))
 
 (use-package lsp-treemacs
-  :bind ("C-x T" . lsp-treemacs-symbols))
-
-(use-package lsp-origami
-  :after lsp-mode
-  :bind (:map lsp-command-map
-              ("To" . lsp-origami-mode)))
+  :bind ("C-x T" . lsp-treemacs-symbols)
+  :config
+  (setq lsp-treemacs-symbols-position-params
+        `((side . right)
+          (slot . 2)
+          (window-width . ,treemacs-width))))
 
 (use-package helm-lsp
   :after lsp-mode
@@ -897,23 +891,27 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 (use-package highlight-indent-guides
   :config (setq highlight-indent-guides-method 'character))
 
-(use-package toml-mode
+;; sudo pacman -Syu taplo-cli
+(use-package toml-ts-mode
+  :preface (ensure-treesit '(toml "https://github.com/tree-sitter/tree-sitter-toml"))
+  :hook
+  ((toml-ts-mode . lsp-deferred)
+   (toml-ts-mode . (lambda () (add-hook 'before-save-hook 'lsp-format-buffer t)))
+   (toml-ts-mode . turn-on-tree-sitter-mode))
   :mode "\\.toml\\'")
 
 (use-package json-mode
   :mode (("\\.json\\'" . json-mode)
          ("\\.avsc\\'" . json-mode))
+  :hook (json-mode . turn-on-tree-sitter-mode)
   :config (setq js-indent-level 2))
 
 (use-package protobuf-mode)
 
-(use-package dockerfile-mode
-  :mode "Dockerfile\\'")
-
 (use-package mustache-mode)
 
 ;; sudo pacman -Syu marked
-;; pip install --user grip
+;; pipx install grip
 (use-package markdown-mode
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'"       . markdown-mode)
@@ -925,17 +923,19 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   (setq markdown-command "marked"
         markdown-live-preview-delete-export 'delete-on-export))
 
-(use-package rfc-mode)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;; Ops ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; sudo pacman -Syu yaml-language-server
-(use-package yaml-mode
-  :hook (yaml-mode
-         . (lambda () (local-set-key (kbd "<backtab>") 'company-complete)))
-  :bind (:map yaml-mode-map
+(use-package yaml-ts-mode
+  :preface (ensure-treesit '(yaml "https://github.com/ikatyang/tree-sitter-yaml"))
+  :mode "\\.\\(e?ya?\\|ra\\)ml\\'"
+  :hook
+  ((yaml-ts-mode . turn-on-tree-sitter-mode)
+   (yaml-ts-mode . combobulate-mode))
+  :bind (:map yaml-ts-mode-map
               ("C-c C-s" . helm-lsp-yaml-select-buffer-schema))
   :config
+  (setq lsp-yaml-format-enable nil)
   (defun helm-lsp-yaml-select-buffer-schema ()
     "Run lsp-yaml-select-buffer-schema in temporary helm-mode."
     (interactive)
@@ -947,18 +947,10 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
       (helm-mode -1)
       (ido-everywhere 1))))
 
-(use-package yaml-pro
-  :hook ((yaml-mode . yaml-pro-mode))
-  :bind (:map yaml-mode-map
-              ("M-C-u"    . yaml-pro-up-level)
-              ("M-C-n"    . yaml-pro-next-subtree)
-              ("M-C-p"    . yaml-pro-prev-subtree)
-              ("M-<down>" . yaml-pro-move-subtree-down)
-              ("M-<up>"   . yaml-pro-move-subtree-up)
-              ("C-c C-k"  . yaml-pro-kill-subtree)
-              ("C-c M-o"  . yaml-pro-fold-at-point)
-              ("C-c C-o"  . yaml-pro-unfold-at-point)
-              ("C-c '"    . yaml-pro-edit-scalar)))
+;; pamac install dockerfile-language-server
+(use-package dockerfile-ts-mode
+  :preface (ensure-treesit '(dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile"))
+  :mode "\\(?:Dockerfile\\(?:\\..*\\)?\\|\\.[Dd]ockerfile\\)\\'")
 
 (use-package terraform-mode
   :hook (terraform-mode . terraform-format-on-save-mode)
@@ -966,30 +958,11 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   (use-package company-terraform
     :config (company-terraform-init)))
 
-(use-package restclient
-  :config
-  (use-package restclient-helm)
-  (use-package company-restclient
-    :hook (restclient-mode
-           . (lambda () (add-to-list 'company-backends 'company-restclient)))
-    :bind (:map restclient-mode-map
-                ("C-c TAB" . company-complete))))
-
 ;;;;;;;;;;;;;;;;;;;;;;;; Scientific ;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; sudo pacman -Syu texlive-core texlive-latexextra texlive-fontsextra
 (use-package latex-preview-pane
   :config (setq pdf-latex-command "xelatex"))
-
-;; sudo pacman -Syu tk gcc-fortran
-;; install.packages("lintr")
-(use-package ess
-  :mode (("\\.[rR]\\'" . ess-r-mode)
-         ("\\.jl\\'"   . julia-mode))
-  :hook (ess-mode
-         . (lambda () (local-set-key (kbd "TAB") 'company-indent-or-complete-common)))
-  :config
-  (setq ess-use-flymake nil))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;; Lisp ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -1018,22 +991,8 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
 ;;;;;;;;;;;;;;;;;;;;;;;;; Clojure ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; https://github.com/clojure-emacs/clojure-mode
-;; https://github.com/clojure-emacs/cider
-;; https://github.com/clojure-emacs/clj-refactor.el
-;; https://github.com/borkdude/flycheck-clj-kondo
-
-;; https://github.com/technomancy/leiningen
-;; https://github.com/thheller/shadow-cljs
-;; https://github.com/borkdude/clj-kondo
-;; https://github.com/snoe/clojure-lsp
-;; https://github.com/weavejester/cljfmt
-
 ;; sudo pacman -Syu leiningen
-;; pamac install nodejs-shadow-cljs
-;; pamac install clj-kondo-bin
-;; pamac install clojure-lsp-bin
-
+;; pamac install nodejs-shadow-cljs clj-kondo-bin clojure-lsp-bin
 (use-package clojure-mode
   :mode (("\\.clj\\'"  . clojure-mode)
          ("\\.edn\\'"  . clojure-mode)
@@ -1057,7 +1016,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   (advice-add 'cider-find-var :after 'recenter-middle)
   (setq cider-repl-display-help-banner nil
         cider-prompt-for-symbol nil
-        cider-repl-history-file "~/.emacs.d/cider-history"
+        cider-repl-history-file (concat user-emacs-directory "cider-history")
         cider-repl-tab-command
         (lambda () (company-indent-or-complete-common (symbol-at-point)))))
 
@@ -1080,208 +1039,84 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   (cljr-add-keybindings-with-prefix "C-c C-SPC")
   (setq cljr-warn-on-eval nil))
 
-;;;;;;;;;;;;;;;;;;;;;;;; Java/Scala ;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; https://github.com/emacs-lsp/lsp-java
-;; https://github.com/scalameta/metals
-
-;; pamac install jdtls
-;; pamac install metals
-
-(use-package lsp-java
-  :defer 1
-  :config (add-hook 'java-mode-hook 'lsp))
-
-(use-package scala-mode
-  :mode "\\.s\\(cala\\|bt\\)$")
-
-;;;;;;;;;;;;;;;;;;;;;;;; Javascript ;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; https://github.com/codesuki/add-node-modules-path
-
-(use-package js
-  :hook (js-mode . (lambda () (local-set-key (kbd "M-.") 'xref-find-definitions))))
-
-(use-package add-node-modules-path
-  :hook (js-mode . add-node-modules-path))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;; Erlang ;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; https://erlang.org/doc/man/erlang.el.html
-;; https://github.com/erlang/rebar3
-;; https://github.com/erlang-ls/erlang_ls
-
-;; sudo pacman -Syu erlang
-;; pamac install rebar3
-;; pamac install erlang_ls-git
-
-(use-package erlang
-  :no-require t
-  :config (require 'erlang-start))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;; Lua ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(use-package lua-mode)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;; Haxe ;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; https://github.com/emacsorphanage/haxe-mode
-;; https://github.com/vshaxe/haxe-language-server
-;; https://deepnight.net/tutorial/a-quick-guide-to-installing-haxe/
-
-;; sudo pacman -Syu haxe
-;; pamac install hashlink
-;; mkdir -p ~/.haxe-language-server/bin/
-
-(use-package haxe-mode
-  :config (add-hook 'haxe-mode-hook 'lsp))
+;; sudo pacman -Syu lua-language-server
+(use-package lua-ts-mode
+  :preface (ensure-treesit '(lua "https://github.com/MunifTanjim/tree-sitter-lua"))
+  :quelpa (lua-ts-mode :fetcher git :url "https://git.sr.ht/~johnmuhl/lua-ts-mode")
+  :mode "\\.lua\\'"
+  :hook
+  ((lua-ts-mode . lsp-deferred)
+   (lua-ts-mode . (lambda () (add-hook 'before-save-hook 'lsp-format-buffer t)))
+   (lua-ts-mode . turn-on-tree-sitter-mode)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;; Python ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; https://github.com/jorgenschaefer/elpy
-;; https://github.com/galaunay/poetry.el
-;; https://github.com/brotzeit/pippel
-;; https://github.com/millejoh/emacs-ipython-notebook
-
-;; sudo pacman -Syu ipython pyenv jupyter
-;; pip install --user jedi black flake8 pylint
-
-(use-package elpy
-  :pin melpa-stable
-  :init
-  (advice-add 'python-mode :before 'elpy-enable)
+;; sudo pacman -Syu python-pipx pyenv ipython
+(use-package python
+  :preface (ensure-treesit '(python "https://github.com/tree-sitter/tree-sitter-python"))
+  :mode ("\\.py[iw]?\\'" . python-ts-mode)
   :hook
-  ((python-mode          . highlight-indent-guides-mode)
-   (elpy-mode            . (lambda () (add-hook 'before-save-hook 'elpy-format-code)))
-   (inferior-python-mode . (lambda () (local-set-key (kbd "TAB") 'company-complete))))
-  :bind (:map elpy-mode-map
-              ("<C-down>" . forward-paragraph)
-              ("<C-up>"   . backward-paragraph))
-  :config
-  (advice-add 'elpy-format-code :after 'recenter-middle)
-  (setq python-shell-interpreter "ipython"
-        python-shell-interpreter-args "--simple-prompt -i"
-        ;; elpy-syntax-check-command "pylint"
-        elpy-rpc-virtualenv-path 'current
-        elpy-modules (->> elpy-modules
-                          (delq 'elpy-module-flymake)
-                          (delq 'elpy-module-highlight-indentation))))
+  ((python-ts-mode . turn-on-tree-sitter-mode)
+   (python-ts-mode . combobulate-mode)
+   (python-ts-mode . (lambda ()
+                       (define-key selected-keymap
+                                   (kbd "TAB")
+                                   'combobulate-python-indent-for-tab-command)))))
 
+;; sudo pacman -Syu pyright
+(use-package lsp-pyright
+  :hook (python-ts-mode . lsp-deferred))
+
+;; sudo pacman -Syu python-black
+(use-package python-black
+  :hook (python-ts-mode . python-black-on-save-mode))
+
+;; sudo pacman -Syu python-poetry
 (use-package poetry
-  :hook (python-mode . (lambda () (local-set-key (kbd "C-c p") 'poetry))))
+  :hook (python-ts-mode . (lambda () (local-set-key (kbd "C-c p") 'poetry))))
 
-(use-package pippel
-  :after python-mode)
-
-(use-package ein)
+(use-package pippel)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;; C/C++ ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; sudo pacman -Syu clang
-;; pip install --user compiledb
+;; pipx install compiledb
 (use-package cc-mode
   :ensure nil
   :hook
   (((c-mode c++-mode objc-mode cuda-mode) . lsp-deferred)
-   ((c-mode c++-mode objc-mode cuda-mode) . setup-cc-lsp))
+   ((c-mode c++-mode objc-mode cuda-mode) . (lambda ()
+                                              (add-hook 'before-save-hook
+                                                        'lsp-format-buffer t))))
   :bind (:map c-mode-base-map
-              ("C-c C-c" . ff-find-other-file))
-  :config
-  (defun setup-cc-lsp ()
-    (when (derived-mode-p 'c-mode 'c++-mode 'objc-mode 'cuda-mode)
-      (add-hook 'before-save-hook 'lsp-format-buffer t)
-      )))
+              ("C-c C-c" . ff-find-other-file)))
 
 (use-package cuda-mode)
 
 (use-package modern-cpp-font-lock
   :hook (( c++-mode cuda-mode) . modern-c++-font-lock-mode))
 
-;; pip install --user cmake-format
-(use-package cmake-mode
-  :bind (:map cmake-mode-map
-              ("C-c C-f" . cmake-format-buffer))
-  :config
-  (defun cmake-format-buffer ()
-    (interactive)
-    (let ((line (save-excursion (beginning-of-line) (1+ (count-lines 1 (point)))))
-          (col  (save-excursion (goto-char (point)) (current-column)))
-          (conf (current-window-configuration))
-          (buf  (current-buffer)))
-
-      (when-let (buf (get-buffer "*cmake-format*"))
-        (kill-buffer buf))
-
-      (with-current-buffer (get-buffer-create "*cmake-format*")
-        (insert-buffer-substring buf)
-        (let ((ret (shell-command-on-region
-                    (point-min) (point-max)
-                    "cmake-format - "
-                    (current-buffer) nil
-                    "*cmake-format*" t)))
-          (cond
-           ((zerop ret)
-            (copy-to-buffer buf (point-min) (point-max))
-            (kill-buffer)
-            (set-window-configuration conf)
-            (with-no-warnings (goto-line line))
-            (move-to-column col t)
-            (recenter-top-bottom))
-           (t
-            (special-mode)
-            (select-window (get-buffer-window "*cmake-format*")))))))))
-
-(use-package cmake-font-lock
-  :hook (cmake-mode . cmake-font-lock-activate))
-
-(use-package eldoc-cmake
-  :hook (cmake-mode . eldoc-cmake-enable))
+;; pipx install cmake-language-server
+(use-package cmake-ts-mode
+  :preface (ensure-treesit '(cmake "https://github.com/uyha/tree-sitter-cmake"))
+  :mode ("CMakeLists\\.txt\\'" "\\.cmake\\'")
+  :hook ((cmake-ts-mode . lsp-deferred)
+         (cmake-ts-mode . (lambda () (add-hook 'before-save-hook 'lsp-format-buffer t)))))
 
 (use-package glsl-mode
   :bind (:map glsl-mode-map
               ("C-c C-c" . ff-find-other-file)
               ("C-?"     . glsl-find-man-page)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;; Go ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; https://github.com/dominikh/go-mode.el
-;; https://github.com/dominikh/go-errcheck.el
-;; https://github.com/golang/lint
-;; https://github.com/rogpeppe/godef
-;; https://github.com/nsf/gocode#emacs-setup
-;; https://github.com/syohex/emacs-go-eldoc
-
-;; go get -u golang.org/x/tools/cmd/...
-;; go get -u golang.org/x/lint/golint
-;; go get -u github.com/rogpeppe/godef/...
-;; go get -u github.com/nsf/gocode
-;; go get -u github.com/kisielk/errcheck
-
-(use-package go-mode
-  :mode "\\.go\\'"
-  :bind (:map go-mode-map
-              ("M-."   . godef-jump)
-              ("M-,"   . pop-tag-mark)
-              ("C-c r" . go-rename))
-  :hook (before-save . gofmt-before-save)
-  :config
-  (setq gofmt-command "goimports")
-  (use-package go-guru
-    :config (define-key go-mode-map (kbd "C-c C-c") 'go-guru-map))
-  (use-package go-rename)
-  (use-package go-errcheck)
-  (use-package golint)
-  (use-package company-go
-    :hook (go-mode . (lambda () (add-to-list 'company-backends 'company-go)))))
-
-(use-package go-eldoc
-  :hook (go-mode . go-eldoc-setup))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;; Godot ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; pip install gdtoolkit
+;; pipx install gdtoolkit
 (use-package gdscript-mode
-  :hook (gdscript-mode . lsp-deferred)
+  :preface (ensure-treesit '(gdscript "https://github.com/PrestonKnopp/tree-sitter-gdscript"))
+  :mode ("\\.gd\\'" . gdscript-ts-mode)
+  :hook (gdscript-ts-mode . lsp-deferred)
   :bind (:map gdscript-comint--mode-map
               ("q" . (lambda ()
                        (interactive)
@@ -1294,21 +1129,20 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;; Rust ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; https://github.com/rust-lang/rust-mode
-;; https://github.com/flycheck/flycheck-rust
-;; https://github.com/kwrooijen/cargo.el
-
 ;; rustup toolchain install stable
 ;; rustup component add rust-src rust-analyzer
-
-;; sudo pacman -Syu sccache lld
 ;; sudo pacman -Syu cargo-edit cargo-outdated
-(use-package rust-mode
-  :bind (:map rust-mode-map
+;; sudo pacman -Syu sccache lld
+(use-package rust-ts-mode
+  :preface (ensure-treesit '(rust "https://github.com/tree-sitter/tree-sitter-rust"))
+  :mode "\\.rs\\'"
+  :bind (:map rust-ts-mode-map
               ("C-c C-o" . rust-occur-definitions))
-  :hook (rust-mode . lsp-deferred)
+  :hook
+  ((rust-ts-mode . lsp-deferred)
+   (rust-ts-mode . (lambda () (add-hook 'before-save-hook 'lsp-format-buffer t)))
+   (rust-ts-mode . turn-on-tree-sitter-mode))
   :config
-  (setq rust-format-on-save t)
   (defun rust-occur-definitions ()
     (interactive)
     (let ((list-matching-lines-face nil))
@@ -1332,19 +1166,31 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
       (put 'list-matching-lines-face 'permanent-local t))))
 
 (use-package flycheck-rust
-  :after rust-mode
+  :after rust-ts-mode
   :hook (flycheck-mode . flycheck-rust-setup))
 
 (use-package cargo
-  :hook (rust-mode . cargo-minor-mode)
-  :config
-  (setq cargo-process--command-clippy "clippy"))
+  :hook (rust-ts-mode . cargo-minor-mode)
+  :config (setq cargo-process--command-clippy "clippy"))
 
 (use-package ron-mode)
 
 ;; cargo install pesta pest_fmt
 (use-package pest-mode
   :hook (pest-mode . flymake-mode))
+
+(use-package poporg
+  :after rust-ts-mode
+  :bind (:map rust-ts-mode-map ("C-c \"" . poporg-dwim))
+  :init
+  (setq rustdoc-attributes '("ignore" "should_panic" "no_run" "compile_fail" "edition2018"))
+  :config
+  (setq poporg-edit-hook '(gfm-mode)
+        poporg-comment-skip-regexp "[[:space:]!/]*"
+        markdown-fontify-code-block-default-mode 'rust-ts-mode)
+  (defun markdown-get-lang-rust-mode (lang)
+    (if (member lang rustdoc-attributes) 'rust-mode))
+  (advice-add 'markdown-get-lang-mode :before-until 'markdown-get-lang-rust-mode))
 
 (use-package wgsl-mode)
 
