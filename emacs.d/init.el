@@ -37,27 +37,17 @@
    doom-theme
    `(hl-line ((t (:background ,(doom-color 'bg-alt)))))))
 
-;; M-x all-the-icons-install-fonts
-(use-package all-the-icons
-  :config
-  (setq all-the-icons-scale-factor 1.0
-        all-the-icons-default-adjust 0.0))
+;; M-x nerd-icons-install-fonts
+(use-package nerd-icons)
 
 (use-package doom-modeline
-  :pin melpa-stable
   :hook (window-setup . doom-modeline-mode)
   :config
   (setq doom-modeline-icon t
-        doom-modeline-height 25
         doom-modeline-major-mode-icon nil
         doom-modeline-minor-modes t
         doom-modeline-buffer-file-name-style 'relative-from-project
         doom-modeline-buffer-encoding nil)
-
-  (add-hook 'helm-minibuffer-set-up-hook
-            (lambda () (advice-add #'doom-modeline--active :override (lambda () t))))
-  (add-hook 'helm-cleanup-hook
-            (lambda () (advice-remove #'doom-modeline--active (lambda () t))))
 
   (custom-set-faces
    `(mode-line-inactive
@@ -666,8 +656,8 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
     (treemacs-select-window))
 
   (use-package treemacs-magit)
-  (use-package treemacs-all-the-icons
-    :config (treemacs-load-theme "all-the-icons"))
+  (use-package treemacs-nerd-icons
+    :config (treemacs-load-theme "nerd-icons"))
 
   (setq treemacs-read-string-input 'from-minibuffer
         treemacs-collapse-dirs 7
