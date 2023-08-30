@@ -133,7 +133,7 @@
 (defun project-or-root ()
   "If git project, find root, otherwise find where Emacs was started."
   (or (vc-root-dir)
-      (cdr (project-current))
+      (caddr (project-current))
       (with-current-buffer "*scratch*" default-directory)))
 
 (defun toggle-comment-on-line ()
@@ -912,6 +912,8 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
                 ("g" . grip-mode)))
   (setq markdown-command "marked"
         markdown-live-preview-delete-export 'delete-on-export))
+
+(use-package sql-cassandra)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;; Ops ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
