@@ -379,7 +379,9 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
       (magit-status-here)))
 
   (use-package magit-todos
-    :config (magit-todos-mode))
+    :config
+    (magit-todos-mode)
+    (setq magit-todos-nice nil))
 
   (use-package magit-ediff
     :ensure nil
@@ -635,47 +637,42 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   (define-key eyebrowse-mode-map (kbd "M-4") 'eyebrowse-switch-to-window-config-4)
   (eyebrowse-mode t))
 
-(use-package treemacs
-  :pin melpa-stable
-  :after doom-themes
-  :bind (("C-x t" . treemacs-project)
-         :map treemacs-mode-map
-         ("C-<tab>"         . (lambda () (interactive)))
-         ("<C-iso-lefttab>" . (lambda () (interactive))))
-
-  :config
-  (defun treemacs--restore ())
-  (defun treemacs--persist ())
-  (defun treemacs-project ()
-    (interactive)
-    (unless (treemacs-current-workspace)
-      (treemacs--find-workspace))
-    (treemacs-do-add-project-to-workspace
-     (project-or-root)
-     (-> (project-or-root) (split-string "/" "") (last) (car)))
-    (treemacs-select-window))
-
-  (use-package treemacs-magit)
-  (use-package treemacs-nerd-icons
-    :config (treemacs-load-theme "nerd-icons"))
-
-  (setq treemacs-read-string-input 'from-minibuffer
-        treemacs-collapse-dirs 7
-        treemacs-file-follow-delay 0))
-
 (use-package dired
   :ensure nil
   :hook (dired-mode . dired-hide-details-mode)
   :config
-  (use-package dired-subtree
-    :bind (:map dired-mode-map
-                ("<right>" . dired-subtree-insert)
-                ("<left>"  . dired-subtree-remove)))
   (use-package dired-git-info
     :bind (:map dired-mode-map
                 (")" . dired-git-info-mode)))
   (use-package diredfl
     :config (diredfl-global-mode 1)))
+
+(use-package dirvish
+  :init (dirvish-override-dired-mode)
+  :bind (("C-x t" . dirvish-side)
+         :map dirvish-mode-map
+         ("TAB"             . dirvish-subtree-toggle)
+         ("C-<tab>"         . (lambda () (interactive)))
+         ("<C-iso-lefttab>" . (lambda () (interactive)))
+         ("C-<return>"      . (lambda () (interactive)
+                                (dired-find-file)
+                                (dirvish-side)
+                                (dirvish-quit))))
+  :config
+  (setq delete-by-moving-to-trash t
+        dirvish-mode-line-height 22
+        dirvish-attributes '(nerd-icons
+                             file-time
+                             subtree-state
+                             vc-state)
+        dirvish-subtree-state-style 'nerd
+        dired-listing-switches (concat "-l "
+                                       "--almost-all "
+                                       "--human-readable "
+                                       "--group-directories-first "
+                                       "--no-group ")
+        dirvish-side-window-parameters '((no-delete-other-windows . t)))
+  (dirvish-side-follow-mode))
 
 (use-package occur
   :ensure nil
@@ -859,14 +856,6 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
         lsp-ui-doc-show-with-mouse nil
         lsp-ui-doc-show-with-cursor t
         lsp-ui-doc-position 'at-point))
-
-(use-package lsp-treemacs
-  :bind ("C-x T" . lsp-treemacs-symbols)
-  :config
-  (setq lsp-treemacs-symbols-position-params
-        `((side . right)
-          (slot . 2)
-          (window-width . ,treemacs-width))))
 
 (use-package helm-lsp
   :after lsp-mode
