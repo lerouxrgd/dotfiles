@@ -769,6 +769,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   :bind (("C-c c" . (lambda () (interactive) (helm-do-ag (project-or-root))))
          ("C-c C" . (lambda () (interactive) (helm-do-ag default-directory))))
   :config
+  (advice-add 'helm-ag--edit :after 'selected-minor-mode)
   (setq helm-ag-base-command "rg -S --no-heading"
         helm-ag-success-exit-status '(0 2)
         helm-ag-insert-at-point 'symbol
