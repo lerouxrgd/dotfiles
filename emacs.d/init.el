@@ -660,7 +660,17 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
                                 (dirvish-side)
                                 (dirvish-quit))))
   :config
+  (defun dirvish-side-selectable-window (orig-fun &rest args)
+    (-if-let (win (dirvish-side--session-visible-p))
+        (progn
+          (set-window-parameter win 'no-other-window nil)
+          (let ((res (apply orig-fun args)))
+            (set-window-parameter win 'no-other-window t)
+            res))
+      (apply orig-fun args)))
+  (advice-add 'windmove-do-window-select :around 'dirvish-side-selectable-window)
   (setq delete-by-moving-to-trash t
+        dirvish-reuse-session nil
         dirvish-mode-line-height 22
         dirvish-attributes '(nerd-icons
                              file-time
@@ -672,7 +682,8 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
                                        "--human-readable "
                                        "--group-directories-first "
                                        "--no-group ")
-        dirvish-side-window-parameters '((no-delete-other-windows . t)))
+        dirvish-side-window-parameters '((no-delete-other-windows . t)
+                                         (no-other-window . t)))
   (dirvish-side-follow-mode))
 
 (use-package occur
