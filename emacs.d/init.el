@@ -82,6 +82,7 @@
    uniquify-buffer-name-style               'forward
    ring-bell-function                       'ignore
    ad-redefinition-action                   'accept
+   mode-require-final-newline               nil
    split-height-threshold                   nil)
 
   (setq-default
