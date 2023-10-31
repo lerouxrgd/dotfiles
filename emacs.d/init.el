@@ -1081,6 +1081,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   :ensure nil
   :hook
   (((c-mode c++-mode objc-mode cuda-mode) . lsp-deferred)
+   ((c-mode c++-mode objc-mode cuda-mode) . (lambda () (c-toggle-comment-style -1)))
    ((c-mode c++-mode objc-mode cuda-mode) . (lambda ()
                                               (add-hook 'before-save-hook
                                                         'lsp-format-buffer t))))
