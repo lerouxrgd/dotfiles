@@ -1090,7 +1090,9 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
                                               (add-hook 'before-save-hook
                                                         'lsp-format-buffer t))))
   :bind (:map c-mode-base-map
-              ("C-c C-c" . ff-find-other-file)))
+              ("C-c C-c" . ff-find-other-file))
+  :config
+  (advice-add 'c-update-modeline :around 'ignore))
 
 (use-package cuda-mode)
 
