@@ -640,7 +640,11 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
 (use-package dired
   :ensure nil
-  :hook (dired-mode . dired-hide-details-mode)
+  :hook ((dired-mode . dired-hide-details-mode)
+         (dired-mode . (lambda ()
+                         (rename-buffer
+                          (generate-new-buffer-name
+                           (format "*dired: %s*" (buffer-name)))))))
   :config
   (use-package dired-git-info
     :bind (:map dired-mode-map
