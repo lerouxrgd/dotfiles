@@ -657,6 +657,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   :bind (("C-x t" . dirvish-side)
          :map dirvish-mode-map
          ("TAB"             . dirvish-subtree-toggle)
+         ("."               . dired-create-empty-file)
          ("C-<tab>"         . (lambda () (interactive)))
          ("<C-iso-lefttab>" . (lambda () (interactive)))
          ("C-<return>"      . (lambda () (interactive)
