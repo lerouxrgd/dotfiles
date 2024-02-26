@@ -676,7 +676,8 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   (advice-add 'windmove-do-window-select :around 'dirvish-side-selectable-window)
   (setq delete-by-moving-to-trash t
         dirvish-reuse-session nil
-        dirvish-mode-line-height 22
+        dirvish-mode-line-height 23
+        dirvish-header-line-height 20
         dirvish-attributes '(nerd-icons
                              file-time
                              subtree-state
@@ -1133,7 +1134,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
 ;; rustup toolchain install stable
 ;; rustup component add rust-src rust-analyzer
-;; sudo pacman -Syu cargo-edit cargo-outdated
+;; sudo pacman -Syu cargo-edit cargo-outdated cargo-msrv
 ;; sudo pacman -Syu sccache lld
 (use-package rust-ts-mode
   :preface (ensure-treesit '(rust "https://github.com/tree-sitter/tree-sitter-rust"))
