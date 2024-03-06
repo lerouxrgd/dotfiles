@@ -1057,13 +1057,25 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 (use-package python
   :preface (ensure-treesit '(python "https://github.com/tree-sitter/tree-sitter-python"))
   :mode ("\\.py[iw]?\\'" . python-ts-mode)
+  :bind (:map python-ts-mode-map
+              ("C-c C-o" . python-occur-definitions))
   :hook
   ((python-ts-mode . turn-on-tree-sitter-mode)
    (python-ts-mode . combobulate-mode)
    (python-ts-mode . (lambda ()
                        (define-key selected-keymap
                                    (kbd "TAB")
-                                   'combobulate-python-indent-for-tab-command)))))
+                                   'combobulate-python-indent-for-tab-command))))
+  :config
+  (defun python-occur-definitions ()
+    "Display an occur buffer of all definitions in the current buffer."
+    (interactive)
+    (let ((list-matching-lines-face nil))
+      (occur "^\s*\\(\\(async\s\\|\\)def\\|class\\)\s"))
+    (let ((window (get-buffer-window "*Occur*")))
+      (if window
+          (select-window window)
+        (switch-to-buffer "*Occur*")))))
 
 ;; sudo pacman -Syu pyright
 (use-package lsp-pyright
