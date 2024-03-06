@@ -86,6 +86,7 @@
    split-height-threshold                   nil)
 
   (setq-default
+   imenu-sort-function 'imenu--sort-by-position
    fill-column      88     ; Right margin when filling paragraphs
    indent-tabs-mode nil    ; Don't use hard tabs
    tab-width        4)
@@ -850,6 +851,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
         lsp-enable-symbol-highlighting nil
         lsp-lens-enable nil
         lsp-signature-doc-lines 2
+        lsp-imenu-sort-methods '(position)
         company-transformers nil
         company-lsp-async t
         company-lsp-cache-candidates nil))
@@ -871,6 +873,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
     (kill-buffer "*lsp-diagnostics*")
     (recenter-middle))
   (setq lsp-ui-sideline-enable nil
+        lsp-ui-imenu-auto-refresh t
         lsp-ui-doc-enable nil
         lsp-ui-doc-show-with-mouse nil
         lsp-ui-doc-show-with-cursor t
