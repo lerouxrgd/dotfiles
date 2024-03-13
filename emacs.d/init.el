@@ -1188,9 +1188,11 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   :after rust-ts-mode
   :hook (flycheck-mode . flycheck-rust-setup))
 
+(use-package rust-mode
+  :hook (rust-ts-mode . (lambda () (require 'rust-compile))))
+
 (use-package cargo
-  :hook (rust-ts-mode . cargo-minor-mode)
-  :config (setq cargo-process--command-clippy "clippy"))
+  :hook (rust-ts-mode . cargo-minor-mode))
 
 (use-package ron-mode)
 
