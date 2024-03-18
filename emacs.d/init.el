@@ -25,7 +25,8 @@
   (setq quelpa-update-melpa-p nil
         quelpa-checkout-melpa-p nil
         quelpa-melpa-recipe-stores '())
-  (use-package quelpa-use-package))
+  (use-package quelpa-use-package
+    :config (quelpa-use-package-activate-advice)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Interface ;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -60,6 +61,12 @@
 
 (use-package minions
   :config (minions-mode 1))
+
+(use-package popup
+  :config
+  (custom-set-faces
+   `(popup-tip-face
+     ((t (:background "#35424a" :foreground ,(doom-color 'white)))))))
 
 (use-package emacs
   :ensure nil
@@ -352,13 +359,13 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 (use-package magit
   :bind (("C-x g" . magit-status)
          ("C-x G" . magit-status-here)
-         ("C-x D" . magit-diff-buffer-file)
          :map magit-status-mode-map
          ("<M-return>" . magit-diff-visit-file-other-window)
          :map magit-diff-mode-map
          ("<M-return>" . magit-diff-visit-file-other-window)
          ("<backtab>"  . magit-section-cycle-diffs)
          :map my-keymap
+         ("d" . magit-diff-buffer-file)
          ("g" . magit-status-current-window)
          ("G" . magit-status-here-current-window))
   :config
@@ -414,7 +421,8 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 (use-package git-gutter
   :hook (prog-mode . git-gutter-mode)
   :bind (("C-x C-<up>"   . git-gutter:previous-hunk)
-         ("C-x C-<down>" . git-gutter:next-hunk))
+         ("C-x C-<down>" . git-gutter:next-hunk)
+         ("C-x D"        . git-gutter:popup-hunk))
   :config
   (advice-add 'git-gutter:previous-hunk :after 'recenter-middle)
   (advice-add 'git-gutter:next-hunk :after 'recenter-middle)
@@ -428,6 +436,18 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
 (use-package git-timemachine
   :bind ("C-x H" . git-timemachine))
+
+(use-package git-messenger
+  :quelpa (git-messenger :fetcher github :repo "cnsunyour/git-messenger")
+  :bind ("C-x M" . git-messenger:popup-message)
+  :config
+  (defun git-messenger:popup-show ()
+    (interactive)
+    (magit-show-commit git-messenger:last-commit-id)
+    (recenter-middle)
+    (git-messenger:popup-close))
+  (setq git-messenger:show-detail t
+        git-messenger:use-magit-popup t))
 
 (use-package ediff
   :ensure nil
@@ -638,6 +658,13 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   (define-key eyebrowse-mode-map (kbd "M-3") 'eyebrowse-switch-to-window-config-3)
   (define-key eyebrowse-mode-map (kbd "M-4") 'eyebrowse-switch-to-window-config-4)
   (eyebrowse-mode t))
+
+(use-package popper
+  :bind ("C-`" . popper-toggle)
+  :init
+  (setq popper-reference-buffers '("\\*git-gutter:diff\\*"))
+  (popper-mode +1)
+  (popper-echo-mode +1))
 
 (use-package dired
   :ensure nil
