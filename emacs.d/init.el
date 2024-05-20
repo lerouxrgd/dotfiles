@@ -1116,6 +1116,10 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 (use-package python-black
   :hook (python-ts-mode . python-black-on-save-mode))
 
+;; sudo pacman -Syu python-isort
+(use-package python-isort
+  :hook (python-ts-mode . python-isort-on-save-mode))
+
 ;; sudo pacman -Syu python-poetry
 (use-package poetry
   :hook (python-ts-mode . (lambda () (local-set-key (kbd "C-c p") 'poetry))))
