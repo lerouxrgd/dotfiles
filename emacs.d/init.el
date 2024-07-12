@@ -614,9 +614,8 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
           try-expand-dabbrev-from-kill
           yas-hippie-try-expand)))
 
-(use-package undo-tree
-  :bind ("C-M-/" . undo-tree-visualize)
-  :config (global-undo-tree-mode))
+(use-package vundo
+  :bind ("C-M-/" . vundo))
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Navigation ;;;;;;;;;;;;;;;;;;;;;;;;
 
