@@ -510,9 +510,6 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
 ;;;;;;;;;;;;;;;;;;;;;;;;; Editing ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(use-package expand-region
-  :bind ("C-=" . er/expand-region))
-
 (use-package selected
   :bind (:map selected-keymap
               ("q" . selected-off)
@@ -522,6 +519,11 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
               ("m" . apply-macro-to-region-lines)
               ("d" . diffview-region))
   :init (selected-global-mode))
+
+(use-package expreg
+  :bind (:map selected-keymap
+              ("=" . expreg-expand)
+              ("-" . expreg-contract)))
 
 (use-package multiple-cursors
   :after selected
@@ -1191,7 +1193,8 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   :hook
   ((rust-ts-mode . lsp-deferred)
    (rust-ts-mode . (lambda () (add-hook 'before-save-hook 'lsp-format-buffer t)))
-   (rust-ts-mode . turn-on-tree-sitter-mode))
+   (rust-ts-mode . turn-on-tree-sitter-mode)
+   (rust-ts-mode . subword-mode))
   :config
   (defun rust-occur-definitions ()
     (interactive)
