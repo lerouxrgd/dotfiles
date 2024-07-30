@@ -1,3 +1,4 @@
 *
 !init.el
 !early-init.el
+!lua-ts-mode.el

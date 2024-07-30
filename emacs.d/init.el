@@ -835,38 +835,30 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
 (use-package ov
   :bind (("M-o M->" . ov-goto-next)
-         ("M-o M-<" . ov-goto-prev))
+         ("M-o M-<" . ov-goto-prev)
+         ("M-o DEL" . ov-clear))
   :config
   (advice-add 'ov-goto-next :after 'recenter-middle)
   (advice-add 'ov-goto-prev :after 'recenter-middle))
 
 ;;;;;;;;;;;;;;;;;;;;;;; Tree Sitter ;;;;;;;;;;;;;;;;;;;;;;;;
 
-(use-package tree-sitter
-  :preface
+(use-package treesit
+  :ensure nil
+  :config
   (setq treesit-language-source-alist '())
   (defun ensure-treesit (grammar-spec)
     (add-to-list 'treesit-language-source-alist grammar-spec)
     (unless (treesit-language-available-p (car grammar-spec))
-      (treesit-install-language-grammar (car grammar-spec))))
-  :config
-  (add-to-list 'tree-sitter-major-mode-language-alist '(rust-ts-mode   . rust))
-  (add-to-list 'tree-sitter-major-mode-language-alist '(python-ts-mode . python))
-  (add-to-list 'tree-sitter-major-mode-language-alist '(lua-ts-mode    . lua))
-  (add-to-list 'tree-sitter-major-mode-language-alist '(yaml-ts-mode   . yaml))
-  (use-package tree-sitter-langs)
-  (use-package ts-fold
-    ;; FIXME: https://github.com/emacs-tree-sitter/ts-fold/issues/48
-    :quelpa (ts-fold :fetcher github :repo "emacs-tree-sitter/ts-fold")
-    :bind (("M-o M-o" . ts-fold-toggle)
-           ("M-o o"   . ts-fold-open-all)
-           ("M-o O"   . ts-fold-close-all))
-    :config
-    (add-to-list 'ts-fold-range-alist `(rust-ts-mode   . ,(ts-fold-parsers-rust)))
-    (add-to-list 'ts-fold-range-alist `(python-ts-mode . ,(ts-fold-parsers-python)))
-    (add-to-list 'ts-fold-range-alist `(lua-ts-mode    . ,(ts-fold-parsers-lua)))
-    (add-to-list 'ts-fold-range-alist `(yaml-ts-mode   . ,(ts-fold-parsers-yaml)))
-    (global-ts-fold-mode)))
+      (treesit-install-language-grammar (car grammar-spec)))))
+
+(use-package treesit-fold
+  ;; FIXME: https://github.com/emacs-tree-sitter/treesit-fold/issues/11
+  :quelpa (treesit-fold :fetcher github :repo "emacs-tree-sitter/treesit-fold")
+  :bind (("M-o M-o" . treesit-fold-toggle)
+         ("M-o o"   . treesit-fold-open-all)
+         ("M-o O"   . treesit-fold-close-all))
+  :config (global-treesit-fold-mode))
 
 (use-package combobulate
   :quelpa (combobulate :fetcher github :repo "mickeynp/combobulate"))
@@ -924,18 +916,19 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
 ;; sudo pacman -Syu taplo-cli
 (use-package toml-ts-mode
-  :preface (ensure-treesit '(toml "https://github.com/tree-sitter/tree-sitter-toml"))
+  :init (ensure-treesit '(toml "https://github.com/tree-sitter/tree-sitter-toml"))
   :hook
   ((toml-ts-mode . lsp-deferred)
-   (toml-ts-mode . (lambda () (add-hook 'before-save-hook 'lsp-format-buffer t)))
-   (toml-ts-mode . turn-on-tree-sitter-mode))
+   (toml-ts-mode . (lambda () (add-hook 'before-save-hook 'lsp-format-buffer t))))
   :mode "\\.toml\\'")
 
-(use-package json-mode
-  :mode (("\\.json\\'" . json-mode)
-         ("\\.avsc\\'" . json-mode))
-  :hook (json-mode . turn-on-tree-sitter-mode)
-  :config (setq js-indent-level 2))
+(use-package json-ts-mode
+  :init (ensure-treesit '(json "https://github.com/tree-sitter/tree-sitter-json"))
+  :mode (("\\.json\\'" . json-ts-mode)
+         ("\\.avsc\\'" . json-ts-mode))
+  :config
+  (use-package json-mode)
+  (setq json-ts-mode-map json-mode-map))
 
 (use-package protobuf-mode)
 
@@ -960,11 +953,9 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
 ;; sudo pacman -Syu yaml-language-server
 (use-package yaml-ts-mode
-  :preface (ensure-treesit '(yaml "https://github.com/ikatyang/tree-sitter-yaml"))
+  :init (ensure-treesit '(yaml "https://github.com/ikatyang/tree-sitter-yaml"))
   :mode "\\.\\(e?ya?\\|ra\\)ml\\'"
-  :hook
-  ((yaml-ts-mode . turn-on-tree-sitter-mode)
-   (yaml-ts-mode . combobulate-mode))
+  :hook (yaml-ts-mode . combobulate-mode)
   :bind (:map yaml-ts-mode-map
               ("C-c C-s" . helm-lsp-yaml-select-buffer-schema))
   :config
@@ -982,7 +973,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
 ;; pamac install dockerfile-language-server
 (use-package dockerfile-ts-mode
-  :preface (ensure-treesit '(dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile"))
+  :init (ensure-treesit '(dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile"))
   :mode "\\(?:Dockerfile\\(?:\\..*\\)?\\|\\.[Dd]ockerfile\\)\\'")
 
 (use-package terraform-mode
@@ -1077,29 +1068,23 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
 ;; sudo pacman -Syu lua-language-server
 (use-package lua-ts-mode
-  :preface (ensure-treesit '(lua "https://github.com/MunifTanjim/tree-sitter-lua"))
-  :quelpa (lua-ts-mode :fetcher git :url "https://git.sr.ht/~johnmuhl/lua-ts-mode")
+  ;; FIXME: lua-ts-mode will be available in Emacs 30
+  :quelpa (lua-ts-mode :fetcher file :path "~/.emacs.d/lua-ts-mode.el")
+  :init (ensure-treesit '(lua "https://github.com/MunifTanjim/tree-sitter-lua"))
   :mode "\\.lua\\'"
   :hook
   ((lua-ts-mode . lsp-deferred)
-   (lua-ts-mode . (lambda () (add-hook 'before-save-hook 'lsp-format-buffer t)))
-   (lua-ts-mode . turn-on-tree-sitter-mode)))
+   (lua-ts-mode . (lambda () (add-hook 'before-save-hook 'lsp-format-buffer t)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;; Python ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; sudo pacman -Syu python-pipx pyenv ipython
 (use-package python
-  :preface (ensure-treesit '(python "https://github.com/tree-sitter/tree-sitter-python"))
+  :init (ensure-treesit '(python "https://github.com/tree-sitter/tree-sitter-python"))
   :mode ("\\.py[iw]?\\'" . python-ts-mode)
   :bind (:map python-ts-mode-map
               ("C-c C-o" . python-occur-definitions))
-  :hook
-  ((python-ts-mode . turn-on-tree-sitter-mode)
-   (python-ts-mode . combobulate-mode)
-   (python-ts-mode . (lambda ()
-                       (define-key selected-keymap
-                                   (kbd "TAB")
-                                   'combobulate-python-indent-for-tab-command))))
+  :hook (python-ts-mode . combobulate-mode)
   :config
   (defun python-occur-definitions ()
     "Display an occur buffer of all definitions in the current buffer."
@@ -1153,7 +1138,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
 ;; pipx install cmake-language-server
 (use-package cmake-ts-mode
-  :preface (ensure-treesit '(cmake "https://github.com/uyha/tree-sitter-cmake"))
+  :init (ensure-treesit '(cmake "https://github.com/uyha/tree-sitter-cmake"))
   :mode ("CMakeLists\\.txt\\'" "\\.cmake\\'")
   :hook ((cmake-ts-mode . lsp-deferred)
          (cmake-ts-mode . (lambda () (add-hook 'before-save-hook 'lsp-format-buffer t)))))
@@ -1167,7 +1152,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
 ;; pipx install gdtoolkit
 (use-package gdscript-mode
-  :preface (ensure-treesit '(gdscript "https://github.com/PrestonKnopp/tree-sitter-gdscript"))
+  :init (ensure-treesit '(gdscript "https://github.com/PrestonKnopp/tree-sitter-gdscript"))
   :mode ("\\.gd\\'" . gdscript-ts-mode)
   :hook (gdscript-ts-mode . lsp-deferred)
   :bind (:map gdscript-comint--mode-map
@@ -1187,14 +1172,13 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 ;; sudo pacman -Syu cargo-edit cargo-outdated cargo-msrv
 ;; sudo pacman -Syu sccache lld
 (use-package rust-ts-mode
-  :preface (ensure-treesit '(rust "https://github.com/tree-sitter/tree-sitter-rust"))
+  :init (ensure-treesit '(rust "https://github.com/tree-sitter/tree-sitter-rust"))
   :mode "\\.rs\\'"
   :bind (:map rust-ts-mode-map
               ("C-c C-o" . rust-occur-definitions))
   :hook
   ((rust-ts-mode . lsp-deferred)
    (rust-ts-mode . (lambda () (add-hook 'before-save-hook 'lsp-format-buffer t)))
-   (rust-ts-mode . turn-on-tree-sitter-mode)
    (rust-ts-mode . subword-mode))
   :config
   (defun rust-occur-definitions ()
