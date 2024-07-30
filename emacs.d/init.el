@@ -89,6 +89,7 @@
    uniquify-buffer-name-style               'forward
    ring-bell-function                       'ignore
    ad-redefinition-action                   'accept
+   eldoc-documentation-strategy             'eldoc-documentation-compose-eagerly
    mode-require-final-newline               nil
    split-height-threshold                   nil)
 
@@ -770,7 +771,8 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
       (display-line-numbers-mode -1)))
   (advice-add 'goto-line-preview :around 'with-line-numbers)
   (advice-add 'goto-line-preview--do :after 'recenter-middle)
-  (setq goto-line-preview-after-hook 'recenter-middle)
+  (setq goto-line-preview-after-hook 'recenter-middle
+        goto-line-preview-hl-duration 0)
   (global-set-key [remap goto-line] 'goto-line-preview))
 
 (use-package helm
