@@ -1175,7 +1175,8 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   :init (ensure-treesit '(rust "https://github.com/tree-sitter/tree-sitter-rust"))
   :mode "\\.rs\\'"
   :bind (:map rust-ts-mode-map
-              ("C-c C-o" . rust-occur-definitions))
+              ("C-c C-o" . rust-occur-definitions)
+              ("C-c TAB" . lsp-rust-analyzer-expand-macro))
   :hook
   ((rust-ts-mode . lsp-deferred)
    (rust-ts-mode . (lambda () (add-hook 'before-save-hook 'lsp-format-buffer t)))
@@ -1208,10 +1209,13 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   :hook (flycheck-mode . flycheck-rust-setup))
 
 (use-package rust-mode
+  :no-require t
   :hook (rust-ts-mode . (lambda () (require 'rust-compile))))
 
 (use-package cargo
-  :hook (rust-ts-mode . cargo-minor-mode))
+  :hook (rust-ts-mode . cargo-minor-mode)
+  :bind (:map cargo-minor-mode-command-map
+              ("C-S-t" . lsp-rust-analyzer-related-tests)))
 
 (use-package ron-mode)
 
