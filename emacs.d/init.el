@@ -1176,6 +1176,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   :mode "\\.rs\\'"
   :bind (:map rust-ts-mode-map
               ("C-c C-o" . rust-occur-definitions)
+              ("C-c C-d" . lsp-rust-analyzer-open-external-docs)
               ("C-c TAB" . lsp-rust-analyzer-expand-macro))
   :hook
   ((rust-ts-mode . lsp-deferred)
@@ -1236,6 +1237,16 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
     (if (member lang rustdoc-attributes) 'rust-mode))
   (advice-add 'markdown-get-lang-mode :before-until 'markdown-get-lang-rust-mode))
 
-(use-package wgsl-mode)
+;; pamac install wgsl-analyzer
+(use-package wgsl-mode
+  :hook
+  ((wgsl-mode . lsp-deferred)
+   (wgsl-mode . (lambda () (add-hook 'before-save-hook 'lsp-format-buffer t))))
+  :config
+  (setq c-basic-offset 4
+        c-offsets-alist ;; set with C-c C-o
+        '((label         . +)
+          (arglist-intro . +)
+          (arglist-close . -))))
 
 ;;; init.el ends here
