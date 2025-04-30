@@ -22,7 +22,7 @@ reverse_array() {
     shopt -u extdebug
 }
 
-emx() { setsid emacs $(reverse_array "$@") ;}
+emx() { setsid emacs $(reverse_array "$@") > /dev/null 2>&1 ;}
 
 # -e "(select-frame-set-input-focus (selected-frame))"
 emc() { setsid emacsclient -c -F "((undecorated . t) (fullscreen . maximized))" $@ > /dev/null 2>&1 ;}
