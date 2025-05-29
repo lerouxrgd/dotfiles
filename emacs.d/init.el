@@ -285,7 +285,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 (global-set-key (kbd "M-B")           'backward-whitespace)
 (global-set-key (kbd "s-z")           'switch-to-scratch-buffer)
 (global-set-key (kbd "C-;")           'toggle-comment-on-line)
-(global-set-key (kbd "C-R")           'revert-all-file-buffers)
+(global-set-key (kbd "C-S-R")         'revert-all-file-buffers)
 (global-set-key (kbd "C-z")            nil)
 
 ;;;;;;;;;;;;;;;;;;;;; General packages ;;;;;;;;;;;;;;;;;;;;;
@@ -556,6 +556,19 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
       (progn
         (define-key selected-keymap (kbd "}") nil)
         (define-key selected-keymap (kbd "{") nil)))))
+
+(use-package phi-search
+  :init
+  (add-hook 'multiple-cursors-mode-enabled-hook
+            (lambda ()
+              (interactive)
+              (global-set-key (kbd "C-s") 'phi-search)
+              (global-set-key (kbd "C-r") 'phi-search-backward)))
+  (add-hook 'multiple-cursors-mode-disabled-hook
+            (lambda ()
+              (interactive)
+              (global-set-key (kbd "C-s") 'isearch-forward)
+              (global-set-key (kbd "C-r") 'isearch-backward))))
 
 (use-package visual-regexp
   :bind (("C-M-S" . vr/isearch-forward)
