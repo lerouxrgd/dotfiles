@@ -1093,8 +1093,8 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   ((lua-ts-mode . lsp-deferred)
    (lua-ts-mode . (lambda () (add-hook 'before-save-hook 'lsp-format-buffer t))))
   :config
-  (setq lsp-lua-workspace-library
-        ["/usr/lib/lua-language-server/meta/3rd/Defold/library"]))
+  (setq lsp-lua-workspace-library   ["/usr/lib/lua-language-server/meta/3rd/Defold/library"]
+        lsp-lua-diagnostics-disable ["lowercase-global"]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;; Python ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
