@@ -1086,13 +1086,15 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
 ;; sudo pacman -Syu lua-language-server
 (use-package lua-ts-mode
-  ;; FIXME: lua-ts-mode will be available in Emacs 30
-  :quelpa (lua-ts-mode :fetcher file :path "~/.emacs.d/lua-ts-mode.el")
   :init (ensure-treesit '(lua "https://github.com/MunifTanjim/tree-sitter-lua"))
-  :mode "\\.lua\\'"
+  :mode (("\\.lua\\'"    . lua-ts-mode)
+         ("\\.script\\'" . lua-ts-mode))
   :hook
   ((lua-ts-mode . lsp-deferred)
-   (lua-ts-mode . (lambda () (add-hook 'before-save-hook 'lsp-format-buffer t)))))
+   (lua-ts-mode . (lambda () (add-hook 'before-save-hook 'lsp-format-buffer t))))
+  :config
+  (setq lsp-lua-workspace-library
+        ["/usr/lib/lua-language-server/meta/3rd/Defold/library"]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;; Python ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
