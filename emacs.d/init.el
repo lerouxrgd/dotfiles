@@ -1265,8 +1265,10 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   :config
   (setq c-basic-offset 4
         c-offsets-alist ;; set with C-c C-o
-        '((label         . +)
-          (arglist-intro . +)
-          (arglist-close . -))))
+        '((label              . +)
+          (arglist-intro      . +)
+          (arglist-close      . -)
+          (topmost-intro-cont . -)
+          )))
 
 ;;; init.el ends here
