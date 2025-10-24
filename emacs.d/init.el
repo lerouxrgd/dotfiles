@@ -946,6 +946,19 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
          ("\\.avsc\\'" . json-ts-mode))
   :config
   (use-package json-mode)
+  (defun json-minify-region (begin end)
+    "Minify (compress) JSON in region between BEGIN and END to a single line."
+    (interactive "r")
+    (let* ((json-str (buffer-substring-no-properties begin end))
+           (json-object-type 'alist)
+           (json-array-type 'list)
+           (json-key-type 'string)
+           (json-false nil)
+           (json-null nil)
+           (json-data (json-read-from-string json-str))
+           (minified (json-encode json-data)))
+      (delete-region begin end)
+      (insert minified)))
   (setq json-ts-mode-map json-mode-map))
 
 (use-package protobuf-mode)
