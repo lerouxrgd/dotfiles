@@ -128,6 +128,10 @@
 (use-package dash
   :config (global-dash-fontify-mode))
 
+(defconst my/emacs-start-dir
+  (expand-file-name command-line-default-directory)
+  "Directory where the Emacs process was started.")
+
 (defun unkillable-scratch-buffer ()
   "Disallow killing of scratch and delete its content instead."
   (if (equal (buffer-name (current-buffer)) "*scratch*")
@@ -141,10 +145,14 @@
   (switch-to-buffer "*scratch*"))
 
 (defun project-or-root ()
-  "If git project, find root, otherwise find where Emacs was started."
-  (or (vc-root-dir)
-      (caddr (project-current))
-      (with-current-buffer "*scratch*" default-directory)))
+  "Return Git root if available, otherwise Emacs startup directory."
+  (interactive)
+  (or
+   ;; Git repo root
+   (when-let ((root (vc-call-backend 'Git 'root default-directory)))
+     (expand-file-name root))
+   ;; Fallback: where Emacs was started
+   my/emacs-start-dir))
 
 (defun toggle-comment-on-line ()
   "Toggle comment on line and keep cursor on the toggled line."
@@ -697,7 +705,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
 (use-package dirvish
   :init (dirvish-override-dired-mode)
-  :bind (("C-x t" . dirvish-side)
+  :bind (("C-x t" . dirvish-side-smart-root)
          :map dirvish-mode-map
          ("TAB"             . dirvish-subtree-toggle)
          ("."               . dired-create-empty-file)
@@ -713,6 +721,13 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
                                 (dirvish-side)
                                 (dirvish-quit))))
   :config
+
+  (defun dirvish-side-smart-root ()
+    "Open dirvish-side rooted at Git repo or Emacs startup directory."
+    (interactive)
+    (let ((default-directory (project-or-root)))
+      (dirvish-side)))
+
   (defun dirvish-side-selectable-window (orig-fun &rest args)
     (-if-let (win (dirvish-side--session-visible-p))
         (progn
@@ -721,6 +736,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
             (set-window-parameter win 'no-other-window t)
             res))
       (apply orig-fun args)))
+
   (advice-add 'windmove-do-window-select :around 'dirvish-side-selectable-window)
   (setq delete-by-moving-to-trash t
         dirvish-reuse-session nil
