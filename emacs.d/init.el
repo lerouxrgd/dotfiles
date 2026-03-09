@@ -62,12 +62,6 @@
 (use-package minions
   :config (minions-mode 1))
 
-(use-package popup
-  :config
-  (custom-set-faces
-   `(popup-tip-face
-     ((t (:background "#35424a" :foreground ,(doom-color 'white)))))))
-
 (use-package emacs
   :ensure nil
   :config
@@ -125,12 +119,12 @@
 
 ;;;;;;;;;;;;;;;;;;;;; Custom functions ;;;;;;;;;;;;;;;;;;;;;
 
-(use-package dash
-  :config (global-dash-fontify-mode))
-
 (defconst my/emacs-start-dir
   (expand-file-name command-line-default-directory)
   "Directory where the Emacs process was started.")
+
+(use-package dash
+  :config (global-dash-fontify-mode))
 
 (defun unkillable-scratch-buffer ()
   "Disallow killing of scratch and delete its content instead."
@@ -446,18 +440,6 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 (use-package git-timemachine
   :bind ("C-x H" . git-timemachine))
 
-(use-package git-messenger
-  :quelpa (git-messenger :fetcher github :repo "cnsunyour/git-messenger")
-  :bind ("C-x M" . git-messenger:popup-message)
-  :config
-  (defun git-messenger:popup-show ()
-    (interactive)
-    (magit-show-commit git-messenger:last-commit-id)
-    (recenter-middle)
-    (git-messenger:popup-close))
-  (setq git-messenger:show-detail t
-        git-messenger:use-magit-popup t))
-
 (use-package ediff
   :ensure nil
   :config
@@ -674,6 +656,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 (use-package bufler
   :bind ("C-x C-b" . bufler))
 
+;; TODO: consider perspective-el instead
 (use-package eyebrowse
   :config
   (define-key eyebrowse-mode-map (kbd "M-1") 'eyebrowse-switch-to-window-config-1)
@@ -904,6 +887,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   :hook (lsp-mode . lsp-enable-which-key-integration)
   :init
   (setq lsp-keymap-prefix "C-z"
+        lsp-format-buffer-on-save t
         lsp-enable-symbol-highlighting nil
         lsp-lens-enable nil
         lsp-signature-doc-lines 2
@@ -951,10 +935,9 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 ;; sudo pacman -Syu taplo-cli
 (use-package toml-ts-mode
   :init (ensure-treesit '(toml "https://github.com/tree-sitter/tree-sitter-toml"))
-  :hook
-  ((toml-ts-mode . lsp-deferred)
-   (toml-ts-mode . (lambda () (add-hook 'before-save-hook 'lsp-format-buffer t))))
-  :mode "\\.toml\\'")
+  :mode "\\.toml\\'"
+  :hook (toml-ts-mode . lsp-deferred)
+  :config (add-to-list 'lsp-format-buffer-on-save-list 'toml-ts-mode))
 
 (use-package json-ts-mode
   :init (ensure-treesit '(json "https://github.com/tree-sitter/tree-sitter-json"))
@@ -979,8 +962,6 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
 (use-package protobuf-mode)
 
-(use-package mustache-mode)
-
 ;; sudo pacman -Syu marked
 ;; pipx install grip
 (use-package markdown-mode
@@ -994,7 +975,10 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   (setq markdown-command "marked"
         markdown-live-preview-delete-export 'delete-on-export))
 
-(use-package sql-cassandra)
+;; sudo pacman -Syu texlive-core texlive-latexextra
+;; sudo pacman -Syu texlive-fontsrecommended texlive-fontsextra
+(use-package latex-preview-pane
+  :config (setq pdf-latex-command "xelatex"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;; Ops ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -1023,19 +1007,6 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   :init (ensure-treesit '(dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile"))
   :mode "\\(?:Dockerfile\\(?:\\..*\\)?\\|\\.[Dd]ockerfile\\)\\'")
 
-(use-package terraform-mode
-  :hook (terraform-mode . terraform-format-on-save-mode)
-  :config
-  (use-package company-terraform
-    :config (company-terraform-init)))
-
-;;;;;;;;;;;;;;;;;;;;;;;; Scientific ;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; sudo pacman -Syu texlive-core texlive-latexextra
-;; sudo pacman -Syu texlive-fontsrecommended texlive-fontsextra
-(use-package latex-preview-pane
-  :config (setq pdf-latex-command "xelatex"))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;; Lisp ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (use-package emacs
@@ -1052,65 +1023,6 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
 (use-package rainbow-delimiters)
 
-;; pamac install chez-scheme
-(use-package geiser
-  :preface (setq geiser-active-implementations '(chez))
-  :hook ((scheme-mode      . enable-paredit-mode)
-         (geiser-repl-mode . enable-paredit-mode)))
-
-;; pamac install janet-lang
-(use-package janet-mode)
-
-;;;;;;;;;;;;;;;;;;;;;;;;; Clojure ;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; sudo pacman -Syu leiningen
-;; pamac install nodejs-shadow-cljs clj-kondo-bin clojure-lsp-bin
-(use-package clojure-mode
-  :mode (("\\.clj\\'"  . clojure-mode)
-         ("\\.edn\\'"  . clojure-mode)
-         ("\\.cljc\\'" . clojurec-mode)
-         ("\\.cljs\\'" . clojurescript-mode))
-  :hook ((clojure-mode . enable-paredit-mode)
-         (clojure-mode . subword-mode)
-         (clojure-mode . rainbow-delimiters-mode))
-  :config
-  (use-package clojure-mode-extra-font-locking)
-  (use-package flycheck-clj-kondo))
-
-(use-package cider
-  :after clojure-mode
-  :bind (("C-c M-f" . cider-format-buffer)
-         :map cider-repl-mode-map
-         ("C-c C-o" . cider-repl-clear-buffer))
-  :hook ((cider-repl-mode . paredit-mode)
-         (cider-mode      . eldoc-mode))
-  :config
-  (advice-add 'cider-find-var :after 'recenter-middle)
-  (setq cider-repl-display-help-banner nil
-        cider-prompt-for-symbol nil
-        cider-repl-history-file (concat user-emacs-directory "cider-history")
-        cider-repl-tab-command
-        (lambda () (company-indent-or-complete-common (symbol-at-point)))))
-
-(use-package helm-cider
-  :after clojure-mode
-  :hook (clojure-mode . helm-cider-mode)
-  :bind (("C-c s" . helm-cider-cheatsheet)
-         ("C-c S" . helm-cider-spec))
-  :config
-  (setq helm-cider--doc-actions
-        (helm-make-actions
-         "Clojuredocs"     (wrap-helm-cider-action cider-clojuredocs-lookup)
-         "CiderDoc"        (wrap-helm-cider-action cider-doc-lookup)
-         "Find definition" (wrap-helm-cider-action helm-cider--find-var))))
-
-(use-package clj-refactor
-  :pin melpa-stable
-  :hook (clojure-mode . clj-refactor-mode)
-  :config
-  (cljr-add-keybindings-with-prefix "C-c C-SPC")
-  (setq cljr-warn-on-eval nil))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;; Lua ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; sudo pacman -Syu lua-language-server
@@ -1118,10 +1030,9 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   :init (ensure-treesit '(lua "https://github.com/MunifTanjim/tree-sitter-lua"))
   :mode (("\\.lua\\'"    . lua-ts-mode)
          ("\\.script\\'" . lua-ts-mode))
-  :hook
-  ((lua-ts-mode . lsp-deferred)
-   (lua-ts-mode . (lambda () (add-hook 'before-save-hook 'lsp-format-buffer t))))
+  :hook (lua-ts-mode . lsp-deferred)
   :config
+  (add-to-list 'lsp-format-buffer-on-save-list 'lua-ts-mode)
   (setq lsp-lua-workspace-library   ["/usr/lib/lua-language-server/meta/3rd/Defold/library"]
         lsp-lua-diagnostics-disable ["lowercase-global"]))
 
@@ -1157,12 +1068,6 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 (use-package python-isort
   :hook (python-ts-mode . python-isort-on-save-mode))
 
-;; sudo pacman -Syu python-poetry
-(use-package poetry
-  :hook (python-ts-mode . (lambda () (local-set-key (kbd "C-c p") 'poetry))))
-
-(use-package pippel)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;; C/C++ ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; sudo pacman -Syu clang
@@ -1171,13 +1076,14 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   :ensure nil
   :hook
   (((c-mode c++-mode objc-mode cuda-mode) . lsp-deferred)
-   ((c-mode c++-mode objc-mode cuda-mode) . (lambda () (c-toggle-comment-style -1)))
-   ((c-mode c++-mode objc-mode cuda-mode) . (lambda ()
-                                              (add-hook 'before-save-hook
-                                                        'lsp-format-buffer t))))
+   ((c-mode c++-mode objc-mode cuda-mode) . (lambda () (c-toggle-comment-style -1))))
   :bind (:map c-mode-base-map
               ("C-c C-c" . ff-find-other-file))
   :config
+  (with-eval-after-load 'lsp-mode
+    (mapc (lambda (mode)
+            (add-to-list 'lsp-format-buffer-on-save-list mode))
+          '(c-mode c++-mode objc-mode cuda-mode)))
   (advice-add 'c-update-modeline :around 'ignore))
 
 (use-package cuda-mode)
@@ -1189,13 +1095,9 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 (use-package cmake-ts-mode
   :init (ensure-treesit '(cmake "https://github.com/uyha/tree-sitter-cmake"))
   :mode ("CMakeLists\\.txt\\'" "\\.cmake\\'")
-  :hook ((cmake-ts-mode . lsp-deferred)
-         (cmake-ts-mode . (lambda () (add-hook 'before-save-hook 'lsp-format-buffer t)))))
-
-(use-package glsl-mode
-  :bind (:map glsl-mode-map
-              ("C-c C-c" . ff-find-other-file)
-              ("C-?"     . glsl-find-man-page)))
+  :hook (cmake-ts-mode . lsp-deferred)
+  :config
+  (add-to-list 'lsp-format-buffer-on-save-list 'cmake-ts-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;; Godot ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -1214,6 +1116,86 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   (setq lsp-gdscript-port 6008
         warning-suppress-types '((lsp-mode))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;; Shaders ;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(use-package glsl-mode
+  :bind (:map glsl-mode-map
+              ("C-c C-c" . ff-find-other-file)
+              ("C-?"     . glsl-find-man-page)))
+
+;; pamac install wgsl-analyzer
+(use-package wgsl-mode
+  :hook (wgsl-mode . lsp-deferred)
+  :config
+  (add-to-list 'lsp-format-buffer-on-save-list 'wgsl-mode)
+  (setq c-basic-offset 4
+        c-offsets-alist ;; set with C-c C-o
+        '((label              . +)
+          (arglist-intro      . +)
+          (arglist-close      . -)
+          (topmost-intro-cont . -)
+          )))
+
+(use-package slang-mode
+  :quelpa (slang-mode :fetcher github :repo "k1ngst0m/slang-mode")
+  :mode (("\\.slang\\'"  . slang-ts-mode)
+         ("\\.sl\\'"     . slang-ts-mode)
+         ("\\.slangh\\'" . slang-ts-mode))
+  :hook (slang-ts-mode . lsp-deferred)
+  :init (ensure-treesit '(slang "https://github.com/tree-sitter-grammars/tree-sitter-slang"))
+  :config
+  (define-derived-mode slang-ts-mode slang-mode "Slang[ts]"
+    "Slang mode with tree-sitter highlighting."
+    (when (treesit-ready-p 'slang)
+      (treesit-parser-create 'slang)
+      (setq-local treesit-font-lock-settings
+                  (treesit-font-lock-rules
+                   :language 'slang
+                   :feature 'comment
+                   '((comment) @font-lock-comment-face)
+                   :language 'slang
+                   :feature 'string
+                   '((string_literal) @font-lock-string-face
+                     (string_content) @font-lock-string-face)
+                   :language 'slang
+                   :feature 'type
+                   '((type_identifier) @font-lock-type-face
+                     (primitive_type) @font-lock-type-face)
+                   :language 'slang
+                   :feature 'function
+                   '((function_definition
+                      declarator: (function_declarator
+                                   declarator: (identifier) @font-lock-function-name-face))
+                     (call_expression
+                      function: (identifier) @font-lock-function-call-face))
+                   :language 'slang
+                   :feature 'variable
+                   '((parameter_declaration
+                      declarator: (identifier) @font-lock-variable-name-face)
+                     (field_identifier) @font-lock-property-use-face)
+                   :language 'slang
+                   :feature 'number
+                   '((number_literal) @font-lock-number-face)
+                   :language 'slang
+                   :feature 'attribute
+                   '((hlsl_attribute) @font-lock-preprocessor-face)))
+      (setq-local treesit-font-lock-feature-list
+                  '((comment string)
+                    (type function)
+                    (variable number attribute)))
+      (treesit-major-mode-setup)))
+
+  (with-eval-after-load 'lsp-mode
+    (add-to-list 'lsp-language-id-configuration '(slang-ts-mode . "slang"))
+    (lsp-register-client
+     (make-lsp-client
+      :new-connection (lsp-stdio-connection "slangd")
+      :major-modes '(slang-ts-mode)
+      :language-id "slang"
+      :server-id 'slangd
+      :request-handlers (ht ("workspace/inlayHint/refresh" #'ignore)) ;; FIXME: when slangd supports it
+      ))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;; Rust ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; rustup toolchain install stable
@@ -1229,9 +1211,9 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
               ("C-c TAB" . lsp-rust-analyzer-expand-macro))
   :hook
   ((rust-ts-mode . lsp-deferred)
-   (rust-ts-mode . (lambda () (add-hook 'before-save-hook 'lsp-format-buffer t)))
    (rust-ts-mode . subword-mode))
   :config
+  (add-to-list 'lsp-format-buffer-on-save-list 'rust-ts-mode)
   (defun rust-occur-definitions ()
     (interactive)
     (let ((list-matching-lines-face nil))
@@ -1269,10 +1251,6 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
 (use-package ron-mode)
 
-;; cargo install pesta pest_fmt
-(use-package pest-mode
-  :hook (pest-mode . flymake-mode))
-
 (use-package poporg
   :after rust-ts-mode
   :bind (:map rust-ts-mode-map ("C-c \"" . poporg-dwim))
@@ -1285,19 +1263,5 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   (defun markdown-get-lang-rust-mode (lang)
     (if (member lang rustdoc-attributes) 'rust-mode))
   (advice-add 'markdown-get-lang-mode :before-until 'markdown-get-lang-rust-mode))
-
-;; pamac install wgsl-analyzer
-(use-package wgsl-mode
-  :hook
-  ((wgsl-mode . lsp-deferred)
-   (wgsl-mode . (lambda () (add-hook 'before-save-hook 'lsp-format-buffer t))))
-  :config
-  (setq c-basic-offset 4
-        c-offsets-alist ;; set with C-c C-o
-        '((label              . +)
-          (arglist-intro      . +)
-          (arglist-close      . -)
-          (topmost-intro-cont . -)
-          )))
 
 ;;; init.el ends here
