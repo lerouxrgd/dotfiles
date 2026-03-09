@@ -372,6 +372,32 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   (ido-everywhere 1)
   (ido-ubiquitous-mode 1))
 
+(use-package exec-path-from-shell
+  :if (memq system-type '(gnu gnu/linux darwin))
+  :config (exec-path-from-shell-initialize)
+  :custom (exec-path-from-shell-arguments nil))
+
+(use-package bash-completion
+  :hook (shell-mode
+         . (lambda () (local-set-key (kbd "TAB") 'company-indent-or-complete-common)))
+  :config (bash-completion-setup))
+
+(use-package recentf
+  :ensure nil
+  :config
+  (setq recentf-max-saved-items 50
+        recentf-max-menu-items 35
+        recentf-auto-cleanup 'never)
+  (recentf-mode 1))
+
+(use-package vlf
+  :config (require 'vlf-setup))
+
+(use-package editorconfig
+  :config (editorconfig-mode 1))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;; Git ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (use-package magit
   :bind (("C-x g" . magit-status)
          ("C-x G" . magit-status-here)
@@ -379,29 +405,14 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
          ("<M-return>" . magit-diff-visit-file-other-window)
          :map magit-diff-mode-map
          ("<M-return>" . magit-diff-visit-file-other-window)
-         ("<backtab>"  . magit-section-cycle-diffs)
-         :map my-keymap
-         ("d" . magit-diff-buffer-file)
-         ("g" . magit-status-current-window)
-         ("G" . magit-status-here-current-window))
+         ("<backtab>"  . magit-section-cycle-diffs))
   :config
   (transient-append-suffix 'magit-log "-A"
     '("-m" "Omit merge commits" "--no-merges"))
 
   (setq magit-diff-refine-hunk t)
   (advice-add 'magit-diff-visit-file-other-window :after 'recenter-middle)
-  (advice-add 'magit-diff-buffer-file :after 'recenter-middle)
   (advice-add 'magit-status-here :after 'recenter-middle)
-
-  (defun magit-status-current-window ()
-    (interactive)
-    (let ((magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1))
-      (magit-status-setup-buffer (magit-toplevel))))
-
-  (defun magit-status-here-current-window ()
-    (interactive)
-    (let ((magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1))
-      (with-no-warnings (magit-status-here))))
 
   (use-package magit-todos
     :config
@@ -487,30 +498,6 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
   (setq mwheel-scroll-up-function 'mwheel-scroll-all-scroll-up-all
         mwheel-scroll-down-function 'mwheel-scroll-all-scroll-down-all))
-
-(use-package exec-path-from-shell
-  :if (memq system-type '(gnu gnu/linux darwin))
-  :config (exec-path-from-shell-initialize)
-  :custom (exec-path-from-shell-arguments nil))
-
-(use-package bash-completion
-  :hook (shell-mode
-         . (lambda () (local-set-key (kbd "TAB") 'company-indent-or-complete-common)))
-  :config (bash-completion-setup))
-
-(use-package recentf
-  :ensure nil
-  :config
-  (setq recentf-max-saved-items 50
-        recentf-max-menu-items 35
-        recentf-auto-cleanup 'never)
-  (recentf-mode 1))
-
-(use-package vlf
-  :config (require 'vlf-setup))
-
-(use-package editorconfig
-  :config (editorconfig-mode 1))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;; Editing ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
