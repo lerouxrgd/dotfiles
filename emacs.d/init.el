@@ -22,10 +22,10 @@
   (setq no-littering-etc-directory "~/.emacs.d/etc/"
         no-littering-var-directory "~/.emacs.d/var/")
   :config
-  (setq byte-compile-dest-file-function
-        (lambda (f)
-          (concat no-littering-var-directory "elc/"
-                  (string-remove-prefix "/" (file-name-sans-extension f)) ".elc"))))
+  (advice-add 'display-warning :around
+              (lambda (fn type msg &rest args)
+                (unless (string-match-p "buffer-substring.*obsolete\\|pcre2el" msg)
+                  (apply fn type msg args)))))
 
 (use-package use-package
   :config (setq use-package-always-ensure t))
@@ -33,6 +33,7 @@
 (use-package gnu-elpa-keyring-update)
 
 (use-package quelpa
+  :init (setq quelpa-dir (concat no-littering-var-directory "quelpa"))
   :config
   (setq quelpa-update-melpa-p nil
         quelpa-checkout-melpa-p nil
@@ -119,8 +120,8 @@
 
   ;; Setup local files
   (setq
-   backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
-   custom-file            (concat user-emacs-directory "custom.el")
+   backup-directory-alist `(("." . ,(concat no-littering-var-directory "backups")))
+   custom-file            (no-littering-expand-var-file-name "custom.el")
    auth-sources           '("~/.authinfo.gpg")
    create-lockfiles       nil           ; No need for ~ files when editing
    auto-save-default      nil)          ; No auto-save of file-visiting buffers
@@ -131,12 +132,22 @@
 
 ;;;;;;;;;;;;;;;;;;;;; Custom functions ;;;;;;;;;;;;;;;;;;;;;
 
+(use-package dash
+  :config (global-dash-fontify-mode))
+
 (defconst my/emacs-start-dir
   (expand-file-name command-line-default-directory)
   "Directory where the Emacs process was started.")
 
-(use-package dash
-  :config (global-dash-fontify-mode))
+(defun project-or-root ()
+  "Return Git root if available, otherwise Emacs startup directory."
+  (interactive)
+  (or
+   ;; Git repo root
+   (when-let ((root (vc-call-backend 'Git 'root default-directory)))
+     (expand-file-name root))
+   ;; Fallback: where Emacs was started
+   my/emacs-start-dir))
 
 (defun unkillable-scratch-buffer ()
   "Disallow killing of scratch and delete its content instead."
@@ -149,16 +160,6 @@
   "Switch to scratch buffer."
   (interactive)
   (switch-to-buffer "*scratch*"))
-
-(defun project-or-root ()
-  "Return Git root if available, otherwise Emacs startup directory."
-  (interactive)
-  (or
-   ;; Git repo root
-   (when-let ((root (vc-call-backend 'Git 'root default-directory)))
-     (expand-file-name root))
-   ;; Fallback: where Emacs was started
-   my/emacs-start-dir))
 
 (defun toggle-comment-on-line ()
   "Toggle comment on line and keep cursor on the toggled line."
@@ -310,7 +311,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 (use-package smex
   :bind ("M-x" . smex)
   :config
-  (setq smex-save-file (concat user-emacs-directory "smex-items"))
+  (setq smex-save-file (no-littering-expand-var-file-name "smex-items"))
   (smex-initialize))
 
 (use-package company
@@ -844,6 +845,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
 ;; sudo pacman -Syu ripgrep
 (use-package helm-ag
+  :quelpa (helm-ag :fetcher github :repo "emacsattic/helm-ag")
   :bind (("C-c c" . (lambda () (interactive) (helm-do-ag (project-or-root))))
          ("C-c C" . (lambda () (interactive) (helm-do-ag default-directory))))
   :config
@@ -874,6 +876,13 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
 (use-package treesit
   :ensure nil
+  :init
+  (setq treesit-extra-load-path
+        (list (concat no-littering-var-directory "tree-sitter")))
+  (advice-add 'treesit-install-language-grammar :around
+              (lambda (fn lang &rest args)
+                (let ((user-emacs-directory no-littering-var-directory))
+                  (apply fn lang args))))
   :config
   (setq treesit-language-source-alist '())
   (defun ensure-treesit (grammar-spec)
@@ -897,6 +906,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 (use-package lsp-mode
   :commands lsp
   :hook (lsp-mode . lsp-enable-which-key-integration)
+  :preface (defvar lsp-format-buffer-on-save-list '())
   :init
   (setq lsp-keymap-prefix "C-z"
         lsp-format-buffer-on-save t
@@ -938,6 +948,15 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
         ("aa" . helm-lsp-code-actions)
         ("ga" . (lambda () (interactive) (helm-lsp-workspace-symbol t)))
         ("gA" . (lambda () (interactive) (helm-lsp-global-workspace-symbol t)))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;; LLM ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(use-package eat)
+
+(use-package claudemacs
+  :quelpa (claudemacs :fetcher github :repo "cpoile/claudemacs")
+  :bind (:map prog-mode-map
+              ("C-c C-v" . claudemacs-transient-menu)))
 
 ;;;;;;;;;;;;;;;;;;;; Simple formatting ;;;;;;;;;;;;;;;;;;;;
 
@@ -991,15 +1010,6 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 ;; sudo pacman -Syu texlive-fontsrecommended texlive-fontsextra
 (use-package latex-preview-pane
   :config (setq pdf-latex-command "xelatex"))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;; AI ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(use-package eat)
-
-(use-package claudemacs
-  :quelpa (claudemacs :fetcher github :repo "cpoile/claudemacs")
-  :bind (:map prog-mode-map
-              ("C-c C-v" . claudemacs-transient-menu)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;; Ops ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
