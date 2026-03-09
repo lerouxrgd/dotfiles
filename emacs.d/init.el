@@ -1059,13 +1059,10 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 ;; sudo pacman -Syu lua-language-server
 (use-package lua-ts-mode
   :init (ensure-treesit '(lua "https://github.com/MunifTanjim/tree-sitter-lua"))
-  :mode (("\\.lua\\'"    . lua-ts-mode)
-         ("\\.script\\'" . lua-ts-mode))
+  :mode ("\\.lua\\'" . lua-ts-mode)
   :hook (lua-ts-mode . lsp-deferred)
   :config
-  (add-to-list 'lsp-format-buffer-on-save-list 'lua-ts-mode)
-  (setq lsp-lua-workspace-library   ["/usr/lib/lua-language-server/meta/3rd/Defold/library"]
-        lsp-lua-diagnostics-disable ["lowercase-global"]))
+  (add-to-list 'lsp-format-buffer-on-save-list 'lua-ts-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;; Python ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
