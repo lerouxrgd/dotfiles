@@ -2,10 +2,11 @@
 
 ;;; Commentary:
 
+;;; Code:
+
 ;; Rebuild all packages:
 ;; M-: (byte-recompile-directory package-user-dir nil 'force)
-
-;;; Code:
+;; $ emacs --batch -f batch-byte-compile ~/.emacs.d/init.el
 
 ;;;;;;;;;;;;;;;;;;;; Package management ;;;;;;;;;;;;;;;;;;;;
 
@@ -14,6 +15,17 @@
         ("nongnu"       . "https://elpa.nongnu.org/nongnu/")
         ("melpa"        . "https://melpa.org/packages/")
         ("melpa-stable" . "https://stable.melpa.org/packages/")))
+
+(use-package no-littering
+  :ensure t
+  :init
+  (setq no-littering-etc-directory "~/.emacs.d/etc/"
+        no-littering-var-directory "~/.emacs.d/var/")
+  :config
+  (setq byte-compile-dest-file-function
+        (lambda (f)
+          (concat no-littering-var-directory "elc/"
+                  (string-remove-prefix "/" (file-name-sans-extension f)) ".elc"))))
 
 (use-package use-package
   :config (setq use-package-always-ensure t))
@@ -156,7 +168,7 @@
 
 (defun backward-whitespace (arg)
   "Move to the beginning of the current sequence of whitespaces.
-Delegate call to 'forward-whitespace with negative ARG."
+Delegate call to `forward-whitespace' with negative ARG."
   (interactive "^p")
   (forward-whitespace (- arg)))
 
@@ -383,12 +395,12 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   (defun magit-status-current-window ()
     (interactive)
     (let ((magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1))
-      (magit-status)))
+      (magit-status-setup-buffer (magit-toplevel))))
 
   (defun magit-status-here-current-window ()
     (interactive)
     (let ((magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1))
-      (magit-status-here)))
+      (with-no-warnings (magit-status-here))))
 
   (use-package magit-todos
     :config
@@ -980,6 +992,15 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 (use-package latex-preview-pane
   :config (setq pdf-latex-command "xelatex"))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;; AI ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(use-package eat)
+
+(use-package claudemacs
+  :quelpa (claudemacs :fetcher github :repo "cpoile/claudemacs")
+  :bind (:map prog-mode-map
+              ("C-c C-v" . claudemacs-transient-menu)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;; Ops ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; sudo pacman -Syu yaml-language-server
@@ -1263,5 +1284,9 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   (defun markdown-get-lang-rust-mode (lang)
     (if (member lang rustdoc-attributes) 'rust-mode))
   (advice-add 'markdown-get-lang-mode :before-until 'markdown-get-lang-rust-mode))
+
+;; Local Variables:
+;; byte-compile-warnings: (not unresolved free-vars)
+;; End:
 
 ;;; init.el ends here
