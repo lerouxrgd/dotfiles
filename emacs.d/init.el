@@ -938,7 +938,10 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   :init (ensure-treesit '(toml "https://github.com/tree-sitter/tree-sitter-toml"))
   :mode "\\.toml\\'"
   :hook (toml-ts-mode . lsp-deferred)
-  :config (add-to-list 'lsp-format-buffer-on-save-list 'toml-ts-mode))
+  :config
+  (add-to-list 'lsp-format-buffer-on-save-list 'toml-ts-mode)
+  (with-eval-after-load 'lsp-toml
+    (setq lsp-toml-cache-path (expand-file-name "lsp-toml/" no-littering-var-directory))))
 
 (use-package json-ts-mode
   :init (ensure-treesit '(json "https://github.com/tree-sitter/tree-sitter-json"))
