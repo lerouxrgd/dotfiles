@@ -594,6 +594,8 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
          ("TAB"   . nil))
   :config
   (use-package yasnippet-snippets)
+  (add-to-list 'yas-snippet-dirs
+               (expand-file-name "yasnippet/snippets" no-littering-etc-directory))
   (setq hippie-expand-try-functions-list
         '(try-expand-dabbrev
           try-expand-dabbrev-all-buffers
