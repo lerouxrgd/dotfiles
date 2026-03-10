@@ -926,7 +926,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 (use-package claudemacs
   :quelpa (claudemacs :fetcher github :repo "cpoile/claudemacs")
   :bind (:map prog-mode-map
-              ("C-c C-v" . claudemacs-transient-menu)))
+              ("C-c v" . claudemacs-transient-menu)))
 
 ;;;;;;;;;;;;;;;;;;;; Simple formatting ;;;;;;;;;;;;;;;;;;;;
 
