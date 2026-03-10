@@ -471,33 +471,15 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
         ediff-window-setup-function 'ediff-setup-windows-plain
         ediff-force-faces t))
 
-(use-package diffview
-  :after magit
-  :bind ((:map magit-mode-map
-               ("C-d" . diffview-current))
-         (:map diffview-mode-map
-               ("l" . diffview-align-windows)))
+;; sudo pacman -Syu difftastic
+(use-package difftastic
   :config
-  (defun diffview-align-windows ()
-    (interactive)
-    (let ((align-to-line (line-number-at-pos))
-          (align-from-top (- (line-number-at-pos (point))
-                             (line-number-at-pos (window-start)))))
-      (when
-          (cond
-           ((string= (buffer-name (current-buffer))
-                     diffview--minus-bufname)
-            (switch-to-buffer-other-window diffview--plus-bufname))
-           ((string= (buffer-name (current-buffer))
-                     diffview--plus-bufname)
-            (switch-to-buffer-other-window diffview--minus-bufname)))
-        (goto-char (point-min))
-        (forward-line (1- align-to-line))
-        (recenter align-from-top)
-        (other-window 1))))
-
-  (setq mwheel-scroll-up-function 'mwheel-scroll-all-scroll-up-all
-        mwheel-scroll-down-function 'mwheel-scroll-all-scroll-down-all))
+  (transient-append-suffix 'magit-dispatch "!"
+    '("#" "My Magit Cmds" difftastic-magit-show))
+  (eval-after-load 'magit-diff
+    '(transient-append-suffix 'magit-diff '(-1 -1)
+       [("D" "Difftastic diff (dwim)" difftastic-magit-diff)
+        ("S" "Difftastic show" difftastic-magit-show)])))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;; Editing ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -656,7 +638,6 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 (use-package bufler
   :bind ("C-x C-b" . bufler))
 
-;; TODO: consider perspective-el instead
 (use-package eyebrowse
   :config
   (define-key eyebrowse-mode-map (kbd "M-1") 'eyebrowse-switch-to-window-config-1)
