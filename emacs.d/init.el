@@ -919,6 +919,8 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
         ("ga" . (lambda () (interactive) (helm-lsp-workspace-symbol t)))
         ("gA" . (lambda () (interactive) (helm-lsp-global-workspace-symbol t)))))
 
+(use-package apheleia)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;; LLM ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (use-package eat)
@@ -1039,7 +1041,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;; Python ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; sudo pacman -Syu python-pipx pyenv ipython
+;; sudo pacman -Syu uv python-pipx pyenv
 (use-package python
   :init (ensure-treesit '(python "https://github.com/tree-sitter/tree-sitter-python"))
   :mode ("\\.py[iw]?\\'" . python-ts-mode)
@@ -1057,17 +1059,13 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
           (select-window window)
         (switch-to-buffer "*Occur*")))))
 
-;; sudo pacman -Syu pyright
-(use-package lsp-pyright
-  :hook (python-ts-mode . lsp-deferred))
-
-;; sudo pacman -Syu python-black
-(use-package python-black
-  :hook (python-ts-mode . python-black-on-save-mode))
-
-;; sudo pacman -Syu python-isort
-(use-package python-isort
-  :hook (python-ts-mode . python-isort-on-save-mode))
+;; uv tool install ty ruff
+(use-package lsp-python-ty
+  :ensure nil ;; built into lsp-mode
+  :hook ((python-ts-mode . lsp-deferred)
+         (python-ts-mode . apheleia-mode))
+  :config
+  (setf (alist-get 'python-ts-mode apheleia-mode-alist) '(ruff-isort ruff)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;; C/C++ ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
