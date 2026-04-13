@@ -671,28 +671,30 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
 (use-package dirvish
   :init (dirvish-override-dired-mode)
-  :bind (("C-x t" . dirvish-side-smart-root)
+  :bind (("C-x t" . my/dirvish-side-open)
          :map dirvish-mode-map
          ("TAB"             . dirvish-subtree-toggle)
          ("."               . dired-create-empty-file)
          ("C-<tab>"         . (lambda () (interactive)))
          ("<C-iso-lefttab>" . (lambda () (interactive)))
-         ("<return>"        . (lambda () (interactive)
-                                (dired-find-file)
-                                (let ((window (get-buffer-window)))
-                                  (dirvish-side)
-                                  (when window (select-window window)))))
+         ("<return>"        . my/dirvish-find-file)
          ("C-<return>"      . (lambda () (interactive)
                                 (dired-find-file)
                                 (dirvish-side)
                                 (dirvish-quit))))
   :config
-
-  (defun dirvish-side-smart-root ()
-    "Open dirvish-side rooted at Git repo or Emacs startup directory."
+  (defun my/dirvish-side-open ()
+    "Open dirvish-side anchored at project root."
     (interactive)
-    (let ((default-directory (project-or-root)))
+    (setq my/dirvish-root (project-or-root))
+    (let ((default-directory my/dirvish-root))
       (dirvish-side)))
+
+  (defun my/dirvish-find-file ()
+    (interactive)
+    (let ((file (dired-get-file-for-visit)))
+      (select-window (get-mru-window nil t t))
+      (find-file file)))
 
   (defun dirvish-side-selectable-window (orig-fun &rest args)
     (-if-let (win (dirvish-side--session-visible-p))
