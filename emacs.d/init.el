@@ -762,7 +762,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
 (use-package avy
   :bind (("C-\\"  . avy-goto-word-1)
-         ("M-g g". avy-goto-line)))
+         ("M-g g" . avy-goto-line)))
 
 (use-package goto-line-preview
   :config
@@ -867,8 +867,116 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   :quelpa (treesit-fold :fetcher github :repo "emacs-tree-sitter/treesit-fold")
   :bind (("M-o M-o" . treesit-fold-toggle)
          ("M-o o"   . treesit-fold-open-all)
-         ("M-o O"   . treesit-fold-close-all))
-  :config (global-treesit-fold-mode))
+         ("M-o O"   . treesit-fold-close-all)
+         ("M-o c"   . my/treesit-unfold-docstrings)
+         ("M-o C"   . my/treesit-fold-docstrings))
+  :init
+  (defvar my/treesit-docstring-queries '()
+    "Alist of (major-mode . (language . query)) for docstring folding.")
+  :config
+  (defun my/treesit-fold-docstrings ()
+    "Fold all multi-line docstrings in the current buffer."
+    (interactive)
+    (unless (treesit-parser-list)
+      (user-error "Tree-sitter is not active in this buffer"))
+    (let ((entry (alist-get major-mode my/treesit-docstring-queries)))
+      (unless entry
+        (user-error "No docstring query configured for %s" major-mode))
+      (my/treesit-unfold-docstrings)
+      (let* ((query    (treesit-query-compile (car entry) (cdr entry)))
+             (captures (treesit-query-capture (treesit-buffer-root-node) query))
+             (line-nodes  (mapcar #'cdr (seq-filter (lambda (c)
+                                                      (string= (treesit-node-type (cdr c))
+                                                               "line_comment"))
+                                                    captures)))
+             (block-nodes (mapcar #'cdr (seq-filter (lambda (c)
+                                                      (not (string= (treesit-node-type (cdr c))
+                                                                    "line_comment")))
+                                                    captures))))
+        (dolist (node block-nodes)
+          (my/treesit-fold-node-group (list node)))
+        (dolist (group (my/treesit-group-consecutive line-nodes))
+          (my/treesit-fold-node-group group)))))
+
+  (defun my/treesit-group-consecutive (nodes)
+    "Group NODES appearing on consecutive lines into sublists."
+    (when nodes
+      (let (groups current-group)
+        (dolist (node nodes)
+          (if (null current-group)
+              (setq current-group (list node))
+            (let* ((prev-line (line-number-at-pos
+                               (treesit-node-start (car (last current-group)))))
+                   (curr-line (line-number-at-pos (treesit-node-start node))))
+              (if (= curr-line (1+ prev-line))
+                  (nconc current-group (list node))
+                (push current-group groups)
+                (setq current-group (list node))))))
+        (when current-group (push current-group groups))
+        (nreverse groups))))
+
+  (defun my/treesit-fold-node-group (nodes)
+    "Create a fold overlay spanning a list of NODES."
+    (let ((start (treesit-node-start (car nodes)))
+          (end   (1- (treesit-node-end (car (last nodes))))))
+      (when (> (line-number-at-pos end) (line-number-at-pos start))
+        (save-excursion
+          (goto-char start)
+          (end-of-line)
+          (let ((ov (make-overlay (point) end)))
+            (overlay-put ov 'display
+                         (propertize (treesit-fold--format-overlay-text start end)
+                                     'face 'treesit-fold-replacement-face))
+            (overlay-put ov 'is-docstring-fold t))))))
+
+  (defun my/treesit-unfold-docstrings ()
+    "Unfold all docstrings folded by `my/treesit-fold-docstrings'."
+    (interactive)
+    (remove-overlays (point-min) (point-max) 'is-docstring-fold t))
+
+  (defun my/treesit-fold-toggle-advice (orig-fun &rest args)
+    "Around advice for `treesit-fold-toggle` to handle docstring folds."
+    (let* ((node (when (treesit-parser-list) (treesit-node-at (point))))
+           (doc-node (when node
+                       (cl-loop for n = node then (treesit-node-parent n)
+                                while n
+                                when (member (treesit-node-type n)
+                                             '("string" "block_comment" "line_comment"))
+                                return n))))
+      (if (not doc-node)
+          (apply orig-fun args)
+        (let* ((nodes (if (string= (treesit-node-type doc-node) "line_comment")
+                          (my/treesit-line-comment-group-at-node doc-node)
+                        (list doc-node)))
+               (range-start (treesit-node-start (car nodes)))
+               (range-end   (treesit-node-end (car (last nodes))))
+               (found nil))
+          (dolist (ov (overlays-in range-start range-end))
+            (when (overlay-get ov 'is-docstring-fold)
+              (delete-overlay ov)
+              (setq found t)))
+          (unless found
+            (my/treesit-fold-node-group nodes))))))
+
+  (defun my/treesit-line-comment-group-at-node (node)
+    "Find the group of consecutive line_comment nodes containing NODE."
+    (let* ((entry (alist-get major-mode my/treesit-docstring-queries))
+           (query (treesit-query-compile (car entry) (cdr entry)))
+           (line-nodes (mapcar #'cdr
+                               (seq-filter (lambda (c)
+                                             (string= (treesit-node-type (cdr c)) "line_comment"))
+                                           (treesit-query-capture
+                                            (treesit-buffer-root-node) query)))))
+      (or (seq-find (lambda (g)
+                      (seq-find (lambda (n)
+                                  (= (treesit-node-start n) (treesit-node-start node)))
+                                g))
+                    (my/treesit-group-consecutive line-nodes))
+          (list node))))
+
+  (advice-add 'treesit-fold-toggle :around #'my/treesit-fold-toggle-advice)
+
+  (global-treesit-fold-mode))
 
 (use-package combobulate
   :quelpa (combobulate :fetcher github :repo "mickeynp/combobulate"))
@@ -1051,6 +1159,8 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
               ("C-c C-o" . python-occur-definitions))
   :hook (python-ts-mode . combobulate-mode)
   :config
+  (add-to-list 'my/treesit-docstring-queries
+               '(python-ts-mode . (python . ((expression_statement (string) @docstring)))))
   (defun python-occur-definitions ()
     "Display an occur buffer of all definitions in the current buffer."
     (interactive)
@@ -1215,6 +1325,12 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
    (rust-ts-mode . subword-mode))
   :config
   (add-to-list 'lsp-format-buffer-on-save-list 'rust-ts-mode)
+  (add-to-list 'my/treesit-docstring-queries
+               '(rust-ts-mode . (rust . (([(block_comment (outer_doc_comment_marker))
+                                           (block_comment (inner_doc_comment_marker))
+                                           (line_comment  (outer_doc_comment_marker))
+                                           (line_comment  (inner_doc_comment_marker))]
+                                          @docstring)))))
   (defun rust-occur-definitions ()
     (interactive)
     (let ((list-matching-lines-face nil))
