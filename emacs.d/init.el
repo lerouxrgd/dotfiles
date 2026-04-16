@@ -489,8 +489,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
               ("u" . upcase-region)
               ("l" . downcase-region)
               ("w" . copy-to-register)
-              ("m" . apply-macro-to-region-lines)
-              ("d" . diffview-region))
+              ("m" . apply-macro-to-region-lines))
   :init (selected-global-mode))
 
 (use-package expreg
@@ -1040,7 +1039,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   :bind (:map prog-mode-map
               ("C-c v" . claudemacs-transient-menu)))
 
-;;;;;;;;;;;;;;;;;;;; Simple formatting ;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;; Simple formatting ;;;;;;;;;;;;;;;;;;;;;
 
 (use-package highlight-indent-guides
   :config (setq highlight-indent-guides-method 'character))
@@ -1095,6 +1094,11 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 ;; sudo pacman -Syu texlive-fontsrecommended texlive-fontsextra
 (use-package latex-preview-pane
   :config (setq pdf-latex-command "xelatex"))
+
+;; sudo pacman -Syu typst tinymist
+(use-package typst-ts-mode
+  :init (ensure-treesit '(typst "https://github.com/uben0/tree-sitter-typst"))
+  :hook (typst-ts-mode . lsp-deferred))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;; Ops ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
