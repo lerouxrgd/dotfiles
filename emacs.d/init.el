@@ -1143,6 +1143,9 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
 (use-package rainbow-delimiters)
 
+(use-package fennel-mode
+  :quelpa (fennel-mode :fetcher sourcehut :repo "technomancy/fennel-mode"))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;; Lua ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; sudo pacman -Syu lua-language-server

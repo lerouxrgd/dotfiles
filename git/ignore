@@ -4,3 +4,4 @@ compile_commands.json
 .clj-kondo/.cache/
 .python-version
 .rgignore
+.claude/settings.local.json
