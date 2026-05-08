@@ -1134,6 +1134,20 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   :hook (emacs-lisp-mode . (lambda () (setq flycheck-check-syntax-automatically
                                             '(mode-enabled save)))))
 
+(use-package helpful
+  :bind
+  ((:map help-map
+    ("f" . helpful-callable)
+    ("v" . helpful-variable)
+    ("k" . helpful-key)
+    ("x" . helpful-command))
+   :map emacs-lisp-mode-map
+   ("C-c C-d" . helpful-at-point)))
+
+(use-package elisp-demos
+  :config
+  (advice-add 'helpful-update :after #'elisp-demos-advice-helpful-update))
+
 (use-package flycheck-package
   :no-require t)
 
