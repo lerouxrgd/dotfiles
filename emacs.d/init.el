@@ -270,6 +270,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
                     :keys (my-keymap-key)
                     :bindings ("r" 'revert-all-file-buffers)))
 
+(advice-add 'xref-go-back               :after  'recenter-middle)
 (advice-add 'xref-pop-marker-stack      :after  'recenter-middle)
 (advice-add 'xref-find-definitions      :after  'recenter-middle)
 (advice-add 'compile-goto-error         :after  'recenter-middle)
