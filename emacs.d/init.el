@@ -417,8 +417,7 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
   (use-package magit-todos
     :config
-    (magit-todos-mode)
-    (setq magit-todos-nice nil))
+    (magit-todos-mode))
 
   (use-package magit-ediff
     :ensure nil
