@@ -144,7 +144,7 @@
   (interactive)
   (or
    ;; Git repo root
-   (when-let ((root (vc-call-backend 'Git 'root default-directory)))
+   (when-let* ((root (vc-call-backend 'Git 'root default-directory)))
      (expand-file-name root))
    ;; Fallback: where Emacs was started
    my/emacs-start-dir))
