@@ -1231,22 +1231,6 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   :config
   (add-to-list 'lsp-format-buffer-on-save-list 'cmake-ts-mode))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;; Godot ;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; pipx install gdtoolkit
-(use-package gdscript-mode
-  :init (ensure-treesit '(gdscript "https://github.com/PrestonKnopp/tree-sitter-gdscript"))
-  :mode ("\\.gd\\'" . gdscript-ts-mode)
-  :hook (gdscript-ts-mode . lsp-deferred)
-  :bind (:map gdscript-comint--mode-map
-              ("q" . (lambda ()
-                       (interactive)
-                       (let ((kill-buffer-query-functions nil))
-                         (kill-current-buffer))))
-              ("k" . kill-current-buffer))
-  :config
-  (setq lsp-gdscript-port 6008
-        warning-suppress-types '((lsp-mode))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;; Shaders ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
