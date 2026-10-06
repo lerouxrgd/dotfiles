@@ -1231,6 +1231,76 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   :config
   (add-to-list 'lsp-format-buffer-on-save-list 'cmake-ts-mode))
 
+;;;;;;;;;;;;;;;;;;;;;;; Flatbuffers ;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; cargo install --git https://github.com/smpanaro/flatbuffers-language-server --locked
+(use-package flatbuffers-ts-mode
+  :ensure nil
+  :mode "\\.fbs\\'"
+  :hook (flatbuffers-ts-mode . lsp-deferred)
+  :init
+  (ensure-treesit '(flatbuffers "https://github.com/smpanaro/tree-sitter-flatbuffers"))
+
+  (define-derived-mode flatbuffers-ts-mode prog-mode "FlatBuffers[ts]"
+    "Major mode for FlatBuffers schema files with tree-sitter."
+    (when (treesit-ready-p 'flatbuffers)
+      (treesit-parser-create 'flatbuffers)
+      (setq-local treesit-font-lock-settings
+                  (treesit-font-lock-rules
+                   :language 'flatbuffers
+                   :feature 'comment
+                   '((comment) @font-lock-comment-face)
+                   :language 'flatbuffers
+                   :feature 'string
+                   '((string_constant) @font-lock-string-face)
+                   :language 'flatbuffers
+                   :feature 'number
+                   '([(integer_constant) (float_constant)] @font-lock-number-face
+                     [(boolean_constant) (null_constant)] @font-lock-constant-face)
+                   :language 'flatbuffers
+                   :feature 'keyword
+                   '(["namespace" "include" "attribute" "table" "struct"
+                      "enum" "union" "root_type" "rpc_service"
+                      "file_extension" "file_identifier"]
+                     @font-lock-keyword-face)
+                   :language 'flatbuffers
+                   :feature 'type
+                   '((scalar_type)      @font-lock-type-face
+                     (qualified_ident)  @font-lock-type-face
+                     (table       name: (ident) @font-lock-type-face)
+                     (struct      name: (ident) @font-lock-type-face)
+                     (enum        name: (ident) @font-lock-type-face)
+                     (union       name: (ident) @font-lock-type-face)
+                     (rpc_service name: (ident) @font-lock-type-face))
+                   :language 'flatbuffers
+                   :feature 'variable
+                   '((table_field  name:  (ident) @font-lock-variable-name-face)
+                     (struct_field name:  (ident) @font-lock-variable-name-face)
+                     (enum_field   name:  (ident) @font-lock-variable-name-face)
+                     (union_field  alias: (ident) @font-lock-variable-name-face))
+                   :language 'flatbuffers
+                   :feature 'function
+                   '((rpc_method name: (ident) @font-lock-function-name-face))
+                   :language 'flatbuffers
+                   :feature 'attribute
+                   '((attribute        name: (_) @font-lock-preprocessor-face)
+                     (custom_attribute name: (_) @font-lock-preprocessor-face))))
+      (setq-local treesit-font-lock-feature-list
+                  '((comment string)
+                    (keyword type function)
+                    (variable number attribute)))
+      (setq-local comment-start "// ")
+      (setq-local comment-end "")
+      (treesit-major-mode-setup)))
+
+  (with-eval-after-load 'lsp-mode
+    (add-to-list 'lsp-language-id-configuration '(flatbuffers-ts-mode . "flatbuffers"))
+    (lsp-register-client
+     (make-lsp-client
+      :new-connection (lsp-stdio-connection "flatbuffers-language-server")
+      :major-modes    '(flatbuffers-ts-mode)
+      :language-id    "flatbuffers"
+      :server-id      'flatbuffers-ls))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;; Shaders ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
