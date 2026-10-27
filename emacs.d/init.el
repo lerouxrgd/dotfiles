@@ -1216,6 +1216,25 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   :config
   (setf (alist-get 'python-ts-mode apheleia-mode-alist) '(ruff-isort ruff)))
 
+;;;;;;;;;;;;;;;;;;;;;;;; Typescript ;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; sudo pacman -Syu typescript-language-server typescript
+(use-package typescript-ts-mode
+  :ensure nil
+  :init
+  (ensure-treesit '(typescript "https://github.com/tree-sitter/tree-sitter-typescript"
+                               "master" "typescript/src"))
+  (ensure-treesit '(tsx "https://github.com/tree-sitter/tree-sitter-typescript"
+                        "master" "tsx/src"))
+  :mode (("\\.ts\\'"  . typescript-ts-mode)
+         ("\\.tsx\\'" . tsx-ts-mode))
+  :hook ((typescript-ts-mode tsx-ts-mode) . lsp-deferred)
+  :config
+  (with-eval-after-load 'lsp-mode
+    (mapc (lambda (mode)
+            (add-to-list 'lsp-format-buffer-on-save-list mode))
+          '(typescript-ts-mode tsx-ts-mode))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;; C/C++ ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; sudo pacman -Syu clang
