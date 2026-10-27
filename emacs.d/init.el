@@ -1138,10 +1138,16 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
       (helm-mode -1)
       (ido-everywhere 1))))
 
-;; pamac install dockerfile-language-server
+;; sudo pacman -Syu dockerfile-language-server
 (use-package dockerfile-ts-mode
   :init (ensure-treesit '(dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile"))
   :mode "\\(?:Dockerfile\\(?:\\..*\\)?\\|\\.[Dd]ockerfile\\)\\'")
+
+;; sudo pacman -Syu just just-lsp
+(use-package just-ts-mode
+  :init (ensure-treesit '(just "https://github.com/IndianBoy42/tree-sitter-just"))
+  :mode "\\(?:\\.?[Jj]ustfile\\|\\.[Jj]ust\\)\\'"
+  :hook (just-ts-mode . lsp-deferred))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;; Lisp ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
