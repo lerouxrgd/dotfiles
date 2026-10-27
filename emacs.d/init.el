@@ -1077,18 +1077,34 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
 (use-package protobuf-mode)
 
-;; sudo pacman -Syu marked
-;; pipx install grip
-(use-package markdown-mode
-  :mode (("README\\.md\\'" . gfm-mode)
-         ("\\.md\\'"       . markdown-mode)
-         ("\\.markdown\\'" . markdown-mode))
+;; sudo pacman -Syu markdownlint-cli # ~/.markdownlintrc { "MD013": { "line_length": 120 } }
+(use-package markdown-ts-mode
+  :ensure nil
+  :demand t
+  :init
+  (ensure-treesit '(markdown "https://github.com/tree-sitter-grammars/tree-sitter-markdown"
+                             nil "tree-sitter-markdown/src"))
+  (ensure-treesit '(markdown-inline "https://github.com/tree-sitter-grammars/tree-sitter-markdown"
+                                    nil "tree-sitter-markdown-inline/src"))
+  (ensure-treesit '(bash "https://github.com/tree-sitter/tree-sitter-bash"))
+  :bind (:map markdown-ts-mode-map
+              ("C-c C-SPC" . my/markdown-toggle-ts-mode))
   :config
-  (use-package grip-mode
-    :bind (:map markdown-mode-command-map
-                ("g" . grip-mode)))
-  (setq markdown-command "marked"
-        markdown-live-preview-delete-export 'delete-on-export))
+  (defun my/markdown-toggle-ts-mode ()
+    "Alternate between `markdown-mode' and `markdown-ts-mode'."
+    (interactive)
+    (if (derived-mode-p 'markdown-ts-mode)
+        (markdown-mode)
+      (markdown-ts-mode)))
+  (use-package markdown-mode
+    :mode (("README\\.md\\'" . gfm-mode)
+           ("\\.md\\'"       . markdown-mode)
+           ("\\.markdown\\'" . markdown-mode))
+    :bind (:map markdown-mode-map
+                ("C-c C-SPC" . my/markdown-toggle-ts-mode)))
+  (use-package markdown-ts-appear
+    :pin nongnu
+    :hook (markdown-ts-mode . markdown-ts-appear-mode)))
 
 ;; sudo pacman -Syu texlive-core texlive-latexextra
 ;; sudo pacman -Syu texlive-fontsrecommended texlive-fontsextra
