@@ -1038,9 +1038,12 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
   :quelpa (claudemacs :fetcher github :repo "cpoile/claudemacs")
   :init
   (require 'server)
-  ;; unique server per Emacs process
-  (setq server-name (format "emacs-%d" (emacs-pid)))
-  (unless (server-running-p) (server-start))
+  ;; The daemon keeps the default name so a bare `emacsclient' reaches it.
+  ;; Any other Emacs process gets a unique server so nested emacsclient
+  ;; calls (e.g. from claude in eat) target the right instance.
+  (unless (daemonp)
+    (setq server-name (format "emacs-%d" (emacs-pid)))
+    (unless (server-running-p) (server-start)))
   ;; inherited by eat/shell subprocesses started from now on
   (setenv "EMACS_SOCKET_NAME" (expand-file-name server-name server-socket-dir))
   :bind (:map prog-mode-map
