@@ -429,21 +429,11 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 
 ;; git config --global github.user lerouxrgd
 ;; (~/.authinfo.gpg) machine api.github.com login lerouxrgd^forge password token_xxx
-(use-package code-review
-  ;; FIXME: https://github.com/wandersoncferreira/code-review/issues/245
-  ;; FIXME: https://github.com/wandersoncferreira/code-review/pull/246
-  :quelpa (code-review
-           :fetcher github
-           :repo "phelrine/code-review"
-           :branch "fix/closql-update")
-  :ensure nil
+(use-package diff-review
+  :vc (:url "https://github.com/xiaoxinghu/diff-review" :rev :newest)
   :after magit
-  :bind ((:map magit-status-mode-map
-               ("C-c r" . code-review-forge-pr-at-point))
-         (:map code-review-mode-map
-               ("<M-return>" . magit-diff-visit-file-other-window)))
   :config
-  (setq code-review-auth-login-marker 'forge))
+  (diff-review-magit-mode 1))
 
 (use-package git-gutter
   :hook (prog-mode . git-gutter-mode)
