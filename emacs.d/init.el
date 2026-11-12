@@ -82,6 +82,7 @@
   (show-paren-mode       1)             ; Highlight matching parenthesis
   (column-number-mode    1)             ; Show column number
   (delete-selection-mode 1)             ; Force selected text deletion
+  (repeat-mode           1)             ; Repeat commands with single keys
 
   (prefer-coding-system 'utf-8)
   (fset 'yes-or-no-p 'y-or-n-p)
@@ -432,8 +433,33 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
 (use-package diff-review
   :vc (:url "https://github.com/xiaoxinghu/diff-review" :rev :newest)
   :after magit
+  :bind (:map magit-status-mode-map
+              ("C-c r" . my/diff-review-worktree))
   :config
-  (diff-review-magit-mode 1))
+  (diff-review-magit-mode 1)
+
+  ;; Base of a new review: the branch checked out where the review is started
+  ;; (typically the main checkout, that the reviewed branch will be merged into),
+  ;; instead of origin/HEAD, main or master.  It is only read when a review is
+  ;; created: existing reviews keep the base recorded in their .git/review/*.json
+  ;; file (edit its "base" and press `g' to change it).  On a detached HEAD this
+  ;; yields "HEAD".  Called with `default-directory' at the repository root.
+  (setq diff-review-default-base
+        (lambda ()
+          (string-trim
+           (shell-command-to-string "git rev-parse --abbrev-ref HEAD"))))
+
+  (defun my/diff-review-worktree ()
+    "Review the uncommitted changes (staged and unstaged) of this worktree.
+The review is against HEAD, kept in .git/review/worktree/<dir>.json.
+Untracked files are not shown: `git add -N' them first."
+    (interactive)
+    (let* ((root (diff-review--root-here))
+           (name (file-name-nondirectory (directory-file-name root))))
+      (diff-review-find-file
+       (expand-file-name (format "review/worktree/%s.json" name)
+                         (diff-review--common-dir root))
+       root "HEAD"))))
 
 (use-package git-gutter
   :hook (prog-mode . git-gutter-mode)
@@ -985,7 +1011,15 @@ With ARG, do this that many times.  Does not push text to `kill-ring'."
         lsp-imenu-sort-methods '(position)
         company-transformers nil
         company-lsp-async t
-        company-lsp-cache-candidates nil))
+        company-lsp-cache-candidates nil)
+  :config
+  ;; diff-review checks out throwaway worktrees under <repo>/.git/review/worktrees/<sha>/,
+  ;; which lsp-mode would otherwise attach to the main repo's session (its ancestor folder).
+  ;; Make each such worktree its own project root so the server actually loads its files.
+  (define-advice lsp--calculate-root (:around (orig session file-name) diff-review-worktree)
+    (if (string-match "\\`\\(.*/\\.git/review/worktrees/[^/]+\\)/" file-name)
+        (match-string 1 file-name)
+      (funcall orig session file-name))))
 
 (use-package lsp-ui
   :hook (lsp-mode . lsp-ui-mode)
