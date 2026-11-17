@@ -1071,7 +1071,14 @@ Untracked files are not shown: `git add -N' them first."
   ;; inherited by eat/shell subprocesses started from now on
   (setenv "EMACS_SOCKET_NAME" (expand-file-name server-name server-socket-dir))
   :bind (:map prog-mode-map
-              ("C-c v" . claudemacs-transient-menu)))
+              ("C-c v" . claudemacs-transient-menu))
+  :config
+  ;; Sandboxed claude (see scripts/claude-podman) alongside the host one.
+  (add-to-list 'claudemacs-tool-registry
+               `(claude-podman
+                 :program ,(expand-file-name "../scripts/claude-podman"
+                                             (file-truename user-emacs-directory))))
+  (setq claudemacs-default-tool 'claude-podman))
 
 ;;;;;;;;;;;;;;;;;;;; Simple formatting ;;;;;;;;;;;;;;;;;;;;;
 

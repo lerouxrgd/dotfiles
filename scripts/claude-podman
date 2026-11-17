@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Persisted claude home (login, ~/.claude/settings.json, plans...). Mounted at
+# the same path as on the host and used as HOME, so files claude writes there
+# (e.g. plans for `/plan open`) have the same path for host emacsclient.
+STATE="$HOME/.local/share/claude-podman"
+mkdir -p "$STATE"
+
+opts=()
+
+# Opt-in: CLAUDE_PODMAN_EMACS=1 exposes the host emacs server socket so
+# $EDITOR=emacsclient works inside (e.g. `/plan open`). This lets the sandboxed
+# claude evaluate elisp in the host emacs, so it is off by default.
+if [[ "${CLAUDE_PODMAN_EMACS:-}" == 1 ]]; then
+  SOCK_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/emacs"
+  opts+=(-e EMACS_SOCKET_NAME -v "$SOCK_DIR:$SOCK_DIR")
+fi
+
+exec podman run -it --rm \
+  --userns=keep-id \
+  --tz=local \
+  --security-opt no-new-privileges \
+  -e HOME="$STATE" \
+  -e COLORTERM \
+  -e CARGO_HOME="$HOME/.cargo" \
+  -e RUSTUP_HOME="$HOME/.rustup" \
+  -v "$STATE:$STATE" \
+  -v "$HOME/.cargo:$HOME/.cargo:O" \
+  -v "$HOME/.rustup:$HOME/.rustup:O" \
+  -v "$PWD:$PWD" \
+  -w "$PWD" \
+  "${opts[@]}" \
+  claude-sandbox claude "$@"
