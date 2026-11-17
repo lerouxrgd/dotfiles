@@ -17,6 +17,16 @@ if [[ "${CLAUDE_PODMAN_EMACS:-}" == 1 ]]; then
   opts+=(-e EMACS_SOCKET_NAME -v "$SOCK_DIR:$SOCK_DIR")
 fi
 
+# Opt-in: CLAUDE_PODMAN_CLIPBOARD=1 exposes the host Wayland socket so claude's
+# "paste image" (reads the clipboard with wl-paste) works. The Wayland socket
+# gives the sandbox access to the clipboard (and whatever else the compositor
+# allows clients), so it is off by default.
+if [[ "${CLAUDE_PODMAN_CLIPBOARD:-}" == 1 ]]; then
+  RT="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+  WL="$RT/${WAYLAND_DISPLAY:-wayland-0}"
+  opts+=(-e XDG_RUNTIME_DIR="$RT" -e WAYLAND_DISPLAY="${WAYLAND_DISPLAY:-wayland-0}" -v "$WL:$WL")
+fi
+
 exec podman run -it --rm \
   --userns=keep-id \
   --tz=local \

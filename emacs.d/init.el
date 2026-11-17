@@ -455,11 +455,19 @@ The review is against HEAD, kept in .git/review/worktree/<dir>.json.
 Untracked files are not shown: `git add -N' them first."
     (interactive)
     (let* ((root (diff-review--root-here))
-           (name (file-name-nondirectory (directory-file-name root))))
-      (diff-review-find-file
-       (expand-file-name (format "review/worktree/%s.json" name)
-                         (diff-review--common-dir root))
-       root "HEAD"))))
+           (name (file-name-nondirectory (directory-file-name root)))
+           (file (expand-file-name (format "review/worktree/%s.json" name)
+                                   (diff-review--common-dir root))))
+      ;; A review file left by a worktree of the same name at another path (since
+      ;; moved or removed) would silently fall back to the main checkout: recreate it.
+      (when (file-exists-p file)
+        (let ((old (ignore-errors
+                     (gethash "root" (with-temp-buffer
+                                       (insert-file-contents file)
+                                       (json-parse-buffer))))))
+          (unless (and old (file-equal-p old root))
+            (delete-file file))))
+      (diff-review-find-file file root "HEAD"))))
 
 (use-package git-gutter
   :hook (prog-mode . git-gutter-mode)
@@ -1013,12 +1021,16 @@ Untracked files are not shown: `git add -N' them first."
         company-lsp-async t
         company-lsp-cache-candidates nil)
   :config
-  ;; diff-review checks out throwaway worktrees under <repo>/.git/review/worktrees/<sha>/,
-  ;; which lsp-mode would otherwise attach to the main repo's session (its ancestor folder).
-  ;; Make each such worktree its own project root so the server actually loads its files.
-  (define-advice lsp--calculate-root (:around (orig session file-name) diff-review-worktree)
-    (if (string-match "\\`\\(.*/\\.git/review/worktrees/[^/]+\\)/" file-name)
-        (match-string 1 file-name)
+  ;; Linked worktrees (claude --worktree under <repo>/.claude/worktrees/, diff-review's
+  ;; throwaway ones under <repo>/.git/review/worktrees/<sha>/, ...) may live inside the main
+  ;; repo, which lsp-mode would then attach to the main repo's session (its ancestor folder).
+  ;; Make each worktree its own project root so the server actually loads its files.
+  ;; A linked worktree has a `.git' file, whereas the main checkout has a `.git' directory.
+  (define-advice lsp--calculate-root (:around (orig session file-name) worktree)
+    (if-let* ((wt (locate-dominating-file
+                  file-name
+                  (lambda (d) (file-regular-p (expand-file-name ".git" d))))))
+        (directory-file-name wt)
       (funcall orig session file-name))))
 
 (use-package lsp-ui

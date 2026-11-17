@@ -7,7 +7,7 @@ FROM docker.io/manjarolinux/base
 # the host ~/.rustup mounted by claude-podman, which also sets RUSTUP_HOME and
 # CARGO_HOME. The container runs as the host uid (--userns=keep-id).
 RUN pacman -Syu --noconfirm --needed \
-       base-devel git ripgrep emacs-nox openssl rustup nodejs-lts-jod npm \
+       base-devel git ripgrep emacs-nox openssl wl-clipboard rustup nodejs-lts-jod npm \
     && pacman -Scc --noconfirm \
     && npm install -g @anthropic-ai/claude-code \
     && node "$(npm root -g)/@anthropic-ai/claude-code/install.cjs"
