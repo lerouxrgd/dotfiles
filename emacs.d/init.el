@@ -1073,8 +1073,9 @@ Untracked files are not shown: `git add -N' them first."
   :config
   ;; TUIs like Claude Code draw their own cursor as an inverse-video char.
   ;; Dim it when the eat window is not selected.
-  (defvar-local my/eat-cursor-overlay nil)
-
+  (defvar my/eat-cursor-overlay nil
+    "Overlay dimming the TUI cursor while the eat window is not selected.
+Always set it with `setq-local'.")
   (defun my/eat--find-tui-cursor ()
     "Return position of the last inverse-video char in the buffer."
     (let ((fg (face-foreground 'default)) (pos (point-max)) found)
@@ -1097,7 +1098,7 @@ Untracked files are not shown: `git add -N' them first."
             (if (not pos)
                 (when my/eat-cursor-overlay (delete-overlay my/eat-cursor-overlay))
               (unless (overlayp my/eat-cursor-overlay)
-                (setq my/eat-cursor-overlay (make-overlay pos (1+ pos)))
+                (setq-local my/eat-cursor-overlay (make-overlay pos (1+ pos)))
                 (overlay-put my/eat-cursor-overlay 'priority 1000))
               (overlay-put my/eat-cursor-overlay 'face
                            `(:foreground ,(face-background 'default)
@@ -1106,7 +1107,16 @@ Untracked files are not shown: `git add -N' them first."
 
   (add-hook 'window-selection-change-functions #'my/eat-update-inactive-cursor)
   (add-hook 'window-buffer-change-functions #'my/eat-update-inactive-cursor)
-  (add-hook 'eat-update-hook #'my/eat-update-inactive-cursor))
+  (add-hook 'eat-update-hook #'my/eat-update-inactive-cursor)
+
+  ;; Claude Code draws its own cursor, but resumed sessions (bg-pty-host)
+  ;; leave the terminal cursor visible: never show Emacs' cursor over it.
+  (defvar eat-invisible-cursor-type)
+  (defun my/eat-hide-cursor-for-claude (proc)
+    "Hide Emacs' cursor in eat buffer if PROC runs Claude Code."
+    (when (string-match-p "claude" (string-join (process-command proc) " "))
+      (setq-local eat-default-cursor-type eat-invisible-cursor-type)))
+  (add-hook 'eat-exec-hook #'my/eat-hide-cursor-for-claude))
 
 (use-package claudemacs
   :quelpa (claudemacs :fetcher github :repo "cpoile/claudemacs")
