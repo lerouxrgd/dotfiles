@@ -107,7 +107,8 @@
    indent-tabs-mode nil    ; Don't use hard tabs
    tab-width        4)
 
-  ;; Setup line highlighting
+  ;; Setup line highlighting (not in terminals: it hides TUI-drawn cursors)
+  (setopt global-hl-line-buffers '(not (derived-mode . eat-mode)))
   (global-hl-line-mode 1)
   (add-hook 'activate-mark-hook   (lambda () (global-hl-line-mode -1)))
   (add-hook 'deactivate-mark-hook (lambda () (global-hl-line-mode 1)))
@@ -1068,7 +1069,44 @@ Untracked files are not shown: `git add -N' them first."
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;; LLM ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(use-package eat)
+(use-package eat
+  :config
+  ;; TUIs like Claude Code draw their own cursor as an inverse-video char.
+  ;; Dim it when the eat window is not selected.
+  (defvar-local my/eat-cursor-overlay nil)
+
+  (defun my/eat--find-tui-cursor ()
+    "Return position of the last inverse-video char in the buffer."
+    (let ((fg (face-foreground 'default)) (pos (point-max)) found)
+      (while (and (not found) (> pos (point-min)))
+        (setq pos (previous-single-property-change pos 'face nil (point-min)))
+        (let ((face (get-text-property pos 'face)))
+          (when (and (consp face) (keywordp (car face))
+                     (equal (plist-get face :background) fg))
+            (setq found pos))))
+      found))
+
+  (defun my/eat-update-inactive-cursor (&rest _)
+    "Dim TUI cursors in eat buffers not shown in the selected window."
+    (dolist (buf (buffer-list))
+      (with-current-buffer buf
+        (when (derived-mode-p 'eat-mode)
+          (let ((pos (and (not (eq (window-buffer) buf))
+                          (get-buffer-window buf 'visible)
+                          (my/eat--find-tui-cursor))))
+            (if (not pos)
+                (when my/eat-cursor-overlay (delete-overlay my/eat-cursor-overlay))
+              (unless (overlayp my/eat-cursor-overlay)
+                (setq my/eat-cursor-overlay (make-overlay pos (1+ pos)))
+                (overlay-put my/eat-cursor-overlay 'priority 1000))
+              (overlay-put my/eat-cursor-overlay 'face
+                           `(:foreground ,(face-background 'default)
+                             :background ,(face-foreground 'shadow)))
+              (move-overlay my/eat-cursor-overlay pos (1+ pos) buf)))))))
+
+  (add-hook 'window-selection-change-functions #'my/eat-update-inactive-cursor)
+  (add-hook 'window-buffer-change-functions #'my/eat-update-inactive-cursor)
+  (add-hook 'eat-update-hook #'my/eat-update-inactive-cursor))
 
 (use-package claudemacs
   :quelpa (claudemacs :fetcher github :repo "cpoile/claudemacs")
